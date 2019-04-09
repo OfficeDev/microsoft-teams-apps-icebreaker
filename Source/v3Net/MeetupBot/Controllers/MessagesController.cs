@@ -6,6 +6,13 @@
 
 namespace MeetupBot
 {
+    using Icebreaker.Properties;
+    using Microsoft.ApplicationInsights;
+    using Microsoft.ApplicationInsights.Extensibility;
+    using Microsoft.Azure;
+    using Microsoft.Bot.Connector;
+    using Microsoft.Bot.Connector.Teams;
+    using Microsoft.Bot.Connector.Teams.Models;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -13,13 +20,6 @@ namespace MeetupBot
     using System.Net.Http;
     using System.Threading.Tasks;
     using System.Web.Http;
-    using Microsoft.ApplicationInsights;
-    using Microsoft.ApplicationInsights.Extensibility;
-    using Microsoft.Azure;
-    using Microsoft.Bot.Connector;
-    using Microsoft.Bot.Connector.Teams;
-    using Microsoft.Bot.Connector.Teams.Models;
-    using Properties;  
 
     [BotAuthentication]
     public class MessagesController : ApiController
@@ -50,7 +50,7 @@ namespace MeetupBot
                     if (optOutRequst || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
                     {
                         telemetry.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId} at {DateTime.Now.ToString()}");
-                        await MeetupBot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
+                        await IcebreakerBot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
                         // Looking at the Resources.resx file here
                         replyText = Resources.OptOutConfirmation;
@@ -65,7 +65,7 @@ namespace MeetupBot
                         };
 
                         telemetry.TrackEvent("UserOptIn", optInEventProps); 
-                        await MeetupBot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
+                        await IcebreakerBot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
                         replyText = Resources.OptInConfirmation;
                     }
@@ -154,14 +154,14 @@ namespace MeetupBot
                         telemetry.TrackTrace($"Adding a new member: {memberAddedId}"); 
 
                         // we were just added to team   
-                        await MeetupBot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, channelData.Tenant.Id);
+                        await IcebreakerBot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, channelData.Tenant.Id);
 
                         // TODO: post activity.from has who added the bot. Can record it in schema.
                     }
                     else if (memberRemovedId.Equals(myId))
                     {
                         // we were just removed from a team
-                        await MeetupBot.SaveRemoveFromTeam(message.ServiceUrl, message.Conversation.Id, channelData.Tenant.Id);
+                        await IcebreakerBot.SaveRemoveFromTeam(message.ServiceUrl, message.Conversation.Id, channelData.Tenant.Id);
                     }
                     else if (!string.IsNullOrEmpty(memberAddedId)) // If I wasn't added or removed, then someome else must have been added to team
                     {
@@ -169,7 +169,7 @@ namespace MeetupBot
 
                         // someone else was added
                         // send them a welcome message
-                        await MeetupBot.WelcomeUser(message.ServiceUrl, memberAddedId, channelData.Tenant.Id, channelData.Team.Id);
+                        await IcebreakerBot.WelcomeUser(message.ServiceUrl, memberAddedId, channelData.Tenant.Id, channelData.Team.Id);
                     }
                 }
 

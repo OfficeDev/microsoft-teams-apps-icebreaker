@@ -20,7 +20,7 @@ namespace MeetupBot
     using System.Linq;
     using System.Threading.Tasks;
 
-    public static class MeetupBot
+    public static class IcebreakerBot
     {
         private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("AppInsightsInstrumentationKey")));
 
@@ -37,7 +37,7 @@ namespace MeetupBot
             // Now notify each pair found in 1:1 and ask them to reach out to the other person
             // When contacting the user in 1:1, give them the button to opt-out.
 
-            var teams = MeetupBotDataProvider.GetInstalledTeams();
+            var teams = IcebreakerBotDataProvider.GetInstalledTeams();
 
             var countPairsNotified = 0;
             var maxPairUpsPerTeam = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"));
@@ -184,22 +184,22 @@ namespace MeetupBot
 
         public static async Task SaveAddedToTeam(string serviceUrl, string teamId, string tenantId)
         {
-            await MeetupBotDataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, true);
+            await IcebreakerBotDataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, true);
         }
 
         public static async Task SaveRemoveFromTeam(string serviceUrl, string teamId, string tenantId)
         {
-            await MeetupBotDataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, false);
+            await IcebreakerBotDataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, false);
         }
 
         public static async Task OptOutUser(string tenantId, string userId, string serviceUrl)
         {
-            await MeetupBotDataProvider.SetUserOptInStatus(tenantId, userId, false, serviceUrl);
+            await IcebreakerBotDataProvider.SetUserOptInStatus(tenantId, userId, false, serviceUrl);
         }
 
         public static async Task OptInUser(string tenantId, string userId, string serviceUrl)
         {
-            await MeetupBotDataProvider.SetUserOptInStatus(tenantId, userId, true, serviceUrl);
+            await IcebreakerBotDataProvider.SetUserOptInStatus(tenantId, userId, true, serviceUrl);
         }
 
         private static async Task<TeamsChannelAccount[]> GetTeamMembers(string serviceUrl, string teamId, string tenantId)
@@ -235,7 +235,7 @@ namespace MeetupBot
 
             foreach (var member in members)
             {
-                var optInStatus = MeetupBotDataProvider.GetUserOptInStatus(teamInfo.TenantId, member.ObjectId);
+                var optInStatus = IcebreakerBotDataProvider.GetUserOptInStatus(teamInfo.TenantId, member.ObjectId);
 
                 if (optInStatus == null || optInStatus.OptedIn)
                 {

@@ -31,7 +31,7 @@ namespace MeetupBot.Controllers
 
         private static async Task<int> MakePairs()
         {
-            return await MeetupBot.MakePairsAndNotify();
+            return await IcebreakerBot.MakePairsAndNotify();
         }
 
     }

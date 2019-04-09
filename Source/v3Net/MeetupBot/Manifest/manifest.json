@@ -6,9 +6,9 @@
   "packageName": "com.microsoft.teams.meetup",
   "developer": {
     "name": "",
-        "websiteUrl": "",
-        "privacyUrl": "",
-        "termsOfUseUrl": ""
+    "websiteUrl": "",
+    "privacyUrl": "",
+    "termsOfUseUrl": ""
   },
   "icons": {
     "color": "color.png",
@@ -16,7 +16,7 @@
   },
   "name": {
     "short": "",
-    "full": "Learn about your team members"
+    "full": ""
   },
   "description": {
     "short": "",

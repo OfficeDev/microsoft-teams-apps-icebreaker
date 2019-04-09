@@ -16,7 +16,7 @@ namespace MeetupBot.Helpers
     using System.Linq;
     using System.Threading.Tasks;
 
-    public static class MeetupBotDataProvider
+    public static class IcebreakerBotDataProvider
     {
         private static DocumentClient documentClient;
         private static Database db;
