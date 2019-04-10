@@ -84,7 +84,7 @@ namespace Icebreaker
                     else
                     {
                         var botName = CloudConfigurationManager.GetSetting("BotDisplayName");
-                        telemetry.TrackTrace($"{botName} cannot process the following: {activity.Text}"); 
+                        telemetry.TrackTrace($"Cannot process the following: {activity.Text}"); 
                         replyText = Resources.IDontKnow;
                     }
                 }
