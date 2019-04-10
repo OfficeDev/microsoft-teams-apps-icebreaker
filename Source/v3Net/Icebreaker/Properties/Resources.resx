@@ -121,7 +121,7 @@
     <value>😓 there was an error while processing request. Retry?</value>
   </data>
   <data name="IDontKnow" xml:space="preserve">
-    <value>😕 no idea what you just said. My tiny 🤖 🧠 doesn't understand how to handle that yet! Post feedback here https://github.com/siduppal/TeamsMeetuplyBot/issues</value>
+    <value>😕 no idea what you just said. My tiny 🤖 🧠 doesn't understand how to handle that yet!</value>
   </data>
   <data name="OptInConfirmation" xml:space="preserve">
     <value>👍 👏 way to go! You are now opted in!</value>

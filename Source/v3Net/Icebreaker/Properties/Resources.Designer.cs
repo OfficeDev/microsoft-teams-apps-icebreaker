@@ -70,7 +70,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 😕 no idea what you just said. My tiny 🤖 🧠 doesn&apos;t understand how to handle that yet! Post feedback here https://github.com/siduppal/TeamsMeetuplyBot/issues.
+        ///   Looks up a localized string similar to 😕 no idea what you just said. My tiny 🤖 🧠 doesn&apos;t understand how to handle that yet!.
         /// </summary>
         internal static string IDontKnow {
             get {
