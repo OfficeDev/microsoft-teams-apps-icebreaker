@@ -124,7 +124,7 @@ namespace Icebreaker
                     // only process the Teams ones.
                     var teamsChannelData = message.GetChannelData<TeamsChannelData>();
 
-                    if (teamsChannelData.Team == null || string.IsNullOrEmpty(teamsChannelData.Team.Id))
+                    if (teamsChannelData.Team == null || string.IsNullOrEmpty(teamsChannelData?.Team?.Id))
                     {
                         // conversation-update is for 1:1 chat. Just ignore.
                         return null;
