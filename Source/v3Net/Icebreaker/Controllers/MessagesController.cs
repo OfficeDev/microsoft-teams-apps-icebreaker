@@ -51,8 +51,6 @@ namespace MeetupBot
                     {
                         telemetry.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId} at {DateTime.Now.ToString()}");
                         await IcebreakerBot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
-
-                        // Looking at the Resources.resx file here
                         replyText = Resources.OptOutConfirmation;
                     }
                     else if (string.Equals(activity.Text, "optin", StringComparison.InvariantCultureIgnoreCase))
