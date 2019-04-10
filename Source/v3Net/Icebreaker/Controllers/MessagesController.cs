@@ -34,7 +34,6 @@ namespace Icebreaker
             if (activity.Type == ActivityTypes.Message)
             {
                 string replyText = null;
-
                 var optOutRequest = false;
 
                 if (activity.Value != null && ((dynamic)activity.Value).optout == true)
@@ -106,7 +105,6 @@ namespace Icebreaker
             }
 
             var response = Request.CreateResponse(HttpStatusCode.OK);
-
             return response;
         }
 
@@ -131,7 +129,6 @@ namespace Icebreaker
                     }
 
                     string memberAddedId = string.Empty;
-
                     if (message.MembersAdded.Count > 0)
                     {
                         memberAddedId = message.MembersAdded.First().Id;
@@ -163,8 +160,7 @@ namespace Icebreaker
                     {
                         telemetry.TrackTrace($"Adding a new member: {memberAddedId}"); 
 
-                        // someone else was added
-                        // send them a welcome message
+                        // someone else was added send them a welcome message
                         await IcebreakerBot.WelcomeUser(message.ServiceUrl, memberAddedId, channelData.Tenant.Id, channelData.Team.Id);
                     }
                 }
