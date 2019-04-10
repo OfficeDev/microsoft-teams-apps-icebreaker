@@ -173,7 +173,7 @@ namespace MeetupBot
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError(ex.Message);
+                telemetry.TrackException(ex);
                 throw;
             }
         }
