@@ -35,11 +35,11 @@ namespace MeetupBot
             {
                 string replyText = null;
 
-                var optOutRequst = false;
+                var optOutRequest = false;
 
                 if (activity.Value != null && ((dynamic)activity.Value).optout == true)
                 {
-                    optOutRequst = true;
+                    optOutRequest = true;
                 }
 
                 try
@@ -47,7 +47,7 @@ namespace MeetupBot
                     // Looking at the sender of the message
                     var senderAadId = activity.From.AsTeamsChannelAccount().Properties["aadObjectId"].ToString();
 
-                    if (optOutRequst || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
+                    if (optOutRequest || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
                     {
                         telemetry.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId} at {DateTime.Now.ToString()}");
                         await IcebreakerBot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
@@ -92,17 +92,15 @@ namespace MeetupBot
                 }
                 catch (Exception ex)
                 {
-                    telemetry.TrackTrace("Oops, I hit a snag: " + ex.ToString());
+                    telemetry.TrackException(ex);
                     replyText = Resources.ErrorOccured;
                 }
 
                 using (var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl)))
                 {
                     var replyActivity = activity.CreateReply(replyText);
-
                     await connectorClient.Conversations.ReplyToActivityAsync(replyActivity);
                 }
-
             }
             else
             {
@@ -180,7 +178,6 @@ namespace MeetupBot
                 System.Diagnostics.Trace.TraceError(ex.Message);
                 throw;
             }
-           
         }
     }
 }
