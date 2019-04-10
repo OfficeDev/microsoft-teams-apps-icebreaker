@@ -4,7 +4,7 @@
 // </copyright>
 //----------------------------------------------------------------------------------------------
 
-namespace MeetupBot
+namespace Icebreaker
 {
     using Helpers;
     using Helpers.AdaptiveCards;

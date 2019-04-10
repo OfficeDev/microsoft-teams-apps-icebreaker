@@ -1,4 +1,4 @@
-﻿namespace MeetupBot
+﻿namespace Icebreaker
 {
     using System.Web.Http;
     using Newtonsoft.Json;

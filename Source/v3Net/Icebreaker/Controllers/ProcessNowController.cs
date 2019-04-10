@@ -4,7 +4,7 @@
 // </copyright>
 //----------------------------------------------------------------------------------------------
 
-namespace MeetupBot.Controllers
+namespace Icebreaker.Controllers
 {
     using System.Threading.Tasks;
     using System.Web.Hosting;

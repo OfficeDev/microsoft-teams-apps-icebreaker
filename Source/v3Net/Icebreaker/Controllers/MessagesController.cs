@@ -4,9 +4,9 @@
 // </copyright>
 //----------------------------------------------------------------------------------------------
 
-namespace MeetupBot
+namespace Icebreaker
 {
-    using Icebreaker.Properties;
+    using Properties;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.Azure;

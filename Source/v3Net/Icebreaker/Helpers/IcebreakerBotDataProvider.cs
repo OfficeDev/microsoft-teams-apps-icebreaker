@@ -4,7 +4,7 @@
 // </copyright>
 //----------------------------------------------------------------------------------------------
 
-namespace MeetupBot.Helpers
+namespace Icebreaker.Helpers
 {
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.Extensibility;

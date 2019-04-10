@@ -4,7 +4,7 @@
 // </copyright>
 //----------------------------------------------------------------------------------------------
 
-namespace MeetupBot.Helpers.AdaptiveCards
+namespace Icebreaker.Helpers.AdaptiveCards
 {
     using System.Collections.Generic;
     using System.IO;
