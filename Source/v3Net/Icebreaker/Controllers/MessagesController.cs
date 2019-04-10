@@ -129,9 +129,17 @@ namespace Icebreaker
                     }
 
                     string memberAddedId = string.Empty;
-                    if (message.MembersAdded.Count > 0)
+                    if (message.MembersAdded.Count > 1)
                     {
-                        memberAddedId = message.MembersAdded.First().Id;
+                        var addedRoster = message.MembersAdded;
+
+                        foreach (ChannelAccount person in addedRoster)
+                        {
+                            telemetry.TrackTrace($"Adding a new member: {person.Id}");
+
+                            // someone else was added send them a welcome message
+                            await IcebreakerBot.WelcomeUser(message.ServiceUrl, person.Id, channelData.Tenant.Id, channelData.Team.Id);
+                        }
                     }
 
                     string memberRemovedId = string.Empty;
