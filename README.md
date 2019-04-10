@@ -1,5 +1,5 @@
-# Meetuply 🤝🤖
-Meetuply is an open-source bot for Microsoft Teams that helps the whole team get closer by pairing members up every week at random, to meet for coffee, burgers, pizza, or a walk around the block.
+# Icebreaker
+Icebreaker is an open-source bot for Microsoft Teams that helps the whole team get closer by pairing members up every week at random, to meet for coffee, burgers, pizza, or a walk around the block.
 
 ![Meetuply pair up notification](MeetuplyPairupNotification.png)
 
@@ -16,7 +16,7 @@ The source for the bot is available under [MIT license](LICENSE) and demonstrate
 
 ## Setting up the bot
 * Fork this repo.
-* Open MeetupBot.sln file in Visual Studio.
+* Open Icebreaker.sln file in Visual Studio.
 * Open Web.config file and update it as follows:
   * Use your web-browser to register [a new bot for Teams](https://dev.botframework.com/bots/new).  
   * Replace `ADD_BOT_APP_ID_HERE` with the Application ID you received while registering your bot.
@@ -49,7 +49,12 @@ Publish your bot to Azure from Visual Studio and paste the URL of the newly crea
 # Questions ❓ / Issues 🙋‍♂️ / Feedback 🗨
 Post [here](https://github.com/siduppal/TeamsMeetuplyBot/issues).
 
-Contributions are welcome! 👏
+# Contributing
+This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details visit [https://cla.microsoft.com](https://cla.microsoft.com).  
+
+When you submit a pull request, a CLA-bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.  
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional question or comments.
 
 # Deploy to Azure
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOfficeDev%2Fmicrosoft-teams-icebreaker-app%2Fmaster%2Fportal.azuredeploy.json" target="_blank">
