@@ -125,11 +125,10 @@ namespace Icebreaker
                 }
             }
 
-            var welcomeMessageCard = WelcomeNewMemberCard.GetCard(teamName, userThatJustJoined.Name, botDisplayName);
-
             if (userThatJustJoined != null)
             {
-                telemetry.TrackTrace($"A new user just joined - {userThatJustJoined.ObjectId}, {userThatJustJoined.GivenName}"); 
+                telemetry.TrackTrace($"A new user just joined - {userThatJustJoined.ObjectId}, {userThatJustJoined.GivenName}");
+                var welcomeMessageCard = WelcomeNewMemberCard.GetCard(teamName, userThatJustJoined.Name, botDisplayName);
                 await NotifyUser(serviceUrl, welcomeMessageCard, userThatJustJoined, tenantId);
             }
             
