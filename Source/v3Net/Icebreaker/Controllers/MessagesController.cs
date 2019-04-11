@@ -38,45 +38,61 @@ namespace Icebreaker
         /// <returns>Task that resolves to the HTTP response message</returns>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
-            if (activity.Type == ActivityTypes.Message)
+            using (var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl)))
             {
-                string replyText = null;
-                var optOutRequest = false;
-
-                if (activity.Value != null && ((dynamic)activity.Value).optout == true)
+                if (activity.Type == ActivityTypes.Message)
                 {
-                    optOutRequest = true;
+                    await this.HandleMessageActivity(connectorClient, activity);
                 }
-
-                try
+                else
                 {
-                    // Looking at the sender of the message
-                    var senderAadId = activity.From.AsTeamsChannelAccount().Properties["aadObjectId"].ToString();
+                    await this.HandleSystemActivity(connectorClient, activity);
+                }
+            }
 
-                    if (optOutRequest || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        telemetryClient.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId} at {DateTime.Now.ToString()}");
-                        await IcebreakerBot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
-                        replyText = Resources.OptOutConfirmation;
-                    }
-                    else if (string.Equals(activity.Text, "optin", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        Dictionary<string, string> optInEventProps = new Dictionary<string, string>()
+            var response = this.Request.CreateResponse(HttpStatusCode.OK);
+            return response;
+        }
+
+        private async Task HandleMessageActivity(ConnectorClient connectorClient, Activity activity)
+        {
+            string replyText = null;
+            var optOutRequest = false;
+
+            if (activity.Value != null && ((dynamic)activity.Value).optout == true)
+            {
+                optOutRequest = true;
+            }
+
+            try
+            {
+                // Looking at the sender of the message
+                var senderAadId = activity.From.AsTeamsChannelAccount().Properties["aadObjectId"].ToString();
+
+                if (optOutRequest || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    telemetryClient.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId} at {DateTime.Now.ToString()}");
+                    await IcebreakerBot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
+                    replyText = Resources.OptOutConfirmation;
+                }
+                else if (string.Equals(activity.Text, "optin", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Dictionary<string, string> optInEventProps = new Dictionary<string, string>()
                         {
                             { "message", activity.Text },
                             { "messageSender", senderAadId },
                             { "messageTimeStamp", DateTime.Now.ToString() }
                         };
 
-                        telemetryClient.TrackEvent("UserOptIn", optInEventProps);
-                        await IcebreakerBot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
+                    telemetryClient.TrackEvent("UserOptIn", optInEventProps);
+                    await IcebreakerBot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
-                        replyText = Resources.OptInConfirmation;
-                    }
-                    else if (string.Equals(activity.Text, "feedback", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        string emailAddress = CloudConfigurationManager.GetSetting("ContactEmail");
-                        Dictionary<string, string> feedbackEventProps = new Dictionary<string, string>()
+                    replyText = Resources.OptInConfirmation;
+                }
+                else if (string.Equals(activity.Text, "feedback", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    string emailAddress = CloudConfigurationManager.GetSetting("ContactEmail");
+                    Dictionary<string, string> feedbackEventProps = new Dictionary<string, string>()
                         {
                             { "message", activity.Text },
                             { "messageSender", senderAadId },
@@ -84,38 +100,27 @@ namespace Icebreaker
                             { "messageTimeStamp", DateTime.Now.ToString() }
                         };
 
-                        telemetryClient.TrackEvent("FeedbackEvent", feedbackEventProps);
-                        replyText = $"If you want to provide feedback about me, contact my creator at {emailAddress}";
-                    }
-                    else
-                    {
-                        var botName = CloudConfigurationManager.GetSetting("BotDisplayName");
-                        telemetryClient.TrackTrace($"Cannot process the following: {activity.Text}");
-                        replyText = Resources.IDontKnow;
-                    }
+                    telemetryClient.TrackEvent("FeedbackEvent", feedbackEventProps);
+                    replyText = $"If you want to provide feedback about me, contact my creator at {emailAddress}";
                 }
-                catch (Exception ex)
+                else
                 {
-                    telemetryClient.TrackException(ex);
-                    replyText = Resources.ErrorOccured;
-                }
-
-                using (var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl)))
-                {
-                    var replyActivity = activity.CreateReply(replyText);
-                    await connectorClient.Conversations.ReplyToActivityAsync(replyActivity);
+                    var botName = CloudConfigurationManager.GetSetting("BotDisplayName");
+                    telemetryClient.TrackTrace($"Cannot process the following: {activity.Text}");
+                    replyText = Resources.IDontKnow;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                await this.HandleSystemMessage(activity);
+                telemetryClient.TrackException(ex);
+                replyText = Resources.ErrorOccured;
             }
 
-            var response = this.Request.CreateResponse(HttpStatusCode.OK);
-            return response;
+            var replyActivity = activity.CreateReply(replyText);
+            await connectorClient.Conversations.ReplyToActivityAsync(replyActivity);
         }
 
-        private async Task<Activity> HandleSystemMessage(Activity message)
+        private async Task<Activity> HandleSystemActivity(ConnectorClient connectorClient, Activity message)
         {
             telemetryClient.TrackTrace("Processing system message");
 
@@ -154,7 +159,7 @@ namespace Icebreaker
                                 // Someome else must have been added to team, send them a welcome message
                                 telemetryClient.TrackTrace($"Adding a new member: {member.Id}");
 
-                                await IcebreakerBot.WelcomeUser(message.ServiceUrl, member.Id, tenantId, teamsChannelData.Team.Id);
+                                await IcebreakerBot.WelcomeUser(connectorClient, member.Id, tenantId, teamsChannelData.Team.Id);
                             }
                         }
                     }

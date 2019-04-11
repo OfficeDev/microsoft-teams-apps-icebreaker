@@ -87,15 +87,13 @@ namespace Icebreaker
         /// <summary>
         /// Send a welcome message to the user that was just added to a team.
         /// </summary>
-        /// <param name="serviceUrl">The service url</param>
+        /// <param name="connectorClient">The connector client</param>
         /// <param name="memberAddedId">The id of the added user</param>
         /// <param name="tenantId">The tenant id</param>
         /// <param name="teamId">The id of the team the user was added to</param>
         /// <returns>Tracking task</returns>
-        public static async Task WelcomeUser(string serviceUrl, string memberAddedId, string tenantId, string teamId)
+        public static async Task WelcomeUser(ConnectorClient connectorClient, string memberAddedId, string tenantId, string teamId)
         {
-            var connectorClient = new ConnectorClient(new Uri(serviceUrl));
-
             var teamName = await GetTeamNameAsync(connectorClient, teamId);
 
             var allMembers = await GetTeamMembers(connectorClient, teamId, tenantId);
