@@ -51,7 +51,7 @@
     {
       "type": "Action.OpenUrl",
       "title": "Propose meetup",
-      "url": ""
+      "url": "https://teams.microsoft.com/l/meeting/new?subject=Meetup%20with%20%personUpn%&attendees=joe@contoso.com,bob@contoso.com&startTime=10%2F24%2F2018%2010%3A30%3A00&endTime=10%2F24%2F2018%2010%3A30%3A00&content=test%3Acontent"
     }
   ],
   "version": "1.0"
