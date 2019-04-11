@@ -23,8 +23,9 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <param name="matchedPersonFirstName">First name of the matched person</param>
         /// <param name="receiverName">Name of the receiver</param>
         /// <param name="personUpn">UPN of the person</param>
+        /// <param name="botDisplayName">This is the display name of the bot that is set from the deployment</param>
         /// <returns>Pairup notification card</returns>
-        public static string GetCard(string teamName, string matchedPersonName, string matchedPersonFirstName, string receiverName, string personUpn)
+        public static string GetCard(string teamName, string matchedPersonName, string matchedPersonFirstName, string receiverName, string personUpn, string botDisplayName)
         {
             var variablesToValues = new Dictionary<string, string>()
             {
@@ -32,7 +33,8 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 { "matchedPerson", matchedPersonName },
                 { "matchedPersonFirstName", matchedPersonFirstName },
                 { "receiverName", receiverName },
-                { "personUpn", personUpn }
+                { "personUpn", personUpn },
+                { "botDisplayName", botDisplayName }
             };
 
             var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/PairUpNotificationAdaptiveCard.json");
