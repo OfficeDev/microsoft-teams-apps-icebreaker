@@ -25,7 +25,7 @@ namespace Icebreaker
     /// </summary>
     public static class IcebreakerBot
     {
-        private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("AppInsightsInstrumentationKey")));
+        private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
 
         /// <summary>
         /// Generate pairups and send pairup notifications.
