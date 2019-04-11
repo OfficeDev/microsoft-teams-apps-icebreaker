@@ -47,7 +47,7 @@ Publish your bot to Azure from Visual Studio and paste the URL of the newly crea
 * Select all files in the current folder of the manifest (there're 3 of them in there), and Compress again.
 
 # Questions ❓ / Issues 🙋‍♂️ / Feedback 🗨
-Post [here](https://github.com/siduppal/TeamsMeetuplyBot/issues).
+Post [here](https://github.com/OfficeDev/microsoft-teams-icebreaker-app/issues).
 
 # Contributing
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details visit [https://cla.microsoft.com](https://cla.microsoft.com).  
