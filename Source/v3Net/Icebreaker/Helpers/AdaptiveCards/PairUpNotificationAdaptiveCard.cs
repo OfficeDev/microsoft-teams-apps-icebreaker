@@ -6,6 +6,7 @@
 
 namespace Icebreaker.Helpers.AdaptiveCards
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Web.Hosting;
@@ -28,6 +29,13 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <returns>Pairup notification card</returns>
         public static string GetCard(string teamName, string matchedPersonName, string matchedPersonFirstName, string receiverName, string personUpn, string botDisplayName, string emailAddress)
         {
+            var title = $"{matchedPersonName} / {matchedPersonFirstName} Meet up";
+            var titleEncoding = Uri.EscapeUriString(title);
+
+            var content = $"Hey there! Looks like {botDisplayName} matched us this week. It'd be great to meet up for a coffee or a lunch or a call if you've got time.";
+            var contentEncoding = Uri.EscapeUriString(content);
+            var meetingLink = "https://teams.microsoft.com/l/meeting/new?subject=" + titleEncoding + "&attendees=%email%&content=" + contentEncoding;
+
             var variablesToValues = new Dictionary<string, string>()
             {
                 { "team", teamName },
@@ -36,7 +44,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 { "receiverName", receiverName },
                 { "personUpn", personUpn },
                 { "botDisplayName", botDisplayName },
-                { "email", emailAddress }
+                { "meetingLink", meetingLink }
             };
 
             var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/PairUpNotificationAdaptiveCard.json");
