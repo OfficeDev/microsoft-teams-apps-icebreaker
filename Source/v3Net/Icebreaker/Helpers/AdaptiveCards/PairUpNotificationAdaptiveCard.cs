@@ -18,7 +18,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
             {
                 { "team", teamName },
                 { "matchedPerson", matchedPersonName },
-                { "matchedPersonFirstName", matchedPersonFirstName},
+                { "matchedPersonFirstName", matchedPersonFirstName },
                 { "receiverName", receiverName },
                 { "personUpn", personUpn }
             };

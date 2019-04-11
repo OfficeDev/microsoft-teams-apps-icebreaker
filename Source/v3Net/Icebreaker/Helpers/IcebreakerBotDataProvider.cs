@@ -1,20 +1,20 @@
 ﻿//----------------------------------------------------------------------------------------------
-// <copyright file="MeetupBotDataProvider.cs" company="Microsoft">
+// <copyright file="IcebreakerBotDataProvider.cs" company="Microsoft">
 // Copyright (c) Microsoft. All rights reserved.
 // </copyright>
 //----------------------------------------------------------------------------------------------
 
 namespace Icebreaker.Helpers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.Azure;
     using Microsoft.Azure.Documents;
     using Microsoft.Azure.Documents.Client;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     public static class IcebreakerBotDataProvider
     {
@@ -99,7 +99,6 @@ namespace Icebreaker.Helpers
                 {
                     var response = documentClient.DeleteDocumentAsync(match.First().SelfLink);
                 }
-
             }
 
             return team;
@@ -142,8 +141,6 @@ namespace Icebreaker.Helpers
 
             var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
             var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
-
-
 
             // Set some common query options
             FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true, PartitionKey = new PartitionKey("/tenantId") };
@@ -198,7 +195,7 @@ namespace Icebreaker.Helpers
                 { "serviceUrl", serviceUrl }
             };
 
-            telemetry.TrackEvent("SetUserOptInStatus", setUserOptInProps); 
+            telemetry.TrackEvent("SetUserOptInStatus", setUserOptInProps);
 
             return obj;
         }
@@ -262,11 +259,9 @@ namespace Icebreaker.Helpers
                 var response = await documentClient.UpsertDocumentAsync(
                 UriFactory.CreateDocumentCollectionUri(databaseName, collectionName),
                 obj);
-
             }
 
             return obj;
         }
-
     }
 }

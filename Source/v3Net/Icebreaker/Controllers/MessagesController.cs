@@ -6,13 +6,6 @@
 
 namespace Icebreaker
 {
-    using Properties;
-    using Microsoft.ApplicationInsights;
-    using Microsoft.ApplicationInsights.Extensibility;
-    using Microsoft.Azure;
-    using Microsoft.Bot.Connector;
-    using Microsoft.Bot.Connector.Teams;
-    using Microsoft.Bot.Connector.Teams.Models;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -20,15 +13,26 @@ namespace Icebreaker
     using System.Net.Http;
     using System.Threading.Tasks;
     using System.Web.Http;
+    using Microsoft.ApplicationInsights;
+    using Microsoft.ApplicationInsights.Extensibility;
+    using Microsoft.Azure;
+    using Microsoft.Bot.Connector;
+    using Microsoft.Bot.Connector.Teams;
+    using Microsoft.Bot.Connector.Teams.Models;
+    using Properties;
 
     [BotAuthentication]
     public class MessagesController : ApiController
     {
-        public static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("AppInsightsInstrumentationKey")));
+        private static TelemetryClient telemetryClient =
+            new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("AppInsightsInstrumentationKey")));
+
         /// <summary>
-        /// POST: api/Messages
+        /// POST: api/messages
         /// Receive a message from a user and reply to it
         /// </summary>
+        /// <param name="activity">The incoming activity</param>
+        /// <returns>Task that resolves to the HTTP response message</returns>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
             if (activity.Type == ActivityTypes.Message)
@@ -48,7 +52,7 @@ namespace Icebreaker
 
                     if (optOutRequest || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        telemetry.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId} at {DateTime.Now.ToString()}");
+                        telemetryClient.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId} at {DateTime.Now.ToString()}");
                         await IcebreakerBot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
                         replyText = Resources.OptOutConfirmation;
                     }
@@ -61,7 +65,7 @@ namespace Icebreaker
                             { "messageTimeStamp", DateTime.Now.ToString() }
                         };
 
-                        telemetry.TrackEvent("UserOptIn", optInEventProps); 
+                        telemetryClient.TrackEvent("UserOptIn", optInEventProps);
                         await IcebreakerBot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
                         replyText = Resources.OptInConfirmation;
@@ -77,19 +81,19 @@ namespace Icebreaker
                             { "messageTimeStamp", DateTime.Now.ToString() }
                         };
 
-                        telemetry.TrackEvent("FeedbackEvent", feedbackEventProps); 
+                        telemetryClient.TrackEvent("FeedbackEvent", feedbackEventProps);
                         replyText = $"If you want to provide feedback about me, contact my creator at {emailAddress}";
                     }
                     else
                     {
                         var botName = CloudConfigurationManager.GetSetting("BotDisplayName");
-                        telemetry.TrackTrace($"Cannot process the following: {activity.Text}"); 
+                        telemetryClient.TrackTrace($"Cannot process the following: {activity.Text}");
                         replyText = Resources.IDontKnow;
                     }
                 }
                 catch (Exception ex)
                 {
-                    telemetry.TrackException(ex);
+                    telemetryClient.TrackException(ex);
                     replyText = Resources.ErrorOccured;
                 }
 
@@ -101,16 +105,16 @@ namespace Icebreaker
             }
             else
             {
-                await HandleSystemMessage(activity);
+                await this.HandleSystemMessage(activity);
             }
 
-            var response = Request.CreateResponse(HttpStatusCode.OK);
+            var response = this.Request.CreateResponse(HttpStatusCode.OK);
             return response;
         }
 
         private async Task<Activity> HandleSystemMessage(Activity message)
         {
-            telemetry.TrackTrace("Processing system message");
+            telemetryClient.TrackTrace("Processing system message");
 
             try
             {
@@ -135,7 +139,7 @@ namespace Icebreaker
 
                         foreach (ChannelAccount person in addedRoster)
                         {
-                            telemetry.TrackTrace($"Adding a new member: {person.Id}");
+                            telemetryClient.TrackTrace($"Adding a new member: {person.Id}");
 
                             // someone else was added send them a welcome message
                             await IcebreakerBot.WelcomeUser(message.ServiceUrl, person.Id, channelData.Tenant.Id, channelData.Team.Id);
@@ -152,10 +156,9 @@ namespace Icebreaker
 
                     if (memberAddedId.Equals(myId))
                     {
-                        telemetry.TrackTrace($"Adding a new member: {memberAddedId}"); 
+                        telemetryClient.TrackTrace($"Adding a new member: {memberAddedId}");
 
-                        // we were just added to team   
-                        await IcebreakerBot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, channelData.Tenant.Id);
+                        // we were just added to team                        await IcebreakerBot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, channelData.Tenant.Id);
 
                         // TODO: post activity.from has who added the bot. Can record it in schema.
                     }
@@ -164,11 +167,11 @@ namespace Icebreaker
                         // we were just removed from a team
                         await IcebreakerBot.SaveRemoveFromTeam(message.ServiceUrl, message.Conversation.Id, channelData.Tenant.Id);
                     }
-                    else if (!string.IsNullOrEmpty(memberAddedId)) // If I wasn't added or removed, then someome else must have been added to team
+                    else if (!string.IsNullOrEmpty(memberAddedId))
                     {
-                        telemetry.TrackTrace($"Adding a new member: {memberAddedId}"); 
+                        // Someome else must have been added to team, send them a welcome message
+                        telemetryClient.TrackTrace($"Adding a new member: {memberAddedId}");
 
-                        // someone else was added send them a welcome message
                         await IcebreakerBot.WelcomeUser(message.ServiceUrl, memberAddedId, channelData.Tenant.Id, channelData.Team.Id);
                     }
                 }
@@ -177,7 +180,7 @@ namespace Icebreaker
             }
             catch (Exception ex)
             {
-                telemetry.TrackException(ex);
+                telemetryClient.TrackException(ex);
                 throw;
             }
         }

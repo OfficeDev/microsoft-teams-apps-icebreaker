@@ -6,9 +6,9 @@
 
 namespace Icebreaker.Helpers
 {
+    using System.Collections.Generic;
     using Microsoft.Azure.Documents;
     using Newtonsoft.Json;
-    using System.Collections.Generic;
 
     public class UserOptInInfo : Document
     {

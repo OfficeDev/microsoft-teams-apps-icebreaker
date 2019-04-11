@@ -169,7 +169,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AdaptiveCards\PairUpNotificationAdaptiveCard.cs" />
-    <Compile Include="Helpers\AdaptiveCards\WelcomeNewmemberCard.cs" />
+    <Compile Include="Helpers\AdaptiveCards\WelcomeNewMemberCard.cs" />
     <Compile Include="Helpers\IcebreakerBotDataProvider.cs" />
     <Compile Include="Helpers\TeamInstallInfo.cs" />
     <Compile Include="Helpers\UserOptInInfo.cs" />

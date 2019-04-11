@@ -11,9 +11,16 @@ namespace Icebreaker.Controllers
     using System.Web.Http;
     using Microsoft.Azure;
 
+    /// <summary>
+    /// API controller to process matches.
+    /// </summary>
     public class ProcessNowController : ApiController
     {
-        // GET api/<controller>/5
+        /// <summary>
+        /// Action to process matches
+        /// </summary>
+        /// <param name="key">API key</param>
+        /// <returns>Success (1) or failure (-1) code</returns>
         [Route("api/processnow/{key}")]
         public int Get([FromUri]string key)
         {
@@ -26,13 +33,11 @@ namespace Icebreaker.Controllers
             {
                 return -1;
             }
-
         }
 
         private static async Task<int> MakePairs()
         {
             return await IcebreakerBot.MakePairsAndNotify();
         }
-
     }
 }
