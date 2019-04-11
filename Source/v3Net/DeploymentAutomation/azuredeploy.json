@@ -369,7 +369,7 @@
             "type": "Microsoft.Insights/components",
             "kind": "other",
             "apiVersion": "2015-05-01",
-            "location": "[resourceGroup().location]",
+            "location": "eastus",
             "tags": {},
             "scale": null,
             "properties": {
