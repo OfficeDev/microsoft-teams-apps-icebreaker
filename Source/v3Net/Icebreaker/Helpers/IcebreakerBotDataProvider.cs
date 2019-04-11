@@ -16,6 +16,9 @@ namespace Icebreaker.Helpers
     using Microsoft.Azure.Documents;
     using Microsoft.Azure.Documents.Client;
 
+    /// <summary>
+    /// Data provider routines
+    /// </summary>
     public static class IcebreakerBotDataProvider
     {
         private static DocumentClient documentClient;
@@ -24,6 +27,9 @@ namespace Icebreaker.Helpers
         private static DocumentCollection usersOptInStatusDocCol;
         private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("AppInsightsInstrumentationKey")));
 
+        /// <summary>
+        /// Initializes the database
+        /// </summary>
         public static void InitDatabase()
         {
             if (documentClient == null)
@@ -67,6 +73,12 @@ namespace Icebreaker.Helpers
             }
         }
 
+        /// <summary>
+        /// Save team installation status to store.
+        /// </summary>
+        /// <param name="team">The team installation info</param>
+        /// <param name="installed">Value that indicates if bot is installed</param>
+        /// <returns>Updated team installation info</returns>
         public static async Task<TeamInstallInfo> SaveTeamInstallStatus(TeamInstallInfo team, bool installed)
         {
             telemetry.TrackTrace("Hit the method - SaveTeamInstallStatus at: " + DateTime.Now.ToString());
@@ -104,6 +116,10 @@ namespace Icebreaker.Helpers
             return team;
         }
 
+        /// <summary>
+        /// Get the list of teams to which the app was installed.
+        /// </summary>
+        /// <returns>List of installed teams</returns>
         public static List<TeamInstallInfo> GetInstalledTeams()
         {
             telemetry.TrackTrace("Hit the method - GetInstalledTeams at: " + DateTime.Now.ToString());
@@ -133,7 +149,13 @@ namespace Icebreaker.Helpers
             }
         }
 
-        public static UserOptInInfo GetUserOptInStatus(string tenantId, string userId)
+        /// <summary>
+        /// Get the opt-in status of the given user
+        /// </summary>
+        /// <param name="tenantId">Tenant id</param>
+        /// <param name="userId">User id</param>
+        /// <returns>User information</returns>
+        public static UserInfo GetUserOptInStatus(string tenantId, string userId)
         {
             telemetry.TrackTrace("Hit the GetUserOptInStatus method at: " + DateTime.Now.ToString());
 
@@ -148,20 +170,11 @@ namespace Icebreaker.Helpers
             // Find matching activities
             try
             {
-                var lookupQuery = documentClient.CreateDocumentQuery<UserOptInInfo>(
+                var lookupQuery = documentClient.CreateDocumentQuery<UserInfo>(
                         UriFactory.CreateDocumentCollectionUri(databaseName, collectionName), queryOptions)
                         .Where(f => f.TenantId == tenantId && f.UserId == userId);
 
                 var match = lookupQuery.ToList();
-
-                Dictionary<string, string> propDictionary = new Dictionary<string, string>
-                {
-                    { "userId", userId },
-                    { "tenantId", tenantId }
-                };
-
-                telemetry.TrackEvent("GetUserOptInStatus", propDictionary);
-
                 return match.FirstOrDefault();
             }
             catch (Exception ex)
@@ -171,13 +184,21 @@ namespace Icebreaker.Helpers
             }
         }
 
-        public static async Task<UserOptInInfo> SetUserOptInStatus(string tenantId, string userId, bool optedIn, string serviceUrl)
+        /// <summary>
+        /// Set the opt-in status of the given user
+        /// </summary>
+        /// <param name="tenantId">Tenant id</param>
+        /// <param name="userId">User id</param>
+        /// <param name="optedIn">User opt-in status</param>
+        /// <param name="serviceUrl">User service URL</param>
+        /// <returns>Updated user information</returns>
+        public static async Task<UserInfo> SetUserOptInStatus(string tenantId, string userId, bool optedIn, string serviceUrl)
         {
             telemetry.TrackTrace("Hit the method - SetUserOptInStatus");
 
             InitDatabase();
 
-            var obj = new UserOptInInfo()
+            var obj = new UserInfo()
             {
                 TenantId = tenantId,
                 UserId = userId,
@@ -200,7 +221,14 @@ namespace Icebreaker.Helpers
             return obj;
         }
 
-        public static async Task<bool> StorePairup(string tenantId, string user1Id, string user2Id)
+        /// <summary>
+        /// Stores the given pairup
+        /// </summary>
+        /// <param name="tenantId">Tenant id</param>
+        /// <param name="user1Id">First user</param>
+        /// <param name="user2Id">Second user</param>
+        /// <returns>Tracking task</returns>
+        public static async Task StorePairup(string tenantId, string user1Id, string user2Id)
         {
             InitDatabase();
 
@@ -226,11 +254,9 @@ namespace Icebreaker.Helpers
 
             telemetry.TrackTrace($"Having the PairUp stored for - {user2Id} inside of {tenantId}");
             await StoreUserOptInStatus(user2Info);
-
-            return true;
         }
 
-        private static async Task<UserOptInInfo> StoreUserOptInStatus(UserOptInInfo obj)
+        private static async Task<UserInfo> StoreUserOptInStatus(UserInfo obj)
         {
             Dictionary<string, string> propDictionary = new Dictionary<string, string>
             {

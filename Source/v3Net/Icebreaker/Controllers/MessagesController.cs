@@ -21,6 +21,9 @@ namespace Icebreaker
     using Microsoft.Bot.Connector.Teams.Models;
     using Properties;
 
+    /// <summary>
+    /// Controller for the bot messaging endpoint
+    /// </summary>
     [BotAuthentication]
     public class MessagesController : ApiController
     {
@@ -118,61 +121,50 @@ namespace Icebreaker
 
             try
             {
-                var channelData = message.GetChannelData<TeamsChannelData>();
+                var teamsChannelData = message.GetChannelData<TeamsChannelData>();
+                var tenantId = teamsChannelData.Tenant.Id;
 
                 if (message.Type == ActivityTypes.ConversationUpdate)
                 {
                     // conversation-update fires whenever a new 1:1 gets created between us and someone else as well
                     // only process the Teams ones.
-                    var teamsChannelData = message.GetChannelData<TeamsChannelData>();
-
-                    if (teamsChannelData.Team == null || string.IsNullOrEmpty(teamsChannelData?.Team?.Id))
+                    if (string.IsNullOrEmpty(teamsChannelData?.Team?.Id))
                     {
                         // conversation-update is for 1:1 chat. Just ignore.
                         return null;
                     }
 
-                    string memberAddedId = string.Empty;
-                    if (message.MembersAdded.Count > 1)
+                    string myBotId = message.Recipient.Id;
+
+                    if (message.MembersAdded?.Count() > 0)
                     {
-                        var addedRoster = message.MembersAdded;
-
-                        foreach (ChannelAccount person in addedRoster)
+                        foreach (var member in message.MembersAdded)
                         {
-                            telemetryClient.TrackTrace($"Adding a new member: {person.Id}");
+                            if (member.Id == myBotId)
+                            {
+                                telemetryClient.TrackTrace($"Bot installed to team {message.Conversation.Id}");
 
-                            // someone else was added send them a welcome message
-                            await IcebreakerBot.WelcomeUser(message.ServiceUrl, person.Id, channelData.Tenant.Id, channelData.Team.Id);
+                                // we were just added to team
+                                await IcebreakerBot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, tenantId);
+
+                                // TODO: post activity.from has who added the bot. Can record it in schema.
+                            }
+                            else
+                            {
+                                // Someome else must have been added to team, send them a welcome message
+                                telemetryClient.TrackTrace($"Adding a new member: {member.Id}");
+
+                                await IcebreakerBot.WelcomeUser(message.ServiceUrl, member.Id, tenantId, teamsChannelData.Team.Id);
+                            }
                         }
                     }
 
-                    string memberRemovedId = string.Empty;
-                    if (message.MembersRemoved.Count > 0)
+                    if (message.MembersRemoved?.Any(x => x.Id == myBotId) == true)
                     {
-                        memberRemovedId = message.MembersRemoved.First().Id;
-                    }
+                        telemetryClient.TrackTrace($"Bot removed from team {message.Conversation.Id}");
 
-                    string myId = message.Recipient.Id;
-
-                    if (memberAddedId.Equals(myId))
-                    {
-                        telemetryClient.TrackTrace($"Adding a new member: {memberAddedId}");
-
-                        // we were just added to team                        await IcebreakerBot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, channelData.Tenant.Id);
-
-                        // TODO: post activity.from has who added the bot. Can record it in schema.
-                    }
-                    else if (memberRemovedId.Equals(myId))
-                    {
                         // we were just removed from a team
-                        await IcebreakerBot.SaveRemoveFromTeam(message.ServiceUrl, message.Conversation.Id, channelData.Tenant.Id);
-                    }
-                    else if (!string.IsNullOrEmpty(memberAddedId))
-                    {
-                        // Someome else must have been added to team, send them a welcome message
-                        telemetryClient.TrackTrace($"Adding a new member: {memberAddedId}");
-
-                        await IcebreakerBot.WelcomeUser(message.ServiceUrl, memberAddedId, channelData.Tenant.Id, channelData.Team.Id);
+                        await IcebreakerBot.SaveRemoveFromTeam(message.ServiceUrl, message.Conversation.Id, tenantId);
                     }
                 }
 

@@ -8,8 +8,15 @@ namespace Icebreaker
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
 
+    /// <summary>
+    /// Web API configuration
+    /// </summary>
     public static class WebApiConfig
     {
+        /// <summary>
+        /// Configures API settings
+        /// </summary>
+        /// <param name="config">The <see cref="HttpConfiguration"/> to configure</param>
         public static void Register(HttpConfiguration config)
         {
             // Json settings

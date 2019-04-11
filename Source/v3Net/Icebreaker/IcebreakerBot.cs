@@ -20,10 +20,17 @@ namespace Icebreaker
     using Microsoft.Bot.Connector.Teams.Models;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Implements the core logic for Icebreaker bot
+    /// </summary>
     public static class IcebreakerBot
     {
         private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("AppInsightsInstrumentationKey")));
 
+        /// <summary>
+        /// Generate pairups and send pairup notifications.
+        /// </summary>
+        /// <returns>The number of pairups that were made</returns>
         public static async Task<int> MakePairsAndNotify()
         {
             telemetry.TrackTrace("Hit the MakePairsAndNotify method at: " + DateTime.Now.ToString());
@@ -51,15 +58,17 @@ namespace Icebreaker
             {
                 try
                 {
-                    var optedInUsers = await GetOptedInUsers(team);
+                    MicrosoftAppCredentials.TrustServiceUrl(team.ServiceUrl);
                     var connectorClient = new ConnectorClient(new Uri(team.ServiceUrl));
-                    var teamName = await GetTeamNameAsync(team.ServiceUrl, team.TeamId, connectorClient);
+
+                    var optedInUsers = await GetOptedInUsers(connectorClient, team);
+                    var teamName = await GetTeamNameAsync(connectorClient, team.TeamId);
 
                     telemetry.TrackTrace($"Trying to pair members of {teamName} at: " + DateTime.Now.ToString());
 
                     foreach (var pair in MakePairs(optedInUsers).Take(maxPairUpsPerTeam))
                     {
-                        await NotifyPair(team.ServiceUrl, team.TenantId, teamName, pair);
+                        await NotifyPair(connectorClient, team.TenantId, teamName, pair);
 
                         countPairsNotified++;
                     }
@@ -75,13 +84,21 @@ namespace Icebreaker
             return countPairsNotified;
         }
 
+        /// <summary>
+        /// Send a welcome message to the user that was just added to a team.
+        /// </summary>
+        /// <param name="serviceUrl">The service url</param>
+        /// <param name="memberAddedId">The id of the added user</param>
+        /// <param name="tenantId">The tenant id</param>
+        /// <param name="teamId">The id of the team the user was added to</param>
+        /// <returns>Tracking task</returns>
         public static async Task WelcomeUser(string serviceUrl, string memberAddedId, string tenantId, string teamId)
         {
             var connectorClient = new ConnectorClient(new Uri(serviceUrl));
 
-            var teamName = await GetTeamNameAsync(serviceUrl, teamId, connectorClient);
+            var teamName = await GetTeamNameAsync(connectorClient, teamId);
 
-            var allMembers = await GetTeamMembers(serviceUrl, teamId, tenantId, connectorClient);
+            var allMembers = await GetTeamMembers(connectorClient, teamId, tenantId);
 
             var botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
 
@@ -100,46 +117,87 @@ namespace Icebreaker
             {
                 telemetry.TrackTrace($"A new user just joined - {userThatJustJoined.ObjectId}, {userThatJustJoined.GivenName}");
                 var welcomeMessageCard = WelcomeNewMemberCard.GetCard(teamName, userThatJustJoined.Name, botDisplayName);
-                await NotifyUser(serviceUrl, welcomeMessageCard, userThatJustJoined, tenantId, connectorClient);
+                await NotifyUser(connectorClient, welcomeMessageCard, userThatJustJoined, tenantId);
             }
         }
 
+        /// <summary>
+        /// Save information about the team to which the bot was added.
+        /// </summary>
+        /// <param name="serviceUrl">The service url</param>
+        /// <param name="teamId">The team id</param>
+        /// <param name="tenantId">The tenant id</param>
+        /// <returns>Tracking task</returns>
         public static async Task SaveAddedToTeam(string serviceUrl, string teamId, string tenantId)
         {
             await IcebreakerBotDataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, true);
         }
 
+        /// <summary>
+        /// Save information about the team from which the bot was removed.
+        /// </summary>
+        /// <param name="serviceUrl">The service url</param>
+        /// <param name="teamId">The team id</param>
+        /// <param name="tenantId">The tenant id</param>
+        /// <returns>Tracking task</returns>
         public static async Task SaveRemoveFromTeam(string serviceUrl, string teamId, string tenantId)
         {
             await IcebreakerBotDataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, false);
         }
 
+        /// <summary>
+        /// Opt out the user from further pairups
+        /// </summary>
+        /// <param name="tenantId">The tenant id</param>
+        /// <param name="userId">The user id</param>
+        /// <param name="serviceUrl">The service url</param>
+        /// <returns>Tracking task</returns>
         public static async Task OptOutUser(string tenantId, string userId, string serviceUrl)
         {
             await IcebreakerBotDataProvider.SetUserOptInStatus(tenantId, userId, false, serviceUrl);
         }
 
+        /// <summary>
+        /// Opt in the user to pairups
+        /// </summary>
+        /// <param name="tenantId">The tenant id</param>
+        /// <param name="userId">The user id</param>
+        /// <param name="serviceUrl">The service url</param>
+        /// <returns>Tracking task</returns>
         public static async Task OptInUser(string tenantId, string userId, string serviceUrl)
         {
             await IcebreakerBotDataProvider.SetUserOptInStatus(tenantId, userId, true, serviceUrl);
         }
 
-        private static async Task<string> GetTeamNameAsync(string serviceUrl, string teamId, ConnectorClient client)
+        /// <summary>
+        /// Get the name of a team.
+        /// </summary>
+        /// <param name="connectorClient">The connector client</param>
+        /// <param name="teamId">The team id</param>
+        /// <returns>The name of the team</returns>
+        private static async Task<string> GetTeamNameAsync(ConnectorClient connectorClient, string teamId)
         {
             telemetry.TrackTrace("Getting the team name now at: " + DateTime.Now.ToString());
 
-            var teamsConnectorClient = client.GetTeamsConnectorClient();
+            var teamsConnectorClient = connectorClient.GetTeamsConnectorClient();
             var teamDetailsResult = await teamsConnectorClient.Teams.FetchTeamDetailsAsync(teamId);
             return teamDetailsResult.Name;
         }
 
-        private static async Task NotifyPair(string serviceUrl, string tenantId, string teamName, Tuple<ChannelAccount, ChannelAccount> pair)
+        /// <summary>
+        /// Notify a pairup.
+        /// </summary>
+        /// <param name="connectorClient">The connector client</param>
+        /// <param name="tenantId">The tenant id</param>
+        /// <param name="teamName">The team name</param>
+        /// <param name="pair">The pairup</param>
+        /// <returns>Tracking task</returns>
+        private static async Task NotifyPair(ConnectorClient connectorClient, string tenantId, string teamName, Tuple<ChannelAccount, ChannelAccount> pair)
         {
             telemetry.TrackTrace("Hit the NotifyPair method at: " + DateTime.Now.ToString());
 
             var teamsPerson1 = pair.Item1.AsTeamsChannelAccount();
             var teamsPerson2 = pair.Item2.AsTeamsChannelAccount();
-            var connectorClient = new ConnectorClient(new Uri(serviceUrl));
 
             // Fill in person1's info in the card for person2
             var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson1.Name, teamsPerson1.GivenName, teamsPerson2.GivenName, teamsPerson1.UserPrincipalName);
@@ -148,13 +206,13 @@ namespace Icebreaker
             var cardForPerson1 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2.Name, teamsPerson2.GivenName, teamsPerson1.GivenName, teamsPerson2.UserPrincipalName);
 
             telemetry.TrackTrace($"Notifying user - {teamsPerson1.ObjectId}, {teamsPerson1.GivenName}");
-            await NotifyUser(serviceUrl, cardForPerson1, teamsPerson1, tenantId, connectorClient);
+            await NotifyUser(connectorClient, cardForPerson1, teamsPerson1, tenantId);
 
             telemetry.TrackTrace($"Notifying user - {teamsPerson2.ObjectId}, {teamsPerson2.GivenName}");
-            await NotifyUser(serviceUrl, cardForPerson2, teamsPerson2, tenantId, connectorClient);
+            await NotifyUser(connectorClient, cardForPerson2, teamsPerson2, tenantId);
         }
 
-        private static async Task NotifyUser(string serviceUrl, string cardToSend, ChannelAccount user, string tenantId, ConnectorClient client)
+        private static async Task NotifyUser(ConnectorClient connectorClient, string cardToSend, ChannelAccount user, string tenantId)
         {
             telemetry.TrackTrace("Hit the NotifyUser method at: " + DateTime.Now.ToString());
 
@@ -164,10 +222,8 @@ namespace Icebreaker
                 Name = CloudConfigurationManager.GetSetting("BotDisplayName")
             };
 
-            MicrosoftAppCredentials.TrustServiceUrl(serviceUrl);
-
             // ensure conversation exists
-            var response = client.Conversations.CreateOrGetDirectConversation(me, user, tenantId);
+            var response = connectorClient.Conversations.CreateOrGetDirectConversation(me, user, tenantId);
 
             // construct the activity we want to post
             var activity = new Activity()
@@ -192,14 +248,12 @@ namespace Icebreaker
             if (!isTesting)
             {
                 // shoot the activity over
-                await client.Conversations.SendToConversationAsync(activity, response.Id);
+                await connectorClient.Conversations.SendToConversationAsync(activity, response.Id);
             }
         }
 
-        private static async Task<TeamsChannelAccount[]> GetTeamMembers(string serviceUrl, string teamId, string tenantId, ConnectorClient connectorClient)
+        private static async Task<TeamsChannelAccount[]> GetTeamMembers(ConnectorClient connectorClient, string teamId, string tenantId)
         {
-            MicrosoftAppCredentials.TrustServiceUrl(serviceUrl);
-
             // Pull the roster of specified team and then remove everyone who has opted out explicitly
 #pragma warning disable CS0618 // Type or member is obsolete
             var members = await connectorClient.Conversations.GetTeamsConversationMembersAsync(teamId, tenantId);
@@ -207,13 +261,12 @@ namespace Icebreaker
             return members;
         }
 
-        private static async Task<List<ChannelAccount>> GetOptedInUsers(TeamInstallInfo teamInfo)
+        private static async Task<List<ChannelAccount>> GetOptedInUsers(ConnectorClient connectorClient, TeamInstallInfo teamInfo)
         {
             telemetry.TrackTrace("Hit the GetOptedInUsers method at: " + DateTime.Now.ToString());
-            var connectorClient = new ConnectorClient(new Uri(teamInfo.ServiceUrl));
             var optedInUsers = new List<ChannelAccount>();
 
-            var members = await GetTeamMembers(teamInfo.ServiceUrl, teamInfo.TeamId, teamInfo.TenantId, connectorClient);
+            var members = await GetTeamMembers(connectorClient, teamInfo.TeamId, teamInfo.TenantId);
 
             if (members.Length > 1)
             {
