@@ -22,7 +22,7 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "Hi there again, I'm %botDisplayName%, the bot that pairs you with a new coworker to meet each week. This week your match is %matchedPerson%. ",
+              "text": "Hi there again, I'm %botDisplayName%, the bot that pairs you with a new coworker to meet each week. This week your match is %matchedPerson%.",
               "wrap": true
             }
           ]
