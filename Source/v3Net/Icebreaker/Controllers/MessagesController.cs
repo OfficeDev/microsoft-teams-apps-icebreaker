@@ -68,29 +68,19 @@ namespace Icebreaker
                 // Looking at the sender of the message
                 var senderAadId = activity.From.AsTeamsChannelAccount().Properties["aadObjectId"].ToString();
 
-                if (optOutRequest || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase) || string.Equals(activity.Text, "Pause pairings", StringComparison.InvariantCultureIgnoreCase))
+                if (optOutRequest || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
                 {
                     telemetryClient.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId} at {DateTime.Now.ToString()}");
                     await IcebreakerBot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
-                    var optInActions = new List<CardAction>()
-                    {
-                        new CardAction()
-                        {
-                            Title = "Resume pairings",
-                            Type = ActionTypes.MessageBack,
-                            Value = "optin"
-                        }
-                    };
-
                     var optInReply = activity.CreateReply();
                     optInReply.Attachments = new List<Attachment>();
-                    var optOutCard = new HeroCard(null, null, Resources.OptOutConfirmation, null, optInActions, null);
+                    var optOutCard = new HeroCard(null, null, Resources.OptOutConfirmation, null, new List<CardAction>() { new CardAction() { Title = Resources.ResumePairingsButtonText, Type = ActionTypes.MessageBack, Value = "optin" } }, null);
                     optInReply.Attachments.Add(optOutCard.ToAttachment());
 
                     await connectorClient.Conversations.ReplyToActivityAsync(optInReply);
                 }
-                else if (string.Equals(activity.Text, "optin", StringComparison.InvariantCultureIgnoreCase) || string.Equals(activity.Text, "Resume pairings", StringComparison.InvariantCultureIgnoreCase))
+                else if (string.Equals(activity.Text, "optin", StringComparison.InvariantCultureIgnoreCase))
                 {
                     Dictionary<string, string> optInEventProps = new Dictionary<string, string>()
                         {
@@ -106,7 +96,7 @@ namespace Icebreaker
                     {
                         new CardAction()
                         {
-                            Title = "Pause pairings",
+                            Title = Resources.PausePairingsButtonText,
                             Type = ActionTypes.MessageBack,
                             Value = "optout"
                         }
@@ -124,6 +114,9 @@ namespace Icebreaker
                     var botName = CloudConfigurationManager.GetSetting("BotDisplayName");
                     telemetryClient.TrackTrace($"Cannot process the following: {activity.Text}");
                     replyText = Resources.IDontKnow;
+
+                    var replyActivity = activity.CreateReply(replyText);
+                    await connectorClient.Conversations.ReplyToActivityAsync(replyActivity);
                 }
             }
             catch (Exception ex)

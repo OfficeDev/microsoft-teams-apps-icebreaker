@@ -140,4 +140,12 @@
   <data name="OptOutConfirmation" xml:space="preserve">
     <value>I have paused your pairings. Click Resume pairings when you're ready to start meeting people again!</value>
   </data>
+  <data name="PausePairingsButtonText" xml:space="preserve">
+    <value>Pause pairings</value>
+    <comment>Button text to pause pairings</comment>
+  </data>
+  <data name="ResumePairingsButtonText" xml:space="preserve">
+    <value>Resume pairings</value>
+    <comment>Button text to resume pairings</comment>
+  </data>
 </root>

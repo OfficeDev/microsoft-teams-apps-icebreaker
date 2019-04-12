@@ -122,5 +122,23 @@ namespace Icebreaker.Properties {
                 return ResourceManager.GetString("OptOutConfirmation", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pause pairings.
+        /// </summary>
+        internal static string PausePairingsButtonText {
+            get {
+                return ResourceManager.GetString("PausePairingsButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resume pairings.
+        /// </summary>
+        internal static string ResumePairingsButtonText {
+            get {
+                return ResourceManager.GetString("ResumePairingsButtonText", resourceCulture);
+            }
+        }
     }
 }
