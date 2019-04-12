@@ -8,7 +8,9 @@
           "type": "TextBlock",
           "size": "Medium",
           "weight": "Bolder",
-          "text": "👋 Hi %receiverName%"
+          "text": "It's time for a match! You've been matched with %matchedPerson%.",
+          "wrap": true,
+          "maxLines": 2
         }
       ]
     },
@@ -20,14 +22,14 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "I am in _%team%_ team to help you get to know your teammates by pairing everyone every week. This week I have matched you with %matchedPerson% and sent a similar message to them. ",
+              "text": "Hi there again, I'm %botDisplayName%, the bot that pairs you with a new coworker to meet each week. This week your match is %matchedPerson%.",
               "wrap": true
             }
           ]
         },
         {
           "type": "TextBlock",
-          "text": "Message %matchedPersonFirstName% and consider meeting up for ☕ (coffee/bubble-tea) or 🍕 (lunch)!",
+          "text": "If you've got the inclination, set something up. See, meeting people is easy!",
           "wrap": true
         }
       ]
@@ -40,8 +42,13 @@
       "url": "https://teams.microsoft.com/l/chat/0/0?users=%personUpn%&message=👋Hi%20there%20"
     },
     {
+      "type": "Action.OpenUrl",
+      "title": "Propose meetup",
+      "url": "%meetingLink%"
+    },
+    {
       "type": "Action.Submit",
-      "title": "Opt out from future pair-ups",
+      "title": "Pause pairings",
       "data": {
         "optout": true
       }

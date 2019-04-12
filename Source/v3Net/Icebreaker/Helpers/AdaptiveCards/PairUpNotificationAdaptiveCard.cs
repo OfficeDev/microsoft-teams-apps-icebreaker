@@ -6,6 +6,8 @@
 
 namespace Icebreaker.Helpers.AdaptiveCards
 {
+    using Icebreaker.Properties;
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Web.Hosting;
@@ -23,16 +25,26 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <param name="matchedPersonFirstName">First name of the matched person</param>
         /// <param name="receiverName">Name of the receiver</param>
         /// <param name="personUpn">UPN of the person</param>
+        /// <param name="botDisplayName">This is the display name of the bot that is set from the deployment</param>
         /// <returns>Pairup notification card</returns>
-        public static string GetCard(string teamName, string matchedPersonName, string matchedPersonFirstName, string receiverName, string personUpn)
+        public static string GetCard(string teamName, string matchedPersonName, string matchedPersonFirstName, string receiverName, string personUpn, string botDisplayName)
         {
+            var title = string.Format(Resources.MeetupTitle, matchedPersonName, matchedPersonFirstName);
+            var escapedTitle = Uri.EscapeDataString(title);
+
+            var content = string.Format(Resources.MeetupContent, botDisplayName);
+            var escapedContent = Uri.EscapeDataString(content);
+            var meetingLink = "https://teams.microsoft.com/l/meeting/new?subject=" + escapedTitle + "&attendees=" + personUpn + "&content=" + escapedContent;
+
             var variablesToValues = new Dictionary<string, string>()
             {
                 { "team", teamName },
                 { "matchedPerson", matchedPersonName },
                 { "matchedPersonFirstName", matchedPersonFirstName },
                 { "receiverName", receiverName },
-                { "personUpn", personUpn }
+                { "personUpn", personUpn },
+                { "botDisplayName", botDisplayName },
+                { "meetingLink", meetingLink }
             };
 
             var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/PairUpNotificationAdaptiveCard.json");

@@ -25,7 +25,7 @@ namespace Icebreaker.Helpers
         private static Database db;
         private static DocumentCollection teamsInstalledDocCol;
         private static DocumentCollection usersOptInStatusDocCol;
-        private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("AppInsightsInstrumentationKey")));
+        private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
 
         /// <summary>
         /// Initializes the database

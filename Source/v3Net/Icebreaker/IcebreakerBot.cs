@@ -25,7 +25,7 @@ namespace Icebreaker
     /// </summary>
     public static class IcebreakerBot
     {
-        private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("AppInsightsInstrumentationKey")));
+        private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
 
         /// <summary>
         /// Generate pairups and send pairup notifications.
@@ -193,15 +193,16 @@ namespace Icebreaker
         private static async Task NotifyPair(ConnectorClient connectorClient, string tenantId, string teamName, Tuple<ChannelAccount, ChannelAccount> pair)
         {
             telemetry.TrackTrace("Hit the NotifyPair method at: " + DateTime.Now.ToString());
+            var displayName = CloudConfigurationManager.GetSetting("BotDisplayName");
 
             var teamsPerson1 = pair.Item1.AsTeamsChannelAccount();
             var teamsPerson2 = pair.Item2.AsTeamsChannelAccount();
 
             // Fill in person1's info in the card for person2
-            var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson1.Name, teamsPerson1.GivenName, teamsPerson2.GivenName, teamsPerson1.UserPrincipalName);
+            var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson1.Name, teamsPerson2.Name, teamsPerson2.GivenName, teamsPerson1.UserPrincipalName, displayName);
 
             // Fill in person2's info in the card for person1
-            var cardForPerson1 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2.Name, teamsPerson2.GivenName, teamsPerson1.GivenName, teamsPerson2.UserPrincipalName);
+            var cardForPerson1 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2.Name, teamsPerson1.Name, teamsPerson1.GivenName, teamsPerson2.UserPrincipalName, displayName);
 
             telemetry.TrackTrace($"Notifying user - {teamsPerson1.ObjectId}, {teamsPerson1.GivenName}");
             await NotifyUser(connectorClient, cardForPerson1, teamsPerson1, tenantId);

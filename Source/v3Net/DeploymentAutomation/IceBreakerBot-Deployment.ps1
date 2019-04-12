@@ -65,7 +65,7 @@ $ParametersTemplate = @{
         botAppID = @{
             "value" = $appVars.AppId
         }
-        botAppPwd = @{
+        botApplicationPassword = @{
             "value" = $pwdVars.Value
         }
         botDisplayName = @{

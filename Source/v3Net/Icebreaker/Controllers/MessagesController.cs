@@ -27,8 +27,7 @@ namespace Icebreaker
     [BotAuthentication]
     public class MessagesController : ApiController
     {
-        private static TelemetryClient telemetryClient =
-            new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("AppInsightsInstrumentationKey")));
+        private static TelemetryClient telemetryClient = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
 
         /// <summary>
         /// POST: api/messages

@@ -104,8 +104,8 @@
         "botName": "[concat('meetup-', uniqueString(resourceGroup().id))]",
         "CosmosDbName":"[concat('meetuplydb-', uniqueString(resourceGroup().id))]",
         "defaultExperience":"Core (SQL)",
-        "logicAppName":"meetuplyALA",
-        "meetuplyAppInsightsName": "appInsightsMeetuply"
+        "logicAppName":"icebreakerALA",
+        "meetuplyAppInsightsName": "iceBreakerInsights"
     },
     "resources": [
         {
