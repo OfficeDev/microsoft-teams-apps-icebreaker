@@ -131,9 +131,6 @@ namespace Icebreaker
                 telemetryClient.TrackException(ex);
                 replyText = Resources.ErrorOccured;
             }
-
-            var replyActivity = activity.CreateReply(replyText);
-            await connectorClient.Conversations.ReplyToActivityAsync(replyActivity);
         }
 
         private async Task<Activity> HandleSystemActivity(ConnectorClient connectorClient, Activity message)
