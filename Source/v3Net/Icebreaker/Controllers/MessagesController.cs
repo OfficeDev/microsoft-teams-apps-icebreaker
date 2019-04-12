@@ -78,7 +78,7 @@ namespace Icebreaker
                         new CardAction()
                         {
                             Title = "Resume pairings",
-                            Type = ActionTypes.PostBack,
+                            Type = ActionTypes.MessageBack,
                             Value = "optin"
                         }
                     };
@@ -107,7 +107,7 @@ namespace Icebreaker
                         new CardAction()
                         {
                             Title = "Pause pairings",
-                            Type = ActionTypes.PostBack,
+                            Type = ActionTypes.MessageBack,
                             Value = "optout"
                         }
                     };

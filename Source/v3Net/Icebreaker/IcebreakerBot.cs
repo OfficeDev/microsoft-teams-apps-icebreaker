@@ -247,7 +247,7 @@ namespace Icebreaker
             if (!isTesting)
             {
                 // shoot the activity over
-                await connectorClient.Conversations.SendToConversationAsync(activity, response.Id);
+                await connectorClient.Conversations.SendToConversationAsync(activity);
             }
         }
 
