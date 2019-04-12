@@ -106,7 +106,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 👍 👏 way to go! You are now opted in!.
+        ///   Looks up a localized string similar to Yay! Welcome back, I have resumed your pairings. You can always pause again if needed in future..
         /// </summary>
         internal static string OptInConfirmation {
             get {
@@ -115,7 +115,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 👍 opted you out from future notifications 😞. Just send **optin** to resume..
+        ///   Looks up a localized string similar to I have paused your pairings. Click Resume pairings when you&apos;re ready to start meeting people again!.
         /// </summary>
         internal static string OptOutConfirmation {
             get {

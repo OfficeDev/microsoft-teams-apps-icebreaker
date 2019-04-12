@@ -135,9 +135,9 @@
     <comment>The title for the Meetup</comment>
   </data>
   <data name="OptInConfirmation" xml:space="preserve">
-    <value>👍 👏 way to go! You are now opted in!</value>
+    <value>Yay! Welcome back, I have resumed your pairings. You can always pause again if needed in future.</value>
   </data>
   <data name="OptOutConfirmation" xml:space="preserve">
-    <value>👍 opted you out from future notifications 😞. Just send **optin** to resume.</value>
+    <value>I have paused your pairings. Click Resume pairings when you're ready to start meeting people again!</value>
   </data>
 </root>
