@@ -68,12 +68,12 @@ namespace Icebreaker
                 // Looking at the sender of the message
                 var senderAadId = activity.From.AsTeamsChannelAccount().Properties["aadObjectId"].ToString();
 
-                if (optOutRequest || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
+                if (optOutRequest || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase) || string.Equals(activity.Text, "Pause pairings", StringComparison.InvariantCultureIgnoreCase))
                 {
                     telemetryClient.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId} at {DateTime.Now.ToString()}");
                     await IcebreakerBot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
-                    var optOutActions = new List<CardAction>()
+                    var optInActions = new List<CardAction>()
                     {
                         new CardAction()
                         {
@@ -83,15 +83,14 @@ namespace Icebreaker
                         }
                     };
 
-                    // replyText = Resources.OptOutConfirmation;
-                    var optOutReply = activity.CreateReply();
-                    optOutReply.Attachments = new List<Attachment>();
-                    var optOutCard = new HeroCard(null, null, Resources.OptOutConfirmation, null, optOutActions, null);
-                    optOutReply.Attachments.Add(optOutCard.ToAttachment());
+                    var optInReply = activity.CreateReply();
+                    optInReply.Attachments = new List<Attachment>();
+                    var optOutCard = new HeroCard(null, null, Resources.OptOutConfirmation, null, optInActions, null);
+                    optInReply.Attachments.Add(optOutCard.ToAttachment());
 
-                    await connectorClient.Conversations.ReplyToActivityAsync(optOutReply);
+                    await connectorClient.Conversations.ReplyToActivityAsync(optInReply);
                 }
-                else if (string.Equals(activity.Text, "optin", StringComparison.InvariantCultureIgnoreCase))
+                else if (string.Equals(activity.Text, "optin", StringComparison.InvariantCultureIgnoreCase) || string.Equals(activity.Text, "Resume pairings", StringComparison.InvariantCultureIgnoreCase))
                 {
                     Dictionary<string, string> optInEventProps = new Dictionary<string, string>()
                         {
@@ -104,20 +103,6 @@ namespace Icebreaker
                     await IcebreakerBot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
                     replyText = Resources.OptInConfirmation;
-                }
-                else if (string.Equals(activity.Text, "feedback", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    string emailAddress = CloudConfigurationManager.GetSetting("ContactEmail");
-                    Dictionary<string, string> feedbackEventProps = new Dictionary<string, string>()
-                        {
-                            { "message", activity.Text },
-                            { "messageSender", senderAadId },
-                            { "contactEmail", emailAddress },
-                            { "messageTimeStamp", DateTime.Now.ToString() }
-                        };
-
-                    telemetryClient.TrackEvent("FeedbackEvent", feedbackEventProps);
-                    replyText = $"If you want to provide feedback about me, contact my creator at {emailAddress}";
                 }
                 else
                 {
