@@ -102,7 +102,22 @@ namespace Icebreaker
                     telemetryClient.TrackEvent("UserOptIn", optInEventProps);
                     await IcebreakerBot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
-                    replyText = Resources.OptInConfirmation;
+                    var optOutActions = new List<CardAction>()
+                    {
+                        new CardAction()
+                        {
+                            Title = "Pause pairings",
+                            Type = ActionTypes.PostBack,
+                            Value = "optout"
+                        }
+                    };
+
+                    var optOutReply = activity.CreateReply();
+                    optOutReply.Attachments = new List<Attachment>();
+                    var optOutCard = new HeroCard(null, null, Resources.OptInConfirmation, null, optOutActions, null);
+                    optOutReply.Attachments.Add(optOutCard.ToAttachment());
+
+                    await connectorClient.Conversations.ReplyToActivityAsync(optOutReply);
                 }
                 else
                 {
