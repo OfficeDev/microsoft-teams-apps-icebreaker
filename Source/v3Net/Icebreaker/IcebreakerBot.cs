@@ -198,8 +198,8 @@ namespace Icebreaker
             var teamsPerson1 = pair.Item1.AsTeamsChannelAccount();
             var teamsPerson2 = pair.Item2.AsTeamsChannelAccount();
 
-            var firstPerson = teamsPerson1.UserPrincipalName;
-            var secondPerson = teamsPerson2.UserPrincipalName;
+            var firstPerson = teamsPerson1.GivenName;
+            var secondPerson = teamsPerson2.GivenName;
 
             // Fill in person1's info in the card for person2
             var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, firstPerson, secondPerson, teamsPerson2.GivenName, teamsPerson1.UserPrincipalName, displayName, teamsPerson1.Email);
