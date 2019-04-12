@@ -17,7 +17,6 @@ namespace Icebreaker
     using Microsoft.Azure;
     using Microsoft.Bot.Connector;
     using Microsoft.Bot.Connector.Teams;
-    using Microsoft.Bot.Connector.Teams.Models;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -100,7 +99,7 @@ namespace Icebreaker
 
             var botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
 
-            TeamsChannelAccount userThatJustJoined = null;
+            ChannelAccount userThatJustJoined = null;
 
             foreach (var m in allMembers)
             {
@@ -113,7 +112,7 @@ namespace Icebreaker
 
             if (userThatJustJoined != null)
             {
-                telemetry.TrackTrace($"A new user just joined - {userThatJustJoined.ObjectId}, {userThatJustJoined.GivenName}");
+                telemetry.TrackTrace($"A new user just joined - {userThatJustJoined.AsTeamsChannelAccount().ObjectId}, {userThatJustJoined.AsTeamsChannelAccount().GivenName}");
                 var welcomeMessageCard = WelcomeNewMemberCard.GetCard(teamName, userThatJustJoined.Name, botDisplayName);
                 await NotifyUser(connectorClient, welcomeMessageCard, userThatJustJoined, tenantId);
             }
@@ -251,12 +250,13 @@ namespace Icebreaker
             }
         }
 
-        private static async Task<TeamsChannelAccount[]> GetTeamMembers(ConnectorClient connectorClient, string teamId, string tenantId)
+        private static async Task<List<ChannelAccount>> GetTeamMembers(ConnectorClient connectorClient, string teamId, string tenantId)
         {
             // Pull the roster of specified team and then remove everyone who has opted out explicitly
 #pragma warning disable CS0618 // Type or member is obsolete
-            var members = await connectorClient.Conversations.GetTeamsConversationMembersAsync(teamId, tenantId);
+            var membersIList = await connectorClient.Conversations.GetConversationMembersAsync(teamId);
 #pragma warning restore CS0618 // Type or member is obsolete
+            var members = membersIList as List<ChannelAccount>;
             return members;
         }
 
@@ -267,9 +267,9 @@ namespace Icebreaker
 
             var members = await GetTeamMembers(connectorClient, teamInfo.TeamId, teamInfo.TenantId);
 
-            if (members.Length > 1)
+            if (members.Count > 1)
             {
-                telemetry.TrackTrace($"There are {members.Length} members found in {teamInfo.TeamId} at: " + DateTime.Now.ToString());
+                telemetry.TrackTrace($"There are {members.Count} members found in {teamInfo.TeamId} at: " + DateTime.Now.ToString());
             }
             else
             {
@@ -278,7 +278,7 @@ namespace Icebreaker
 
             foreach (var member in members)
             {
-                var optInStatus = IcebreakerBotDataProvider.GetUserOptInStatus(teamInfo.TenantId, member.ObjectId);
+                var optInStatus = IcebreakerBotDataProvider.GetUserOptInStatus(teamInfo.TenantId, member.AsTeamsChannelAccount().ObjectId);
 
                 if (optInStatus == null || optInStatus.OptedIn)
                 {

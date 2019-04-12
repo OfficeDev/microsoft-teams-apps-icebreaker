@@ -88,7 +88,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hey there! Looks like {0} matched us this week. It&apos;d be great to meet up for a coffee or a lunch or a call if you&apos;ve got time..
+        ///   Looks up a localized string similar to Hey there, looks like we&apos;ve been match by {0} this week. It&apos;d be great to meet up for a coffee or a lunch or a call if you&apos;ve got time..
         /// </summary>
         internal static string MeetupContent {
             get {
@@ -106,7 +106,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Yay! Welcome back, I have resumed your pairings. You can always pause again if needed in future..
+        ///   Looks up a localized string similar to Welcome back! You&apos;ve been missed. I&apos;ve restarted your matches. Have fun!.
         /// </summary>
         internal static string OptInConfirmation {
             get {
@@ -115,7 +115,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to I have paused your pairings. Click Resume pairings when you&apos;re ready to start meeting people again!.
+        ///   Looks up a localized string similar to All set. I&apos;ve paused your matches. You can turn them back on whenever you like..
         /// </summary>
         internal static string OptOutConfirmation {
             get {
@@ -124,7 +124,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pause pairings.
+        ///   Looks up a localized string similar to Pause matches.
         /// </summary>
         internal static string PausePairingsButtonText {
             get {
@@ -133,7 +133,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Resume pairings.
+        ///   Looks up a localized string similar to Resume matches.
         /// </summary>
         internal static string ResumePairingsButtonText {
             get {
