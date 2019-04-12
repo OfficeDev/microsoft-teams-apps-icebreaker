@@ -30,11 +30,11 @@ namespace Icebreaker.Helpers.AdaptiveCards
         public static string GetCard(string teamName, string matchedPersonName, string matchedPersonFirstName, string receiverName, string personUpn, string botDisplayName)
         {
             var title = string.Format(Resources.MeetupTitle, matchedPersonName, matchedPersonFirstName);
-            var titleEncoding = Uri.EscapeDataString(title);
+            var escapedTitle = Uri.EscapeDataString(title);
 
             var content = string.Format(Resources.MeetupContent, botDisplayName);
-            var contentEncoding = Uri.EscapeDataString(content);
-            var meetingLink = "https://teams.microsoft.com/l/meeting/new?subject=" + titleEncoding + "&attendees=" + personUpn + "&content=" + contentEncoding;
+            var escapedContent = Uri.EscapeDataString(content);
+            var meetingLink = "https://teams.microsoft.com/l/meeting/new?subject=" + escapedTitle + "&attendees=" + personUpn + "&content=" + escapedContent;
 
             var variablesToValues = new Dictionary<string, string>()
             {
