@@ -72,7 +72,24 @@ namespace Icebreaker
                 {
                     telemetryClient.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId} at {DateTime.Now.ToString()}");
                     await IcebreakerBot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
-                    replyText = Resources.OptOutConfirmation;
+
+                    var optOutActions = new List<CardAction>()
+                    {
+                        new CardAction()
+                        {
+                            Title = "Resume pairings",
+                            Type = ActionTypes.PostBack,
+                            Value = "optin"
+                        }
+                    };
+
+                    // replyText = Resources.OptOutConfirmation;
+                    var optOutReply = activity.CreateReply();
+                    optOutReply.Attachments = new List<Attachment>();
+                    var optOutCard = new HeroCard(null, null, Resources.OptOutConfirmation, null, optOutActions, null);
+                    optOutReply.Attachments.Add(optOutCard.ToAttachment());
+
+                    await connectorClient.Conversations.ReplyToActivityAsync(optOutReply);
                 }
                 else if (string.Equals(activity.Text, "optin", StringComparison.InvariantCultureIgnoreCase))
                 {
