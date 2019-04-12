@@ -79,6 +79,24 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hey there! Looks like {0} matched us this week. It&apos;d be great to meet up for a coffee or a lunch or a call if you&apos;ve got time..
+        /// </summary>
+        internal static string MeetupContent {
+            get {
+                return ResourceManager.GetString("MeetupContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} / {1} Meet up.
+        /// </summary>
+        internal static string MeetupTitle {
+            get {
+                return ResourceManager.GetString("MeetupTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 👍 👏 way to go! You are now opted in!.
         /// </summary>
         internal static string OptInConfirmation {

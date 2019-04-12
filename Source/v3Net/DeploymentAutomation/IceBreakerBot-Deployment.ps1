@@ -8,7 +8,7 @@
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
 
 # Install the necessary modules
-Install-Module AzureAD -RequiredVersion 2.0.2.16 -AllowClobber -Scope CurrentUser
+Install-Module AzureAD -AllowClobber -Scope CurrentUser
 Install-Module AzureRM -AllowClobber -Scope CurrentUser
 
 # Prompting the user to authenticate and log in before moving forward

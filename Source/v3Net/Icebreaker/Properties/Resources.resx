@@ -123,6 +123,14 @@
   <data name="IDontKnow" xml:space="preserve">
     <value>😕 no idea what you just said. My tiny 🤖 🧠 doesn't understand how to handle that yet!</value>
   </data>
+  <data name="MeetupContent" xml:space="preserve">
+    <value>Hey there! Looks like {0} matched us this week. It'd be great to meet up for a coffee or a lunch or a call if you've got time.</value>
+    <comment>Content of the Meetup for the propose meeting</comment>
+  </data>
+  <data name="MeetupTitle" xml:space="preserve">
+    <value>{0} / {1} Meet up</value>
+    <comment>The title for the Meetup</comment>
+  </data>
   <data name="OptInConfirmation" xml:space="preserve">
     <value>👍 👏 way to go! You are now opted in!</value>
   </data>

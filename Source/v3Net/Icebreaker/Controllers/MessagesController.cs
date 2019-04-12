@@ -140,7 +140,7 @@ namespace Icebreaker
 
                     string myBotId = message.Recipient.Id;
 
-                    if (message.MembersAdded.Count() > 0)
+                    if (message.MembersAdded?.Count() > 0)
                     {
                         foreach (var member in message.MembersAdded)
                         {

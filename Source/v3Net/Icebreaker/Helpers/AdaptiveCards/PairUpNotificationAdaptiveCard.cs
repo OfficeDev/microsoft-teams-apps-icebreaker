@@ -6,6 +6,7 @@
 
 namespace Icebreaker.Helpers.AdaptiveCards
 {
+    using Icebreaker.Properties;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -25,16 +26,15 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <param name="receiverName">Name of the receiver</param>
         /// <param name="personUpn">UPN of the person</param>
         /// <param name="botDisplayName">This is the display name of the bot that is set from the deployment</param>
-        /// <param name="otherEmailAddress">The email address of the person</param>
         /// <returns>Pairup notification card</returns>
-        public static string GetCard(string teamName, string matchedPersonName, string matchedPersonFirstName, string receiverName, string personUpn, string botDisplayName, string otherEmailAddress)
+        public static string GetCard(string teamName, string matchedPersonName, string matchedPersonFirstName, string receiverName, string personUpn, string botDisplayName)
         {
-            var title = $"{matchedPersonName} / {matchedPersonFirstName} Meet up";
-            var titleEncoding = Uri.EscapeUriString(title);
+            var title = string.Format(Resources.MeetupTitle, matchedPersonName, matchedPersonFirstName);
+            var titleEncoding = Uri.EscapeDataString(title);
 
-            var content = $"Hey there! Looks like {botDisplayName} matched us this week. It'd be great to meet up for a coffee or a lunch or a call if you've got time.";
-            var contentEncoding = Uri.EscapeUriString(content);
-            var meetingLink = "https://teams.microsoft.com/l/meeting/new?subject=" + titleEncoding + "&attendees=" + otherEmailAddress + "&content=" + contentEncoding;
+            var content = string.Format(Resources.MeetupContent, botDisplayName);
+            var contentEncoding = Uri.EscapeDataString(content);
+            var meetingLink = "https://teams.microsoft.com/l/meeting/new?subject=" + titleEncoding + "&attendees=" + personUpn + "&content=" + contentEncoding;
 
             var variablesToValues = new Dictionary<string, string>()
             {
