@@ -25,7 +25,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <returns>The welcome new member card</returns>
         public static string GetCard(string teamName, string personFirstName, string botDisplayName)
         {
-            var introductoryMessage = string.Format(Resources.InstallMessage, teamName); 
+            var introductoryMessage = string.Format(Resources.InstallMessage, teamName);
             var variablesToValues = new Dictionary<string, string>()
             {
                 { "team", teamName },
