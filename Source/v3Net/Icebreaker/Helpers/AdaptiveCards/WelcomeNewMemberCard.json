@@ -23,6 +23,15 @@
       ]
     }
   ],
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Pause pairings",
+      "data": {
+        "optout": true
+      }
+    }
+  ],
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
   "version": "1.0"
 }
