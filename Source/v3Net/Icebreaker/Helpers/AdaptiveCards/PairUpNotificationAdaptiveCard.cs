@@ -6,11 +6,11 @@
 
 namespace Icebreaker.Helpers.AdaptiveCards
 {
-    using Icebreaker.Properties;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Web.Hosting;
+    using Icebreaker.Properties;
 
     /// <summary>
     /// Builder class for the pairup notification card
