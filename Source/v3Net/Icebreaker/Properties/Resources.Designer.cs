@@ -79,6 +79,15 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to If you&apos;re reading this, it&apos;s because I was added to {0}. I get to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It&apos;s a win-win-*win* situation..
+        /// </summary>
+        internal static string InstallMessage {
+            get {
+                return ResourceManager.GetString("InstallMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hey there! Looks like {0} matched us this week. It&apos;d be great to meet up for a coffee or a lunch or a call if you&apos;ve got time..
         /// </summary>
         internal static string MeetupContent {

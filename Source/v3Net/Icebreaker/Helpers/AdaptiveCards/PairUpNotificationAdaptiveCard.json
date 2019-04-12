@@ -29,7 +29,7 @@
         },
         {
           "type": "TextBlock",
-          "text": "If you've got the inclination, set something up. See, meeting people is easy!",
+          "text": "If you've got the inclination, set something up. See, meeting people *is* easy!",
           "wrap": true
         }
       ]

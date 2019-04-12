@@ -6,18 +6,7 @@
       "items": [
         {
           "type": "TextBlock",
-          "size": "Medium",
-          "weight": "Bolder",
-          "text": "👋 Hey %personFirstName%, welcome!"
-        }
-      ]
-    },
-    {
-      "type": "Container",
-      "items": [
-        {
-          "type": "TextBlock",
-          "text": "I am %botDisplayName% 🤖 and present in %team% team to help folks meet and bond with teammates. So every Monday @ 10 am 🕙, I will randomly match you to a new teammate. Oh btw, I am programmed to say that you can opt out anytime by leaving the team, but I seriously hope you never do that 🤞. Cheers! Until next time 👋",
+          "text": "%introMessage%",
           "wrap": true
         }
       ]
