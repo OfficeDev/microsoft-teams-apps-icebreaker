@@ -66,7 +66,7 @@ namespace Icebreaker
             try
             {
                 // Looking at the sender of the message
-                var senderAadId = activity.From.AsTeamsChannelAccount().Properties["AadObjectId"].ToString();
+                var senderAadId = activity.From.AsTeamsChannelAccount().AadObjectId;
 
                 if (optOutRequest || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -75,7 +75,7 @@ namespace Icebreaker
 
                     var optInReply = activity.CreateReply();
                     optInReply.Attachments = new List<Attachment>();
-                    var optOutCard = new HeroCard(null, null, Resources.OptOutConfirmation, null, new List<CardAction>() { new CardAction() { Title = Resources.ResumePairingsButtonText, Type = ActionTypes.MessageBack, Value = "optin" } }, null);
+                    var optOutCard = new HeroCard(null, null, Resources.OptOutConfirmation, null, new List<CardAction>() { new CardAction() { Title = Resources.ResumePairingsButtonText, Type = ActionTypes.MessageBack, Text = "optin" } }, null);
                     optInReply.Attachments.Add(optOutCard.ToAttachment());
 
                     await connectorClient.Conversations.ReplyToActivityAsync(optInReply);
@@ -92,19 +92,9 @@ namespace Icebreaker
                     telemetryClient.TrackEvent("UserOptIn", optInEventProps);
                     await IcebreakerBot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
-                    var optOutActions = new List<CardAction>()
-                    {
-                        new CardAction()
-                        {
-                            Title = Resources.PausePairingsButtonText,
-                            Type = ActionTypes.MessageBack,
-                            Value = "optout"
-                        }
-                    };
-
                     var optOutReply = activity.CreateReply();
                     optOutReply.Attachments = new List<Attachment>();
-                    var optOutCard = new HeroCard(null, null, Resources.OptInConfirmation, null, optOutActions, null);
+                    var optOutCard = new HeroCard(null, null, Resources.OptInConfirmation, null, new List<CardAction>() { new CardAction() { Title = Resources.PausePairingsButtonText, Type = ActionTypes.MessageBack, Text = "optout" } }, null);
                     optOutReply.Attachments.Add(optOutCard.ToAttachment());
 
                     await connectorClient.Conversations.ReplyToActivityAsync(optOutReply);
