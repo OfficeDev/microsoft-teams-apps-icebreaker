@@ -66,7 +66,7 @@ namespace Icebreaker
             try
             {
                 // Looking at the sender of the message
-                var senderAadId = activity.From.AsTeamsChannelAccount().Properties["aadObjectId"].ToString();
+                var senderAadId = activity.From.AsTeamsChannelAccount().Properties["AadObjectId"].ToString();
 
                 if (optOutRequest || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
                 {
