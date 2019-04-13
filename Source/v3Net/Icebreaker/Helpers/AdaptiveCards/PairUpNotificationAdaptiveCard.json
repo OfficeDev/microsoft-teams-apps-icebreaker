@@ -8,7 +8,7 @@
           "type": "TextBlock",
           "size": "Medium",
           "weight": "Bolder",
-          "text": "It's time for a match! You've been matched with %matchedPerson%.",
+          "text": "It's time for a match!",
           "wrap": true,
           "maxLines": 2
         }
@@ -22,6 +22,16 @@
           "items": [
             {
               "type": "TextBlock",
+              "text": "You've been matched with %matchedPerson%.",
+              "wrap": true
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "items": [
+            {
+              "type": "TextBlock",
               "text": "Hi there again, I'm %botDisplayName%, the bot that pairs you with a new coworker to meet each week. This week your match is %matchedPerson%.",
               "wrap": true
             }
@@ -29,7 +39,7 @@
         },
         {
           "type": "TextBlock",
-          "text": "If you've got the inclination, set something up. See, meeting people is easy!",
+          "text": "If you've got the inclination, set something up. See, meeting people *is* easy!",
           "wrap": true
         }
       ]
@@ -48,7 +58,7 @@
     },
     {
       "type": "Action.Submit",
-      "title": "Pause pairings",
+      "title": "%pauseMatches%",
       "data": {
         "optout": true
       }

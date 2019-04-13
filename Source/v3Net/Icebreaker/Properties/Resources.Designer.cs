@@ -79,7 +79,16 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hey there! Looks like {0} matched us this week. It&apos;d be great to meet up for a coffee or a lunch or a call if you&apos;ve got time..
+        ///   Looks up a localized string similar to If you&apos;re reading this, it&apos;s because I was added to {0}. I get to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It&apos;s a win-win-*win* situation..
+        /// </summary>
+        internal static string InstallMessage {
+            get {
+                return ResourceManager.GetString("InstallMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hey there, looks like we&apos;ve been matched by {0} this week. It&apos;d be great to meet up for a coffee or a lunch or a call if you&apos;ve got time..
         /// </summary>
         internal static string MeetupContent {
             get {
@@ -97,7 +106,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 👍 👏 way to go! You are now opted in!.
+        ///   Looks up a localized string similar to Welcome back! You&apos;ve been missed. I&apos;ve restarted your matches. Have fun!.
         /// </summary>
         internal static string OptInConfirmation {
             get {
@@ -106,11 +115,29 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 👍 opted you out from future notifications 😞. Just send **optin** to resume..
+        ///   Looks up a localized string similar to All set. I&apos;ve paused your matches. You can turn them back on whenever you like..
         /// </summary>
         internal static string OptOutConfirmation {
             get {
                 return ResourceManager.GetString("OptOutConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pause matches.
+        /// </summary>
+        internal static string PausePairingsButtonText {
+            get {
+                return ResourceManager.GetString("PausePairingsButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resume matches.
+        /// </summary>
+        internal static string ResumePairingsButtonText {
+            get {
+                return ResourceManager.GetString("ResumePairingsButtonText", resourceCulture);
             }
         }
     }

@@ -123,8 +123,11 @@
   <data name="IDontKnow" xml:space="preserve">
     <value>😕 no idea what you just said. My tiny 🤖 🧠 doesn't understand how to handle that yet!</value>
   </data>
+  <data name="InstallMessage" xml:space="preserve">
+    <value>If you're reading this, it's because I was added to {0}. I get to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It's a win-win-*win* situation.</value>
+  </data>
   <data name="MeetupContent" xml:space="preserve">
-    <value>Hey there! Looks like {0} matched us this week. It'd be great to meet up for a coffee or a lunch or a call if you've got time.</value>
+    <value>Hey there, looks like we've been matched by {0} this week. It'd be great to meet up for a coffee or a lunch or a call if you've got time.</value>
     <comment>Content of the Meetup for the propose meeting</comment>
   </data>
   <data name="MeetupTitle" xml:space="preserve">
@@ -132,9 +135,17 @@
     <comment>The title for the Meetup</comment>
   </data>
   <data name="OptInConfirmation" xml:space="preserve">
-    <value>👍 👏 way to go! You are now opted in!</value>
+    <value>Welcome back! You've been missed. I've restarted your matches. Have fun!</value>
   </data>
   <data name="OptOutConfirmation" xml:space="preserve">
-    <value>👍 opted you out from future notifications 😞. Just send **optin** to resume.</value>
+    <value>All set. I've paused your matches. You can turn them back on whenever you like.</value>
+  </data>
+  <data name="PausePairingsButtonText" xml:space="preserve">
+    <value>Pause matches</value>
+    <comment>Button text to pause pairings</comment>
+  </data>
+  <data name="ResumePairingsButtonText" xml:space="preserve">
+    <value>Resume matches</value>
+    <comment>Button text to resume pairings</comment>
   </data>
 </root>

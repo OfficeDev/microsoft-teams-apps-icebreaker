@@ -259,3 +259,6 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+# Having the pubxml files be ignored
+/Source/v3Net/Icebreaker/Properties/PublishProfiles

@@ -72,7 +72,25 @@ namespace Icebreaker
                 {
                     telemetryClient.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId} at {DateTime.Now.ToString()}");
                     await IcebreakerBot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
-                    replyText = Resources.OptOutConfirmation;
+
+                    var optInReply = activity.CreateReply();
+                    optInReply.Attachments = new List<Attachment>();
+                    var optOutCard = new HeroCard()
+                    {
+                        Text = Resources.OptOutConfirmation,
+                        Buttons = new List<CardAction>()
+                        {
+                            new CardAction()
+                            {
+                                Title = Resources.ResumePairingsButtonText,
+                                Type = ActionTypes.MessageBack,
+                                Text = "optin"
+                            }
+                        }
+                    };
+                    optInReply.Attachments.Add(optOutCard.ToAttachment());
+
+                    await connectorClient.Conversations.ReplyToActivityAsync(optInReply);
                 }
                 else if (string.Equals(activity.Text, "optin", StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -86,27 +104,33 @@ namespace Icebreaker
                     telemetryClient.TrackEvent("UserOptIn", optInEventProps);
                     await IcebreakerBot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
-                    replyText = Resources.OptInConfirmation;
-                }
-                else if (string.Equals(activity.Text, "feedback", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    string emailAddress = CloudConfigurationManager.GetSetting("ContactEmail");
-                    Dictionary<string, string> feedbackEventProps = new Dictionary<string, string>()
+                    var optOutReply = activity.CreateReply();
+                    optOutReply.Attachments = new List<Attachment>();
+                    var optOutCard = new HeroCard()
+                    {
+                        Text = Resources.OptInConfirmation,
+                        Buttons = new List<CardAction>()
                         {
-                            { "message", activity.Text },
-                            { "messageSender", senderAadId },
-                            { "contactEmail", emailAddress },
-                            { "messageTimeStamp", DateTime.Now.ToString() }
-                        };
+                            new CardAction()
+                            {
+                                Title = Resources.PausePairingsButtonText,
+                                Type = ActionTypes.MessageBack,
+                                Text = "optout"
+                            }
+                        }
+                    };
+                    optOutReply.Attachments.Add(optOutCard.ToAttachment());
 
-                    telemetryClient.TrackEvent("FeedbackEvent", feedbackEventProps);
-                    replyText = $"If you want to provide feedback about me, contact my creator at {emailAddress}";
+                    await connectorClient.Conversations.ReplyToActivityAsync(optOutReply);
                 }
                 else
                 {
                     var botName = CloudConfigurationManager.GetSetting("BotDisplayName");
                     telemetryClient.TrackTrace($"Cannot process the following: {activity.Text}");
                     replyText = Resources.IDontKnow;
+
+                    var replyActivity = activity.CreateReply(replyText);
+                    await connectorClient.Conversations.ReplyToActivityAsync(replyActivity);
                 }
             }
             catch (Exception ex)
@@ -114,9 +138,6 @@ namespace Icebreaker
                 telemetryClient.TrackException(ex);
                 replyText = Resources.ErrorOccured;
             }
-
-            var replyActivity = activity.CreateReply(replyText);
-            await connectorClient.Conversations.ReplyToActivityAsync(replyActivity);
         }
 
         private async Task<Activity> HandleSystemActivity(ConnectorClient connectorClient, Activity message)

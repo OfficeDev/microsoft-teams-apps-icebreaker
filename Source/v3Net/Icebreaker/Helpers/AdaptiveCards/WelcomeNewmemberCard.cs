@@ -9,6 +9,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
     using System.Collections.Generic;
     using System.IO;
     using System.Web.Hosting;
+    using Icebreaker.Properties;
 
     /// <summary>
     /// Builder class for the welcome new member card
@@ -24,11 +25,13 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <returns>The welcome new member card</returns>
         public static string GetCard(string teamName, string personFirstName, string botDisplayName)
         {
+            var introductoryMessage = string.Format(Resources.InstallMessage, teamName);
             var variablesToValues = new Dictionary<string, string>()
             {
                 { "team", teamName },
                 { "personFirstName", personFirstName },
-                { "botDisplayName", botDisplayName }
+                { "botDisplayName", botDisplayName },
+                { "introMessage", introductoryMessage }
             };
 
             var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/WelcomeNewMemberCard.json");
