@@ -75,7 +75,23 @@ namespace Icebreaker
 
                     var optInReply = activity.CreateReply();
                     optInReply.Attachments = new List<Attachment>();
-                    var optOutCard = new HeroCard(null, null, Resources.OptOutConfirmation, null, new List<CardAction>() { new CardAction() { Title = Resources.ResumePairingsButtonText, Type = ActionTypes.MessageBack, Text = "optin" } }, null);
+                    var optOutCard = new HeroCard()
+                    {
+                        Title = null,
+                        Subtitle = null,
+                        Text = Resources.OptOutConfirmation,
+                        Images = null,
+                        Buttons = new List<CardAction>()
+                        {
+                            new CardAction()
+                            {
+                                Title = Resources.ResumePairingsButtonText,
+                                Type = ActionTypes.MessageBack,
+                                Text = "optin"
+                            }
+                        },
+                        Tap = null
+                    };
                     optInReply.Attachments.Add(optOutCard.ToAttachment());
 
                     await connectorClient.Conversations.ReplyToActivityAsync(optInReply);
@@ -94,7 +110,23 @@ namespace Icebreaker
 
                     var optOutReply = activity.CreateReply();
                     optOutReply.Attachments = new List<Attachment>();
-                    var optOutCard = new HeroCard(null, null, Resources.OptInConfirmation, null, new List<CardAction>() { new CardAction() { Title = Resources.PausePairingsButtonText, Type = ActionTypes.MessageBack, Text = "optout" } }, null);
+                    var optOutCard = new HeroCard()
+                    {
+                        Title = null,
+                        Subtitle = null,
+                        Text = Resources.OptInConfirmation,
+                        Images = null,
+                        Buttons = new List<CardAction>()
+                        {
+                            new CardAction()
+                            {
+                                Title = Resources.PausePairingsButtonText,
+                                Type = ActionTypes.MessageBack,
+                                Text = "optout"
+                            }
+                        },
+                        Tap = null
+                    };
                     optOutReply.Attachments.Add(optOutCard.ToAttachment());
 
                     await connectorClient.Conversations.ReplyToActivityAsync(optOutReply);
