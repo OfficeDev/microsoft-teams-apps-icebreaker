@@ -78,7 +78,6 @@ namespace Icebreaker
                     var optOutCard = new HeroCard()
                     {
                         Text = Resources.OptOutConfirmation,
-                        Images = null,
                         Buttons = new List<CardAction>()
                         {
                             new CardAction()
@@ -87,8 +86,7 @@ namespace Icebreaker
                                 Type = ActionTypes.MessageBack,
                                 Text = "optin"
                             }
-                        },
-                        Tap = null
+                        }
                     };
                     optInReply.Attachments.Add(optOutCard.ToAttachment());
 
@@ -111,7 +109,6 @@ namespace Icebreaker
                     var optOutCard = new HeroCard()
                     {
                         Text = Resources.OptInConfirmation,
-                        Images = null,
                         Buttons = new List<CardAction>()
                         {
                             new CardAction()
@@ -120,8 +117,7 @@ namespace Icebreaker
                                 Type = ActionTypes.MessageBack,
                                 Text = "optout"
                             }
-                        },
-                        Tap = null
+                        }
                     };
                     optOutReply.Attachments.Add(optOutCard.ToAttachment());
 
