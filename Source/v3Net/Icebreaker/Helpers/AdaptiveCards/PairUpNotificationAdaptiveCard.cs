@@ -44,7 +44,8 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 { "receiverName", receiverName },
                 { "personUpn", personUpn },
                 { "botDisplayName", botDisplayName },
-                { "meetingLink", meetingLink }
+                { "meetingLink", meetingLink },
+                { "pauseMatches", Resources.PausePairingsButtonText }
             };
 
             var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/PairUpNotificationAdaptiveCard.json");

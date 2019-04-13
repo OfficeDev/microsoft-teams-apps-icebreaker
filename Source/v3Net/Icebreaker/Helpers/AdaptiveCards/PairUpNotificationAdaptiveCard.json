@@ -58,7 +58,7 @@
     },
     {
       "type": "Action.Submit",
-      "title": "Pause pairings",
+      "title": "%pauseMatches%",
       "data": {
         "optout": true
       }

@@ -77,8 +77,6 @@ namespace Icebreaker
                     optInReply.Attachments = new List<Attachment>();
                     var optOutCard = new HeroCard()
                     {
-                        Title = null,
-                        Subtitle = null,
                         Text = Resources.OptOutConfirmation,
                         Images = null,
                         Buttons = new List<CardAction>()
@@ -112,8 +110,6 @@ namespace Icebreaker
                     optOutReply.Attachments = new List<Attachment>();
                     var optOutCard = new HeroCard()
                     {
-                        Title = null,
-                        Subtitle = null,
                         Text = Resources.OptInConfirmation,
                         Images = null,
                         Buttons = new List<CardAction>()
