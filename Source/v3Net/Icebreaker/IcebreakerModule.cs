@@ -5,6 +5,7 @@
 namespace Icebreaker
 {
     using Autofac;
+    using Icebreaker.Helpers;
 
     /// <summary>
     /// Autofac Module
@@ -15,6 +16,12 @@ namespace Icebreaker
         protected override void Load(ContainerBuilder builder)
         {
             base.Load(builder);
+
+            builder.RegisterType<IcebreakerBot>()
+                .SingleInstance();
+
+            builder.RegisterType<IcebreakerBotDataProvider>()
+                .SingleInstance();
         }
     }
 }

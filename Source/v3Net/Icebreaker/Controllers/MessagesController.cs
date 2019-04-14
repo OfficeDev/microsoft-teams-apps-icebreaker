@@ -28,7 +28,16 @@ namespace Icebreaker
     public class MessagesController : ApiController
     {
         private static TelemetryClient telemetryClient = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
-        private readonly IcebreakerBot bot = new IcebreakerBot();
+        private readonly IcebreakerBot bot;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessagesController"/> class.
+        /// </summary>
+        /// <param name="bot">The Icebreaker bot instance</param>
+        public MessagesController(IcebreakerBot bot)
+        {
+            this.bot = bot;
+        }
 
         /// <summary>
         /// POST: api/messages

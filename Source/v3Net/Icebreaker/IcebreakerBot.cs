@@ -25,7 +25,16 @@ namespace Icebreaker
     public class IcebreakerBot
     {
         private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
-        private readonly IcebreakerBotDataProvider dataProvider = new IcebreakerBotDataProvider();
+        private readonly IcebreakerBotDataProvider dataProvider;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IcebreakerBot"/> class.
+        /// </summary>
+        /// <param name="dataProvider">The data provider to use</param>
+        public IcebreakerBot(IcebreakerBotDataProvider dataProvider)
+        {
+            this.dataProvider = dataProvider;
+        }
 
         /// <summary>
         /// Generate pairups and send pairup notifications.

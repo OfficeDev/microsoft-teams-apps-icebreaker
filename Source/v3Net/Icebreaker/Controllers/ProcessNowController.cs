@@ -16,7 +16,16 @@ namespace Icebreaker.Controllers
     /// </summary>
     public class ProcessNowController : ApiController
     {
-        private readonly IcebreakerBot bot = new IcebreakerBot();
+        private readonly IcebreakerBot bot;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProcessNowController"/> class.
+        /// </summary>
+        /// <param name="bot">The Icebreaker bot instance</param>
+        public ProcessNowController(IcebreakerBot bot)
+        {
+            this.bot = bot;
+        }
 
         /// <summary>
         /// Action to process matches
