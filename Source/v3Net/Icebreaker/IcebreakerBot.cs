@@ -54,7 +54,7 @@ namespace Icebreaker
             // When contacting the user in 1:1, give them the button to opt-out.
 
             // Get teams to which the app has been installed
-            var teams = this.dataProvider.GetInstalledTeams();
+            var teams = await this.dataProvider.GetInstalledTeams();
 
             var countPairsNotified = 0;
             var maxPairUpsPerTeam = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"));
@@ -288,8 +288,7 @@ namespace Icebreaker
 
             foreach (var member in members)
             {
-                var optInStatus = this.dataProvider.GetUserOptInStatus(teamInfo.TenantId, member.AsTeamsChannelAccount().ObjectId);
-
+                var optInStatus = await this.dataProvider.GetUserOptInStatus(teamInfo.TenantId, member.AsTeamsChannelAccount().ObjectId);
                 if (optInStatus == null || optInStatus.OptedIn)
                 {
                     telemetry.TrackTrace($"Adding {member.Name} to the list at: " + DateTime.Now.ToString());

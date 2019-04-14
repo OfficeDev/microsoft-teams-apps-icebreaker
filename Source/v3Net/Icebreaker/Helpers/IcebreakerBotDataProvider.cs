@@ -21,56 +21,18 @@ namespace Icebreaker.Helpers
     /// </summary>
     public class IcebreakerBotDataProvider
     {
-        private static DocumentClient documentClient;
-        private static Database db;
-        private static DocumentCollection teamsInstalledDocCol;
-        private static DocumentCollection usersOptInStatusDocCol;
         private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
+        private readonly Task initializeTask;
+        private DocumentClient documentClient;
+        private DocumentCollection teamsInstalledDocCol;
+        private DocumentCollection usersOptInStatusDocCol;
 
         /// <summary>
-        /// Initializes the database
+        /// Initializes a new instance of the <see cref="IcebreakerBotDataProvider"/> class.
         /// </summary>
-        public void InitDatabase()
+        public IcebreakerBotDataProvider()
         {
-            if (documentClient == null)
-            {
-                var endpointUrl = CloudConfigurationManager.GetSetting("CosmosDBEndpointUrl");
-                var primaryKey = CloudConfigurationManager.GetSetting("CosmosDBKey");
-                var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
-
-                var teamsCollection = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
-                var usersCollection = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
-                var dbLink = endpointUrl + databaseName;
-
-                documentClient = new DocumentClient(new Uri(endpointUrl), primaryKey);
-
-                db = documentClient.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseName }).Result;
-                if (db != null)
-                {
-                    telemetry.TrackTrace($"Database: {db.Id} has been successfully created");
-                }
-
-                DocumentCollection teamsCollectionDef = new DocumentCollection
-                {
-                    Id = teamsCollection
-                };
-                teamsCollectionDef.PartitionKey.Paths.Add("/teamId");
-
-                DocumentCollection usersCollectionDef = new DocumentCollection
-                {
-                    Id = usersCollection
-                };
-                usersCollectionDef.PartitionKey.Paths.Add("/tenantId");
-
-                // Using the .Result syntax as there are synchronous calls being made as opposed to the asynchronous calls
-                teamsInstalledDocCol = documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseName), teamsCollectionDef, new RequestOptions { OfferThroughput = 400 }).Result;
-                usersOptInStatusDocCol = documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseName), usersCollectionDef, new RequestOptions { OfferThroughput = 400 }).Result;
-
-                if (teamsInstalledDocCol != null && usersOptInStatusDocCol != null)
-                {
-                    telemetry.TrackTrace($"Collections: {teamsInstalledDocCol.Id} and {usersOptInStatusDocCol.Id} have been created successfully");
-                }
-            }
+            this.initializeTask = this.InitializeDatabaseAsync();
         }
 
         /// <summary>
@@ -83,14 +45,14 @@ namespace Icebreaker.Helpers
         {
             telemetry.TrackTrace("Hit the method - SaveTeamInstallStatus at: " + DateTime.Now.ToString());
 
-            this.InitDatabase();
+            await this.initializeTask;
 
             var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
             var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
 
             if (installed)
             {
-                var response = await documentClient.UpsertDocumentAsync(
+                var response = await this.documentClient.UpsertDocumentAsync(
                 UriFactory.CreateDocumentCollectionUri(databaseName, collectionName),
                 team);
             }
@@ -101,7 +63,7 @@ namespace Icebreaker.Helpers
                 // Set some common query options
                 FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
 
-                var lookupQuery = documentClient.CreateDocumentQuery<TeamInstallInfo>(
+                var lookupQuery = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(
                      UriFactory.CreateDocumentCollectionUri(databaseName, collectionName), queryOptions)
                      .Where(t => t.TeamId == team.TeamId);
 
@@ -109,7 +71,7 @@ namespace Icebreaker.Helpers
 
                 if (match.Count > 0)
                 {
-                    var response = documentClient.DeleteDocumentAsync(match.First().SelfLink);
+                    var response = this.documentClient.DeleteDocumentAsync(match.First().SelfLink);
                 }
             }
 
@@ -120,11 +82,11 @@ namespace Icebreaker.Helpers
         /// Get the list of teams to which the app was installed.
         /// </summary>
         /// <returns>List of installed teams</returns>
-        public List<TeamInstallInfo> GetInstalledTeams()
+        public async Task<List<TeamInstallInfo>> GetInstalledTeams()
         {
             telemetry.TrackTrace("Hit the method - GetInstalledTeams at: " + DateTime.Now.ToString());
 
-            this.InitDatabase();
+            await this.initializeTask;
 
             var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
             var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
@@ -135,7 +97,7 @@ namespace Icebreaker.Helpers
             // Find matching activities
             try
             {
-                var lookupQuery = documentClient.CreateDocumentQuery<TeamInstallInfo>(
+                var lookupQuery = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(
                 UriFactory.CreateDocumentCollectionUri(databaseName, collectionName), queryOptions);
 
                 var match = lookupQuery.ToList();
@@ -155,11 +117,11 @@ namespace Icebreaker.Helpers
         /// <param name="tenantId">Tenant id</param>
         /// <param name="userId">User id</param>
         /// <returns>User information</returns>
-        public UserInfo GetUserOptInStatus(string tenantId, string userId)
+        public async Task<UserInfo> GetUserOptInStatus(string tenantId, string userId)
         {
             telemetry.TrackTrace("Hit the GetUserOptInStatus method at: " + DateTime.Now.ToString());
 
-            this.InitDatabase();
+            await this.initializeTask;
 
             var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
             var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
@@ -170,7 +132,7 @@ namespace Icebreaker.Helpers
             // Find matching activities
             try
             {
-                var lookupQuery = documentClient.CreateDocumentQuery<UserInfo>(
+                var lookupQuery = this.documentClient.CreateDocumentQuery<UserInfo>(
                         UriFactory.CreateDocumentCollectionUri(databaseName, collectionName), queryOptions)
                         .Where(f => f.TenantId == tenantId && f.UserId == userId);
 
@@ -196,7 +158,7 @@ namespace Icebreaker.Helpers
         {
             telemetry.TrackTrace("Hit the method - SetUserOptInStatus");
 
-            this.InitDatabase();
+            await this.initializeTask;
 
             var obj = new UserInfo()
             {
@@ -230,12 +192,12 @@ namespace Icebreaker.Helpers
         /// <returns>Tracking task</returns>
         public async Task StorePairup(string tenantId, string user1Id, string user2Id)
         {
-            this.InitDatabase();
+            await this.initializeTask;
 
             var maxPairUpHistory = Convert.ToInt64(CloudConfigurationManager.GetSetting("MaxPairUpHistory"));
 
-            var user1Info = this.GetUserOptInStatus(tenantId, user1Id);
-            var user2Info = this.GetUserOptInStatus(tenantId, user2Id);
+            var user1Info = await this.GetUserOptInStatus(tenantId, user1Id);
+            var user2Info = await this.GetUserOptInStatus(tenantId, user2Id);
 
             user1Info.RecentPairUps.Add(user2Info);
             if (user1Info.RecentPairUps.Count >= maxPairUpHistory)
@@ -267,27 +229,69 @@ namespace Icebreaker.Helpers
 
             telemetry.TrackEvent("StoreUserOptInStatus", propDictionary);
 
-            this.InitDatabase();
+            await this.initializeTask;
 
             var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
             var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
 
-            var existingDoc = this.GetUserOptInStatus(obj.TenantId, obj.UserId);
-
+            var existingDoc = await this.GetUserOptInStatus(obj.TenantId, obj.UserId);
             if (existingDoc != null)
             {
                 // update
-                var response = await documentClient.DeleteDocumentAsync(existingDoc.SelfLink);
+                var response = await this.documentClient.DeleteDocumentAsync(existingDoc.SelfLink);
             }
             else
             {
                 // Insert
-                var response = await documentClient.UpsertDocumentAsync(
+                var response = await this.documentClient.UpsertDocumentAsync(
                 UriFactory.CreateDocumentCollectionUri(databaseName, collectionName),
                 obj);
             }
 
             return obj;
+        }
+
+        private async Task InitializeDatabaseAsync()
+        {
+            var endpointUrl = CloudConfigurationManager.GetSetting("CosmosDBEndpointUrl");
+            var primaryKey = CloudConfigurationManager.GetSetting("CosmosDBKey");
+            var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
+
+            var teamsCollection = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
+            var usersCollection = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
+            var dbLink = endpointUrl + databaseName;
+
+            this.documentClient = new DocumentClient(new Uri(endpointUrl), primaryKey);
+
+            Database db = await this.documentClient.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseName });
+            if (db != null)
+            {
+                telemetry.TrackTrace($"Database: {db.Id} has been successfully created");
+            }
+
+            DocumentCollection teamsCollectionDef = new DocumentCollection
+            {
+                Id = teamsCollection
+            };
+            teamsCollectionDef.PartitionKey.Paths.Add("/teamId");
+
+            DocumentCollection usersCollectionDef = new DocumentCollection
+            {
+                Id = usersCollection
+            };
+            usersCollectionDef.PartitionKey.Paths.Add("/tenantId");
+
+            this.teamsInstalledDocCol = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseName), teamsCollectionDef, new RequestOptions { OfferThroughput = 400 });
+            if (this.teamsInstalledDocCol != null)
+            {
+                telemetry.TrackTrace($"Teams collection {this.teamsInstalledDocCol.Id} was been created successfully");
+            }
+
+            this.usersOptInStatusDocCol = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseName), usersCollectionDef, new RequestOptions { OfferThroughput = 400 });
+            if (this.usersOptInStatusDocCol != null)
+            {
+                telemetry.TrackTrace($"Users collection {this.usersOptInStatusDocCol.Id} have been created successfully");
+            }
         }
     }
 }
