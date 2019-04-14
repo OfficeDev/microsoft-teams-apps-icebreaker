@@ -19,7 +19,7 @@ namespace Icebreaker.Helpers
     /// <summary>
     /// Data provider routines
     /// </summary>
-    public static class IcebreakerBotDataProvider
+    public class IcebreakerBotDataProvider
     {
         private static DocumentClient documentClient;
         private static Database db;
@@ -30,7 +30,7 @@ namespace Icebreaker.Helpers
         /// <summary>
         /// Initializes the database
         /// </summary>
-        public static void InitDatabase()
+        public void InitDatabase()
         {
             if (documentClient == null)
             {
@@ -79,11 +79,11 @@ namespace Icebreaker.Helpers
         /// <param name="team">The team installation info</param>
         /// <param name="installed">Value that indicates if bot is installed</param>
         /// <returns>Updated team installation info</returns>
-        public static async Task<TeamInstallInfo> SaveTeamInstallStatus(TeamInstallInfo team, bool installed)
+        public async Task<TeamInstallInfo> SaveTeamInstallStatus(TeamInstallInfo team, bool installed)
         {
             telemetry.TrackTrace("Hit the method - SaveTeamInstallStatus at: " + DateTime.Now.ToString());
 
-            InitDatabase();
+            this.InitDatabase();
 
             var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
             var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
@@ -120,11 +120,11 @@ namespace Icebreaker.Helpers
         /// Get the list of teams to which the app was installed.
         /// </summary>
         /// <returns>List of installed teams</returns>
-        public static List<TeamInstallInfo> GetInstalledTeams()
+        public List<TeamInstallInfo> GetInstalledTeams()
         {
             telemetry.TrackTrace("Hit the method - GetInstalledTeams at: " + DateTime.Now.ToString());
 
-            InitDatabase();
+            this.InitDatabase();
 
             var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
             var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
@@ -155,11 +155,11 @@ namespace Icebreaker.Helpers
         /// <param name="tenantId">Tenant id</param>
         /// <param name="userId">User id</param>
         /// <returns>User information</returns>
-        public static UserInfo GetUserOptInStatus(string tenantId, string userId)
+        public UserInfo GetUserOptInStatus(string tenantId, string userId)
         {
             telemetry.TrackTrace("Hit the GetUserOptInStatus method at: " + DateTime.Now.ToString());
 
-            InitDatabase();
+            this.InitDatabase();
 
             var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
             var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
@@ -192,11 +192,11 @@ namespace Icebreaker.Helpers
         /// <param name="optedIn">User opt-in status</param>
         /// <param name="serviceUrl">User service URL</param>
         /// <returns>Updated user information</returns>
-        public static async Task<UserInfo> SetUserOptInStatus(string tenantId, string userId, bool optedIn, string serviceUrl)
+        public async Task<UserInfo> SetUserOptInStatus(string tenantId, string userId, bool optedIn, string serviceUrl)
         {
             telemetry.TrackTrace("Hit the method - SetUserOptInStatus");
 
-            InitDatabase();
+            this.InitDatabase();
 
             var obj = new UserInfo()
             {
@@ -206,7 +206,7 @@ namespace Icebreaker.Helpers
                 ServiceUrl = serviceUrl
             };
 
-            obj = await StoreUserOptInStatus(obj);
+            obj = await this.StoreUserOptInStatus(obj);
 
             Dictionary<string, string> setUserOptInProps = new Dictionary<string, string>()
             {
@@ -228,14 +228,14 @@ namespace Icebreaker.Helpers
         /// <param name="user1Id">First user</param>
         /// <param name="user2Id">Second user</param>
         /// <returns>Tracking task</returns>
-        public static async Task StorePairup(string tenantId, string user1Id, string user2Id)
+        public async Task StorePairup(string tenantId, string user1Id, string user2Id)
         {
-            InitDatabase();
+            this.InitDatabase();
 
             var maxPairUpHistory = Convert.ToInt64(CloudConfigurationManager.GetSetting("MaxPairUpHistory"));
 
-            var user1Info = GetUserOptInStatus(tenantId, user1Id);
-            var user2Info = GetUserOptInStatus(tenantId, user2Id);
+            var user1Info = this.GetUserOptInStatus(tenantId, user1Id);
+            var user2Info = this.GetUserOptInStatus(tenantId, user2Id);
 
             user1Info.RecentPairUps.Add(user2Info);
             if (user1Info.RecentPairUps.Count >= maxPairUpHistory)
@@ -244,7 +244,7 @@ namespace Icebreaker.Helpers
             }
 
             telemetry.TrackTrace($"Having the PairUp stored for - {user1Id} inside of {tenantId}");
-            await StoreUserOptInStatus(user1Info);
+            await this.StoreUserOptInStatus(user1Info);
 
             user2Info.RecentPairUps.Add(user1Info);
             if (user2Info.RecentPairUps.Count >= maxPairUpHistory)
@@ -253,10 +253,10 @@ namespace Icebreaker.Helpers
             }
 
             telemetry.TrackTrace($"Having the PairUp stored for - {user2Id} inside of {tenantId}");
-            await StoreUserOptInStatus(user2Info);
+            await this.StoreUserOptInStatus(user2Info);
         }
 
-        private static async Task<UserInfo> StoreUserOptInStatus(UserInfo obj)
+        private async Task<UserInfo> StoreUserOptInStatus(UserInfo obj)
         {
             Dictionary<string, string> propDictionary = new Dictionary<string, string>
             {
@@ -267,12 +267,12 @@ namespace Icebreaker.Helpers
 
             telemetry.TrackEvent("StoreUserOptInStatus", propDictionary);
 
-            InitDatabase();
+            this.InitDatabase();
 
             var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
             var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
 
-            var existingDoc = GetUserOptInStatus(obj.TenantId, obj.UserId);
+            var existingDoc = this.GetUserOptInStatus(obj.TenantId, obj.UserId);
 
             if (existingDoc != null)
             {

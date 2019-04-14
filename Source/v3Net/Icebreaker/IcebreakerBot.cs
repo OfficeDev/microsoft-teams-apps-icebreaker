@@ -25,6 +25,7 @@ namespace Icebreaker
     public class IcebreakerBot
     {
         private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
+        private readonly IcebreakerBotDataProvider dataProvider = new IcebreakerBotDataProvider();
 
         /// <summary>
         /// Generate pairups and send pairup notifications.
@@ -44,7 +45,7 @@ namespace Icebreaker
             // When contacting the user in 1:1, give them the button to opt-out.
 
             // Get teams to which the app has been installed
-            var teams = IcebreakerBotDataProvider.GetInstalledTeams();
+            var teams = this.dataProvider.GetInstalledTeams();
 
             var countPairsNotified = 0;
             var maxPairUpsPerTeam = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"));
@@ -127,7 +128,7 @@ namespace Icebreaker
         /// <returns>Tracking task</returns>
         public async Task SaveAddedToTeam(string serviceUrl, string teamId, string tenantId)
         {
-            await IcebreakerBotDataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, true);
+            await this.dataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, true);
         }
 
         /// <summary>
@@ -139,7 +140,7 @@ namespace Icebreaker
         /// <returns>Tracking task</returns>
         public async Task SaveRemoveFromTeam(string serviceUrl, string teamId, string tenantId)
         {
-            await IcebreakerBotDataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, false);
+            await this.dataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, false);
         }
 
         /// <summary>
@@ -151,7 +152,7 @@ namespace Icebreaker
         /// <returns>Tracking task</returns>
         public async Task OptOutUser(string tenantId, string userId, string serviceUrl)
         {
-            await IcebreakerBotDataProvider.SetUserOptInStatus(tenantId, userId, false, serviceUrl);
+            await this.dataProvider.SetUserOptInStatus(tenantId, userId, false, serviceUrl);
         }
 
         /// <summary>
@@ -163,7 +164,7 @@ namespace Icebreaker
         /// <returns>Tracking task</returns>
         public async Task OptInUser(string tenantId, string userId, string serviceUrl)
         {
-            await IcebreakerBotDataProvider.SetUserOptInStatus(tenantId, userId, true, serviceUrl);
+            await this.dataProvider.SetUserOptInStatus(tenantId, userId, true, serviceUrl);
         }
 
         /// <summary>
@@ -278,7 +279,7 @@ namespace Icebreaker
 
             foreach (var member in members)
             {
-                var optInStatus = IcebreakerBotDataProvider.GetUserOptInStatus(teamInfo.TenantId, member.AsTeamsChannelAccount().ObjectId);
+                var optInStatus = this.dataProvider.GetUserOptInStatus(teamInfo.TenantId, member.AsTeamsChannelAccount().ObjectId);
 
                 if (optInStatus == null || optInStatus.OptedIn)
                 {
