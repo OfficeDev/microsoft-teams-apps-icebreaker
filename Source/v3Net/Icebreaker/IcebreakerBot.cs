@@ -22,7 +22,7 @@ namespace Icebreaker
     /// <summary>
     /// Implements the core logic for Icebreaker bot
     /// </summary>
-    public static class IcebreakerBot
+    public class IcebreakerBot
     {
         private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
 
@@ -30,7 +30,7 @@ namespace Icebreaker
         /// Generate pairups and send pairup notifications.
         /// </summary>
         /// <returns>The number of pairups that were made</returns>
-        public static async Task<int> MakePairsAndNotify()
+        public async Task<int> MakePairsAndNotify()
         {
             telemetry.TrackTrace("Hit the MakePairsAndNotify method at: " + DateTime.Now.ToString());
 
@@ -60,14 +60,14 @@ namespace Icebreaker
                     MicrosoftAppCredentials.TrustServiceUrl(team.ServiceUrl);
                     var connectorClient = new ConnectorClient(new Uri(team.ServiceUrl));
 
-                    var optedInUsers = await GetOptedInUsers(connectorClient, team);
-                    var teamName = await GetTeamNameAsync(connectorClient, team.TeamId);
+                    var optedInUsers = await this.GetOptedInUsers(connectorClient, team);
+                    var teamName = await this.GetTeamNameAsync(connectorClient, team.TeamId);
 
                     telemetry.TrackTrace($"Trying to pair members of {teamName} at: " + DateTime.Now.ToString());
 
-                    foreach (var pair in MakePairs(optedInUsers).Take(maxPairUpsPerTeam))
+                    foreach (var pair in this.MakePairs(optedInUsers).Take(maxPairUpsPerTeam))
                     {
-                        await NotifyPair(connectorClient, team.TenantId, teamName, pair);
+                        await this.NotifyPair(connectorClient, team.TenantId, teamName, pair);
 
                         countPairsNotified++;
                     }
@@ -91,11 +91,11 @@ namespace Icebreaker
         /// <param name="tenantId">The tenant id</param>
         /// <param name="teamId">The id of the team the user was added to</param>
         /// <returns>Tracking task</returns>
-        public static async Task WelcomeUser(ConnectorClient connectorClient, string memberAddedId, string tenantId, string teamId)
+        public async Task WelcomeUser(ConnectorClient connectorClient, string memberAddedId, string tenantId, string teamId)
         {
-            var teamName = await GetTeamNameAsync(connectorClient, teamId);
+            var teamName = await this.GetTeamNameAsync(connectorClient, teamId);
 
-            var allMembers = await GetTeamMembers(connectorClient, teamId, tenantId);
+            var allMembers = await this.GetTeamMembers(connectorClient, teamId, tenantId);
 
             var botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
 
@@ -114,7 +114,7 @@ namespace Icebreaker
             {
                 telemetry.TrackTrace($"A new user just joined - {userThatJustJoined.AsTeamsChannelAccount().ObjectId}, {userThatJustJoined.AsTeamsChannelAccount().GivenName}");
                 var welcomeMessageCard = WelcomeNewMemberCard.GetCard(teamName, userThatJustJoined.Name, botDisplayName);
-                await NotifyUser(connectorClient, welcomeMessageCard, userThatJustJoined, tenantId);
+                await this.NotifyUser(connectorClient, welcomeMessageCard, userThatJustJoined, tenantId);
             }
         }
 
@@ -125,7 +125,7 @@ namespace Icebreaker
         /// <param name="teamId">The team id</param>
         /// <param name="tenantId">The tenant id</param>
         /// <returns>Tracking task</returns>
-        public static async Task SaveAddedToTeam(string serviceUrl, string teamId, string tenantId)
+        public async Task SaveAddedToTeam(string serviceUrl, string teamId, string tenantId)
         {
             await IcebreakerBotDataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, true);
         }
@@ -137,7 +137,7 @@ namespace Icebreaker
         /// <param name="teamId">The team id</param>
         /// <param name="tenantId">The tenant id</param>
         /// <returns>Tracking task</returns>
-        public static async Task SaveRemoveFromTeam(string serviceUrl, string teamId, string tenantId)
+        public async Task SaveRemoveFromTeam(string serviceUrl, string teamId, string tenantId)
         {
             await IcebreakerBotDataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, false);
         }
@@ -149,7 +149,7 @@ namespace Icebreaker
         /// <param name="userId">The user id</param>
         /// <param name="serviceUrl">The service url</param>
         /// <returns>Tracking task</returns>
-        public static async Task OptOutUser(string tenantId, string userId, string serviceUrl)
+        public async Task OptOutUser(string tenantId, string userId, string serviceUrl)
         {
             await IcebreakerBotDataProvider.SetUserOptInStatus(tenantId, userId, false, serviceUrl);
         }
@@ -161,7 +161,7 @@ namespace Icebreaker
         /// <param name="userId">The user id</param>
         /// <param name="serviceUrl">The service url</param>
         /// <returns>Tracking task</returns>
-        public static async Task OptInUser(string tenantId, string userId, string serviceUrl)
+        public async Task OptInUser(string tenantId, string userId, string serviceUrl)
         {
             await IcebreakerBotDataProvider.SetUserOptInStatus(tenantId, userId, true, serviceUrl);
         }
@@ -172,7 +172,7 @@ namespace Icebreaker
         /// <param name="connectorClient">The connector client</param>
         /// <param name="teamId">The team id</param>
         /// <returns>The name of the team</returns>
-        private static async Task<string> GetTeamNameAsync(ConnectorClient connectorClient, string teamId)
+        private async Task<string> GetTeamNameAsync(ConnectorClient connectorClient, string teamId)
         {
             telemetry.TrackTrace("Getting the team name now at: " + DateTime.Now.ToString());
 
@@ -189,7 +189,7 @@ namespace Icebreaker
         /// <param name="teamName">The team name</param>
         /// <param name="pair">The pairup</param>
         /// <returns>Tracking task</returns>
-        private static async Task NotifyPair(ConnectorClient connectorClient, string tenantId, string teamName, Tuple<ChannelAccount, ChannelAccount> pair)
+        private async Task NotifyPair(ConnectorClient connectorClient, string tenantId, string teamName, Tuple<ChannelAccount, ChannelAccount> pair)
         {
             telemetry.TrackTrace("Hit the NotifyPair method at: " + DateTime.Now.ToString());
             var displayName = CloudConfigurationManager.GetSetting("BotDisplayName");
@@ -204,13 +204,13 @@ namespace Icebreaker
             var cardForPerson1 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2.Name, teamsPerson1.Name, teamsPerson1.GivenName, teamsPerson2.UserPrincipalName, displayName);
 
             telemetry.TrackTrace($"Notifying user - {teamsPerson1.ObjectId}, {teamsPerson1.GivenName}");
-            await NotifyUser(connectorClient, cardForPerson1, teamsPerson1, tenantId);
+            await this.NotifyUser(connectorClient, cardForPerson1, teamsPerson1, tenantId);
 
             telemetry.TrackTrace($"Notifying user - {teamsPerson2.ObjectId}, {teamsPerson2.GivenName}");
-            await NotifyUser(connectorClient, cardForPerson2, teamsPerson2, tenantId);
+            await this.NotifyUser(connectorClient, cardForPerson2, teamsPerson2, tenantId);
         }
 
-        private static async Task NotifyUser(ConnectorClient connectorClient, string cardToSend, ChannelAccount user, string tenantId)
+        private async Task NotifyUser(ConnectorClient connectorClient, string cardToSend, ChannelAccount user, string tenantId)
         {
             telemetry.TrackTrace("Hit the NotifyUser method at: " + DateTime.Now.ToString());
 
@@ -250,7 +250,7 @@ namespace Icebreaker
             }
         }
 
-        private static async Task<List<ChannelAccount>> GetTeamMembers(ConnectorClient connectorClient, string teamId, string tenantId)
+        private async Task<List<ChannelAccount>> GetTeamMembers(ConnectorClient connectorClient, string teamId, string tenantId)
         {
             // Pull the roster of specified team and then remove everyone who has opted out explicitly
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -260,12 +260,12 @@ namespace Icebreaker
             return members;
         }
 
-        private static async Task<List<ChannelAccount>> GetOptedInUsers(ConnectorClient connectorClient, TeamInstallInfo teamInfo)
+        private async Task<List<ChannelAccount>> GetOptedInUsers(ConnectorClient connectorClient, TeamInstallInfo teamInfo)
         {
             telemetry.TrackTrace("Hit the GetOptedInUsers method at: " + DateTime.Now.ToString());
             var optedInUsers = new List<ChannelAccount>();
 
-            var members = await GetTeamMembers(connectorClient, teamInfo.TeamId, teamInfo.TenantId);
+            var members = await this.GetTeamMembers(connectorClient, teamInfo.TeamId, teamInfo.TenantId);
 
             if (members.Count > 1)
             {
@@ -290,7 +290,7 @@ namespace Icebreaker
             return optedInUsers;
         }
 
-        private static List<Tuple<ChannelAccount, ChannelAccount>> MakePairs(List<ChannelAccount> users)
+        private List<Tuple<ChannelAccount, ChannelAccount>> MakePairs(List<ChannelAccount> users)
         {
             telemetry.TrackTrace("Hit the MakePairs method at: " + DateTime.Now.ToString());
 
@@ -305,7 +305,7 @@ namespace Icebreaker
 
             var pairs = new List<Tuple<ChannelAccount, ChannelAccount>>();
 
-            Randomize<ChannelAccount>(users);
+            this.Randomize(users);
 
             for (int i = 0; i < users.Count - 1; i += 2)
             {
@@ -315,7 +315,7 @@ namespace Icebreaker
             return pairs;
         }
 
-        private static void Randomize<T>(IList<T> items)
+        private void Randomize<T>(IList<T> items)
         {
             Random rand = new Random(Guid.NewGuid().GetHashCode());
 

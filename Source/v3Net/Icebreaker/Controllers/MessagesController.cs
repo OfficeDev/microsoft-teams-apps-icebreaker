@@ -28,6 +28,7 @@ namespace Icebreaker
     public class MessagesController : ApiController
     {
         private static TelemetryClient telemetryClient = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
+        private readonly IcebreakerBot bot = new IcebreakerBot();
 
         /// <summary>
         /// POST: api/messages
@@ -71,7 +72,7 @@ namespace Icebreaker
                 if (optOutRequest || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
                 {
                     telemetryClient.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId} at {DateTime.Now.ToString()}");
-                    await IcebreakerBot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
+                    await this.bot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
                     var optInReply = activity.CreateReply();
                     optInReply.Attachments = new List<Attachment>();
@@ -102,7 +103,7 @@ namespace Icebreaker
                         };
 
                     telemetryClient.TrackEvent("UserOptIn", optInEventProps);
-                    await IcebreakerBot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
+                    await this.bot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
                     var optOutReply = activity.CreateReply();
                     optOutReply.Attachments = new List<Attachment>();
@@ -170,16 +171,16 @@ namespace Icebreaker
                                 telemetryClient.TrackTrace($"Bot installed to team {message.Conversation.Id}");
 
                                 // we were just added to team
-                                await IcebreakerBot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, tenantId);
+                                await this.bot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, tenantId);
 
-                                // TODO: post activity.from has who added the bot. Can record it in schema.
+                                // TODO: post activity.from has who added the this.bot. Can record it in schema.
                             }
                             else
                             {
                                 // Someome else must have been added to team, send them a welcome message
                                 telemetryClient.TrackTrace($"Adding a new member: {member.Id}");
 
-                                await IcebreakerBot.WelcomeUser(connectorClient, member.Id, tenantId, teamsChannelData.Team.Id);
+                                await this.bot.WelcomeUser(connectorClient, member.Id, tenantId, teamsChannelData.Team.Id);
                             }
                         }
                     }
@@ -189,7 +190,7 @@ namespace Icebreaker
                         telemetryClient.TrackTrace($"Bot removed from team {message.Conversation.Id}");
 
                         // we were just removed from a team
-                        await IcebreakerBot.SaveRemoveFromTeam(message.ServiceUrl, message.Conversation.Id, tenantId);
+                        await this.bot.SaveRemoveFromTeam(message.ServiceUrl, message.Conversation.Id, tenantId);
                     }
                 }
 
