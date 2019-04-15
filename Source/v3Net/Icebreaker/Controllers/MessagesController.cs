@@ -163,6 +163,11 @@ namespace Icebreaker
 
                     if (message.MembersAdded?.Count() > 0)
                     {
+                        // TODO: post activity.from has who added the bot. Can record it in schema.
+                        var teamMembers = await connectorClient.Conversations.GetConversationMembersAsync(message.Conversation.Id);
+
+                        var personThatAddedBot = teamMembers.FirstOrDefault(x => x.Id == message.From.Id).Name;
+
                         foreach (var member in message.MembersAdded)
                         {
                             if (member.Id == myBotId)
@@ -170,18 +175,16 @@ namespace Icebreaker
                                 telemetryClient.TrackTrace($"Bot installed to team {message.Conversation.Id}");
 
                                 // we were just added to team
-                                await IcebreakerBot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, tenantId);
+                                await IcebreakerBot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, tenantId, personThatAddedBot);
 
-                                await IcebreakerBot.WelcomeTeam(connectorClient, member.Id, tenantId, message.Conversation.Id);
-
-                                // TODO: post activity.from has who added the bot. Can record it in schema.
+                                await IcebreakerBot.WelcomeTeam(connectorClient, member.Id, tenantId, message.Conversation.Id, personThatAddedBot);
                             }
                             else
                             {
                                 // Someome else must have been added to team, send them a welcome message
                                 telemetryClient.TrackTrace($"Adding a new member: {member.Id}");
 
-                                await IcebreakerBot.WelcomeUser(connectorClient, member.Id, tenantId, teamsChannelData.Team.Id);
+                                await IcebreakerBot.WelcomeUser(connectorClient, member.Id, tenantId, teamsChannelData.Team.Id, personThatAddedBot);
                             }
                         }
                     }

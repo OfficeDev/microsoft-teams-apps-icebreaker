@@ -32,10 +32,16 @@ namespace Icebreaker.Helpers
         [JsonProperty("serviceUrl")]
         public string ServiceUrl { get; set; }
 
+        /// <summary>
+        /// Gets or sets the name of the person that installed the bot to the team
+        /// </summary>
+        [JsonProperty("installerName")]
+        public string InstallerName { get; set; }
+
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"Team - Id = {this.TeamId}, TenantId = {this.TenantId}, ServiceUrl = {this.ServiceUrl}";
+            return $"Team - Id = {this.TeamId}, TenantId = {this.TenantId}, ServiceUrl = {this.ServiceUrl}, Installer = {this.InstallerName}";
         }
     }
 }

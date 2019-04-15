@@ -90,8 +90,9 @@ namespace Icebreaker
         /// <param name="memberAddedId">The id of the added user</param>
         /// <param name="tenantId">The tenant id</param>
         /// <param name="teamId">The id of the team the user was added to</param>
+        /// <param name="botInstaller">The person that installed the bot</param>
         /// <returns>Tracking task</returns>
-        public static async Task WelcomeUser(ConnectorClient connectorClient, string memberAddedId, string tenantId, string teamId)
+        public static async Task WelcomeUser(ConnectorClient connectorClient, string memberAddedId, string tenantId, string teamId, string botInstaller)
         {
             var teamName = await GetTeamNameAsync(connectorClient, teamId);
 
@@ -113,7 +114,7 @@ namespace Icebreaker
             if (userThatJustJoined != null)
             {
                 telemetry.TrackTrace($"A new user just joined - {userThatJustJoined.AsTeamsChannelAccount().ObjectId}, {userThatJustJoined.AsTeamsChannelAccount().GivenName}");
-                var welcomeMessageCard = WelcomeNewMemberCard.GetCard(teamName, userThatJustJoined.Name, botDisplayName);
+                var welcomeMessageCard = WelcomeNewMemberCard.GetCard(teamName, userThatJustJoined.Name, botDisplayName, botInstaller);
                 await NotifyUser(connectorClient, welcomeMessageCard, userThatJustJoined, tenantId);
             }
         }
@@ -126,7 +127,7 @@ namespace Icebreaker
         /// <param name="tenantId">The tenant id</param>
         /// <param name="teamId">The id of the team that the bot is installed to</param>
         /// <returns>Tracking task</returns>
-        public static async Task WelcomeTeam(ConnectorClient connectorClient, string addedBotId, string tenantId, string teamId)
+        public static async Task WelcomeTeam(ConnectorClient connectorClient, string addedBotId, string tenantId, string teamId, string botInstaller)
         {
             telemetry.TrackTrace("Hit the WelcomeTeam method at: " + DateTime.Now.ToString() + " teamId = " + teamId);
 
@@ -134,7 +135,7 @@ namespace Icebreaker
 
             var botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
 
-            var welcomeTeamMessageCard = WelcomeTeamAdaptiveCard.GetCard(teamName, botDisplayName);
+            var welcomeTeamMessageCard = WelcomeTeamAdaptiveCard.GetCard(teamName, botDisplayName, botInstaller);
 
             await NotifyTeam(connectorClient, welcomeTeamMessageCard, teamName, teamId);
         }
@@ -145,10 +146,11 @@ namespace Icebreaker
         /// <param name="serviceUrl">The service url</param>
         /// <param name="teamId">The team id</param>
         /// <param name="tenantId">The tenant id</param>
+        /// <param name="botInstaller">Person that has added the bot to the team</param>
         /// <returns>Tracking task</returns>
-        public static async Task SaveAddedToTeam(string serviceUrl, string teamId, string tenantId)
+        public static async Task SaveAddedToTeam(string serviceUrl, string teamId, string tenantId, string botInstaller)
         {
-            await IcebreakerBotDataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, true);
+            await IcebreakerBotDataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId, InstallerName = botInstaller }, true);
         }
 
         /// <summary>
@@ -351,7 +353,6 @@ namespace Icebreaker
 
             var activity = new Activity()
             {
-                Text = "Hi there!",
                 Type = ActivityTypes.Message,
                 Conversation = new ConversationAccount()
                 {
@@ -364,7 +365,9 @@ namespace Icebreaker
                         ContentType = "application/vnd.microsoft.card.adaptive",
                         Content = JsonConvert.DeserializeObject(cardToSend)
                     }
-                }
+                },
+                Text = "Hi there!",
+                TextFormat = TextFormatTypes.Plain
             };
 
             await connectorClient.Conversations.SendToConversationAsync(activity);
