@@ -119,6 +119,61 @@ namespace Icebreaker
         }
 
         /// <summary>
+        /// Sends a welcome message to the General channel of the team that this bot has been installed to
+        /// </summary>
+        /// <param name="connectorClient">The connector client</param>
+        /// <param name="addedBotId">The id of the added bot</param>
+        /// <param name="tenantId">The tenant id</param>
+        /// <param name="teamId">The id of the team that the bot is installed to</param>
+        /// <returns>Tracking task</returns>
+        public static async Task WelcomeTeam(ConnectorClient connectorClient, string addedBotId, string tenantId, string teamId)
+        {
+            telemetry.TrackTrace("Hit the WelcomeTeam method at: " + DateTime.Now.ToString() + " teamId = " + teamId);
+
+            var teamName = await GetTeamNameAsync(connectorClient, teamId);
+
+            var botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
+
+            var welcomeTeamMessageCard = WelcomeTeamAdaptiveCard.GetCard(teamName, botDisplayName);
+
+            await NotifyTeam(connectorClient, welcomeTeamMessageCard, teamName, teamId);
+        }
+
+        /// <summary>
+        /// Method that will send out the message in the General channel of the team
+        /// that this bot has been installed to
+        /// </summary>
+        /// <param name="connectorClient">The connector client</param>
+        /// <param name="cardToSend">The actual welcome card (for the team)</param>
+        /// <param name="teamName">The name of the team that the bot is installed to</param>
+        /// <param name="teamId">The team id</param>
+        /// <returns>A tracking task</returns>
+        private static async Task NotifyTeam(ConnectorClient connectorClient, string cardToSend, string teamName, string teamId)
+        {
+            telemetry.TrackTrace("Hit the NotifyTeam method at: " + DateTime.Now.ToString());
+
+            var activity = new Activity()
+            {
+                Text = "Hi there!",
+                Type = ActivityTypes.Message,
+                Conversation = new ConversationAccount()
+                {
+                    Id = teamId
+                },
+                Attachments = new List<Attachment>()
+                {
+                    new Attachment()
+                    {
+                        ContentType = "application/vnd.microsoft.card.adaptive",
+                        Content = JsonConvert.DeserializeObject(cardToSend)
+                    }
+                }
+            };
+
+            await connectorClient.Conversations.SendToConversationAsync(activity); 
+        }
+
+        /// <summary>
         /// Save information about the team to which the bot was added.
         /// </summary>
         /// <param name="serviceUrl">The service url</param>

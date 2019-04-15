@@ -172,6 +172,8 @@ namespace Icebreaker
                                 // we were just added to team
                                 await IcebreakerBot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, tenantId);
 
+                                await IcebreakerBot.WelcomeTeam(connectorClient, member.Id, tenantId, message.Conversation.Id);
+
                                 // TODO: post activity.from has who added the bot. Can record it in schema.
                             }
                             else
