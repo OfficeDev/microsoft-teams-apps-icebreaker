@@ -84,12 +84,12 @@ namespace Icebreaker.Helpers
         }
 
         /// <summary>
-        /// Save team installation status to store.
+        /// Updates team installation status in store. If the bot is installed, the info is saved, otherwise info for the team is deleted.
         /// </summary>
         /// <param name="team">The team installation info</param>
         /// <param name="installed">Value that indicates if bot is installed</param>
-        /// <returns>Updated team installation info</returns>
-        public async Task<TeamInstallInfo> SaveTeamInstallStatus(TeamInstallInfo team, bool installed)
+        /// <returns>Tracking task</returns>
+        public async Task UpdateTeamInstallStatusAsync(TeamInstallInfo team, bool installed)
         {
             telemetry.TrackTrace("Hit the method - SaveTeamInstallStatus at: " + DateTime.Now.ToString());
 
@@ -111,8 +111,6 @@ namespace Icebreaker.Helpers
                     var response = this.documentClient.DeleteDocumentAsync(match.First().SelfLink, new RequestOptions { PartitionKey = partitionKey });
                 }
             }
-
-            return team;
         }
 
         /// <summary>
@@ -130,7 +128,6 @@ namespace Icebreaker.Helpers
             try
             {
                 var lookupQuery = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(this.teamsInstalledDocCol.SelfLink, queryOptions);
-
                 var match = lookupQuery.ToList();
                 return match;
             }
@@ -149,7 +146,7 @@ namespace Icebreaker.Helpers
         /// <param name="tenantId">Tenant id</param>
         /// <param name="userId">User id</param>
         /// <returns>User information</returns>
-        public async Task<UserInfo> GetUserInfo(string tenantId, string userId)
+        public UserInfo GetUserInfo(string tenantId, string userId)
         {
             telemetry.TrackTrace("Hit the GetUserInfo method at: " + DateTime.Now.ToString());
 
@@ -178,7 +175,7 @@ namespace Icebreaker.Helpers
         /// <param name="userId">User id</param>
         /// <param name="optedIn">User opt-in status</param>
         /// <param name="serviceUrl">User service URL</param>
-        /// <returns>Updated user information</returns>
+        /// <returns>Tracking task</returns>
         public async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl)
         {
             telemetry.TrackTrace("Hit the method - SetUserInfoAsync");
@@ -211,12 +208,12 @@ namespace Icebreaker.Helpers
         /// <param name="user1Id">First user</param>
         /// <param name="user2Id">Second user</param>
         /// <returns>Tracking task</returns>
-        public async Task StorePairup(string tenantId, string user1Id, string user2Id)
+        public async Task StorePairupAsync(string tenantId, string user1Id, string user2Id)
         {
             var maxPairUpHistory = Convert.ToInt64(CloudConfigurationManager.GetSetting("MaxPairUpHistory"));
 
-            var user1Info = await this.GetUserInfo(tenantId, user1Id);
-            var user2Info = await this.GetUserInfo(tenantId, user2Id);
+            var user1Info = this.GetUserInfo(tenantId, user1Id);
+            var user2Info = this.GetUserInfo(tenantId, user2Id);
 
             user1Info.RecentPairUps.Add(user2Info);
             if (user1Info.RecentPairUps.Count >= maxPairUpHistory)

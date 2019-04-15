@@ -139,7 +139,7 @@ namespace Icebreaker
         public async Task SaveAddedToTeam(string serviceUrl, string teamId, string tenantId)
         {
             var dataProvider = await this.dataProviderFactoryTask;
-            await dataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, true);
+            await dataProvider.UpdateTeamInstallStatusAsync(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, true);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace Icebreaker
         public async Task SaveRemoveFromTeam(string serviceUrl, string teamId, string tenantId)
         {
             var dataProvider = await this.dataProviderFactoryTask;
-            await dataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, false);
+            await dataProvider.UpdateTeamInstallStatusAsync(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, false);
         }
 
         /// <summary>
@@ -294,8 +294,8 @@ namespace Icebreaker
             var dataProvider = await this.dataProviderFactoryTask;
             foreach (var member in members)
             {
-                var optInStatus = await dataProvider.GetUserInfo(teamInfo.TenantId, member.AsTeamsChannelAccount().ObjectId);
-                if (optInStatus == null || optInStatus.OptedIn)
+                var userInfo = dataProvider.GetUserInfo(teamInfo.TenantId, member.AsTeamsChannelAccount().ObjectId);
+                if (userInfo == null || userInfo.OptedIn)
                 {
                     telemetry.TrackTrace($"Adding {member.Name} to the list at: " + DateTime.Now.ToString());
                     optedInUsers.Add(member);
