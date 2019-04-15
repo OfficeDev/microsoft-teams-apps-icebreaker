@@ -49,34 +49,37 @@ namespace Icebreaker.Helpers
 
             this.documentClient = new DocumentClient(new Uri(endpointUrl), primaryKey);
 
+            // Create the database if needed
             Database db = await this.documentClient.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseName });
             if (db != null)
             {
-                telemetry.TrackTrace($"Database: {db.Id} has been successfully created");
+                telemetry.TrackTrace($"Reference to database {db.Id} obtained successfully");
             }
 
+            // Get a reference to the Teams collection, creating it if needed
             DocumentCollection teamsCollectionDef = new DocumentCollection
             {
                 Id = teamsCollection
             };
             teamsCollectionDef.PartitionKey.Paths.Add("/teamId");
 
+            this.teamsInstalledDocCol = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseName), teamsCollectionDef, new RequestOptions { OfferThroughput = 400 });
+            if (this.teamsInstalledDocCol != null)
+            {
+                telemetry.TrackTrace($"Reference to Teams collection database {this.teamsInstalledDocCol.Id} was obtained successfully");
+            }
+
+            // Get a reference to the Users collection, creating it if needed
             DocumentCollection usersCollectionDef = new DocumentCollection
             {
                 Id = usersCollection
             };
             usersCollectionDef.PartitionKey.Paths.Add("/tenantId");
 
-            this.teamsInstalledDocCol = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseName), teamsCollectionDef, new RequestOptions { OfferThroughput = 400 });
-            if (this.teamsInstalledDocCol != null)
-            {
-                telemetry.TrackTrace($"Teams collection {this.teamsInstalledDocCol.Id} was been created successfully");
-            }
-
             this.usersOptInStatusDocCol = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseName), usersCollectionDef, new RequestOptions { OfferThroughput = 400 });
             if (this.usersOptInStatusDocCol != null)
             {
-                telemetry.TrackTrace($"Users collection {this.usersOptInStatusDocCol.Id} have been created successfully");
+                telemetry.TrackTrace($"Reference to Users collection database {this.usersOptInStatusDocCol.Id} was obtained successfully");
             }
         }
 
@@ -90,31 +93,22 @@ namespace Icebreaker.Helpers
         {
             telemetry.TrackTrace("Hit the method - SaveTeamInstallStatus at: " + DateTime.Now.ToString());
 
-            var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
-            var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
-
             if (installed)
             {
-                var response = await this.documentClient.UpsertDocumentAsync(
-                UriFactory.CreateDocumentCollectionUri(databaseName, collectionName),
-                team);
+                var response = await this.documentClient.UpsertDocumentAsync(this.teamsInstalledDocCol.SelfLink, team);
             }
             else
             {
-                // query first
-
-                // Set some common query options
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
+                var partitionKey = new PartitionKey(team.TeamId);
 
                 var lookupQuery = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(
-                     UriFactory.CreateDocumentCollectionUri(databaseName, collectionName), queryOptions)
-                     .Where(t => t.TeamId == team.TeamId);
+                    this.teamsInstalledDocCol.SelfLink, new FeedOptions { MaxItemCount = -1, PartitionKey = partitionKey })
+                    .Where(t => t.TeamId == team.TeamId);
 
                 var match = lookupQuery.ToList();
-
                 if (match.Count > 0)
                 {
-                    var response = this.documentClient.DeleteDocumentAsync(match.First().SelfLink);
+                    var response = this.documentClient.DeleteDocumentAsync(match.First().SelfLink, new RequestOptions { PartitionKey = partitionKey });
                 }
             }
 
@@ -129,17 +123,13 @@ namespace Icebreaker.Helpers
         {
             telemetry.TrackTrace("Hit the method - GetInstalledTeams at: " + DateTime.Now.ToString());
 
-            var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
-            var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
-
             // Set some common query options
             FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
 
             // Find matching activities
             try
             {
-                var lookupQuery = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(
-                UriFactory.CreateDocumentCollectionUri(databaseName, collectionName), queryOptions);
+                var lookupQuery = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(this.teamsInstalledDocCol.SelfLink, queryOptions);
 
                 var match = lookupQuery.ToList();
                 return match;
@@ -148,7 +138,8 @@ namespace Icebreaker.Helpers
             {
                 telemetry.TrackTrace($"Hit a snag - {ex.InnerException} at: " + DateTime.Now.ToString());
 
-                return null;
+                // Return no teams if we hit an error fetching
+                return new List<TeamInstallInfo>();
             }
         }
 
@@ -162,17 +153,13 @@ namespace Icebreaker.Helpers
         {
             telemetry.TrackTrace("Hit the GetUserOptInStatus method at: " + DateTime.Now.ToString());
 
-            var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
-            var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
-
             // Set some common query options
-            FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true, PartitionKey = new PartitionKey("/tenantId") };
+            FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, PartitionKey = new PartitionKey(tenantId) };
 
             // Find matching activities
             try
             {
-                var lookupQuery = this.documentClient.CreateDocumentQuery<UserInfo>(
-                        UriFactory.CreateDocumentCollectionUri(databaseName, collectionName), queryOptions)
+                var lookupQuery = this.documentClient.CreateDocumentQuery<UserInfo>(this.usersOptInStatusDocCol.SelfLink, queryOptions)
                         .Where(f => f.TenantId == tenantId && f.UserId == userId);
 
                 var match = lookupQuery.ToList();
@@ -264,9 +251,6 @@ namespace Icebreaker.Helpers
 
             telemetry.TrackEvent("StoreUserOptInStatus", propDictionary);
 
-            var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
-            var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
-
             var existingDoc = await this.GetUserOptInStatus(obj.TenantId, obj.UserId);
             if (existingDoc != null)
             {
@@ -276,9 +260,7 @@ namespace Icebreaker.Helpers
             else
             {
                 // Insert
-                var response = await this.documentClient.UpsertDocumentAsync(
-                UriFactory.CreateDocumentCollectionUri(databaseName, collectionName),
-                obj);
+                var response = await this.documentClient.UpsertDocumentAsync(this.usersOptInStatusDocCol.SelfLink, obj);
             }
 
             return obj;
