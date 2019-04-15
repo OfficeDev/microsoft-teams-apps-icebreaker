@@ -140,40 +140,6 @@ namespace Icebreaker
         }
 
         /// <summary>
-        /// Method that will send out the message in the General channel of the team
-        /// that this bot has been installed to
-        /// </summary>
-        /// <param name="connectorClient">The connector client</param>
-        /// <param name="cardToSend">The actual welcome card (for the team)</param>
-        /// <param name="teamName">The name of the team that the bot is installed to</param>
-        /// <param name="teamId">The team id</param>
-        /// <returns>A tracking task</returns>
-        private static async Task NotifyTeam(ConnectorClient connectorClient, string cardToSend, string teamName, string teamId)
-        {
-            telemetry.TrackTrace("Hit the NotifyTeam method at: " + DateTime.Now.ToString());
-
-            var activity = new Activity()
-            {
-                Text = "Hi there!",
-                Type = ActivityTypes.Message,
-                Conversation = new ConversationAccount()
-                {
-                    Id = teamId
-                },
-                Attachments = new List<Attachment>()
-                {
-                    new Attachment()
-                    {
-                        ContentType = "application/vnd.microsoft.card.adaptive",
-                        Content = JsonConvert.DeserializeObject(cardToSend)
-                    }
-                }
-            };
-
-            await connectorClient.Conversations.SendToConversationAsync(activity); 
-        }
-
-        /// <summary>
         /// Save information about the team to which the bot was added.
         /// </summary>
         /// <param name="serviceUrl">The service url</param>
@@ -368,6 +334,40 @@ namespace Icebreaker
             }
 
             return pairs;
+        }
+
+        /// <summary>
+        /// Method that will send out the message in the General channel of the team
+        /// that this bot has been installed to
+        /// </summary>
+        /// <param name="connectorClient">The connector client</param>
+        /// <param name="cardToSend">The actual welcome card (for the team)</param>
+        /// <param name="teamName">The name of the team that the bot is installed to</param>
+        /// <param name="teamId">The team id</param>
+        /// <returns>A tracking task</returns>
+        private static async Task NotifyTeam(ConnectorClient connectorClient, string cardToSend, string teamName, string teamId)
+        {
+            telemetry.TrackTrace("Hit the NotifyTeam method at: " + DateTime.Now.ToString());
+
+            var activity = new Activity()
+            {
+                Text = "Hi there!",
+                Type = ActivityTypes.Message,
+                Conversation = new ConversationAccount()
+                {
+                    Id = teamId
+                },
+                Attachments = new List<Attachment>()
+                {
+                    new Attachment()
+                    {
+                        ContentType = "application/vnd.microsoft.card.adaptive",
+                        Content = JsonConvert.DeserializeObject(cardToSend)
+                    }
+                }
+            };
+
+            await connectorClient.Conversations.SendToConversationAsync(activity);
         }
 
         private static void Randomize<T>(IList<T> items)
