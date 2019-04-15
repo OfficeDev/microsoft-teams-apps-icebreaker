@@ -165,7 +165,7 @@ namespace Icebreaker
         public async Task OptOutUser(string tenantId, string userId, string serviceUrl)
         {
             var dataProvider = await this.dataProviderFactoryTask;
-            await dataProvider.SetUserOptInStatus(tenantId, userId, false, serviceUrl);
+            await dataProvider.SetUserInfoAsync(tenantId, userId, false, serviceUrl);
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace Icebreaker
         public async Task OptInUser(string tenantId, string userId, string serviceUrl)
         {
             var dataProvider = await this.dataProviderFactoryTask;
-            await dataProvider.SetUserOptInStatus(tenantId, userId, true, serviceUrl);
+            await dataProvider.SetUserInfoAsync(tenantId, userId, true, serviceUrl);
         }
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace Icebreaker
             var dataProvider = await this.dataProviderFactoryTask;
             foreach (var member in members)
             {
-                var optInStatus = await dataProvider.GetUserOptInStatus(teamInfo.TenantId, member.AsTeamsChannelAccount().ObjectId);
+                var optInStatus = await dataProvider.GetUserInfo(teamInfo.TenantId, member.AsTeamsChannelAccount().ObjectId);
                 if (optInStatus == null || optInStatus.OptedIn)
                 {
                     telemetry.TrackTrace($"Adding {member.Name} to the list at: " + DateTime.Now.ToString());

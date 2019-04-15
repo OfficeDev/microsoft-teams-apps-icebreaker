@@ -144,14 +144,14 @@ namespace Icebreaker.Helpers
         }
 
         /// <summary>
-        /// Get the opt-in status of the given user
+        /// Get the stored information about the given user
         /// </summary>
         /// <param name="tenantId">Tenant id</param>
         /// <param name="userId">User id</param>
         /// <returns>User information</returns>
-        public async Task<UserInfo> GetUserOptInStatus(string tenantId, string userId)
+        public async Task<UserInfo> GetUserInfo(string tenantId, string userId)
         {
-            telemetry.TrackTrace("Hit the GetUserOptInStatus method at: " + DateTime.Now.ToString());
+            telemetry.TrackTrace("Hit the GetUserInfo method at: " + DateTime.Now.ToString());
 
             // Set some common query options
             FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, PartitionKey = new PartitionKey(tenantId) };
@@ -160,8 +160,7 @@ namespace Icebreaker.Helpers
             try
             {
                 var lookupQuery = this.documentClient.CreateDocumentQuery<UserInfo>(this.usersOptInStatusDocCol.SelfLink, queryOptions)
-                        .Where(f => f.TenantId == tenantId && f.UserId == userId);
-
+                    .Where(f => f.TenantId == tenantId && f.UserId == userId);
                 var match = lookupQuery.ToList();
                 return match.FirstOrDefault();
             }
@@ -173,16 +172,16 @@ namespace Icebreaker.Helpers
         }
 
         /// <summary>
-        /// Set the opt-in status of the given user
+        /// Set the user info for the given user
         /// </summary>
         /// <param name="tenantId">Tenant id</param>
         /// <param name="userId">User id</param>
         /// <param name="optedIn">User opt-in status</param>
         /// <param name="serviceUrl">User service URL</param>
         /// <returns>Updated user information</returns>
-        public async Task<UserInfo> SetUserOptInStatus(string tenantId, string userId, bool optedIn, string serviceUrl)
+        public async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl)
         {
-            telemetry.TrackTrace("Hit the method - SetUserOptInStatus");
+            telemetry.TrackTrace("Hit the method - SetUserInfoAsync");
 
             var obj = new UserInfo()
             {
@@ -192,7 +191,7 @@ namespace Icebreaker.Helpers
                 ServiceUrl = serviceUrl
             };
 
-            obj = await this.StoreUserOptInStatus(obj);
+            await this.StoreUserInfoAsync(obj);
 
             Dictionary<string, string> setUserOptInProps = new Dictionary<string, string>()
             {
@@ -202,9 +201,7 @@ namespace Icebreaker.Helpers
                 { "serviceUrl", serviceUrl }
             };
 
-            telemetry.TrackEvent("SetUserOptInStatus", setUserOptInProps);
-
-            return obj;
+            telemetry.TrackEvent("SetUserInfoAsync", setUserOptInProps);
         }
 
         /// <summary>
@@ -218,8 +215,8 @@ namespace Icebreaker.Helpers
         {
             var maxPairUpHistory = Convert.ToInt64(CloudConfigurationManager.GetSetting("MaxPairUpHistory"));
 
-            var user1Info = await this.GetUserOptInStatus(tenantId, user1Id);
-            var user2Info = await this.GetUserOptInStatus(tenantId, user2Id);
+            var user1Info = await this.GetUserInfo(tenantId, user1Id);
+            var user2Info = await this.GetUserInfo(tenantId, user2Id);
 
             user1Info.RecentPairUps.Add(user2Info);
             if (user1Info.RecentPairUps.Count >= maxPairUpHistory)
@@ -228,7 +225,7 @@ namespace Icebreaker.Helpers
             }
 
             telemetry.TrackTrace($"Having the PairUp stored for - {user1Id} inside of {tenantId}");
-            await this.StoreUserOptInStatus(user1Info);
+            await this.StoreUserInfoAsync(user1Info);
 
             user2Info.RecentPairUps.Add(user1Info);
             if (user2Info.RecentPairUps.Count >= maxPairUpHistory)
@@ -237,21 +234,12 @@ namespace Icebreaker.Helpers
             }
 
             telemetry.TrackTrace($"Having the PairUp stored for - {user2Id} inside of {tenantId}");
-            await this.StoreUserOptInStatus(user2Info);
+            await this.StoreUserInfoAsync(user2Info);
         }
 
-        private async Task<UserInfo> StoreUserOptInStatus(UserInfo obj)
+        private async Task StoreUserInfoAsync(UserInfo obj)
         {
-            Dictionary<string, string> propDictionary = new Dictionary<string, string>
-            {
-                { "optedIn", obj.OptedIn.ToString() },
-                { "userId", obj.UserId },
-                { "tenantId", obj.TenantId }
-            };
-
-            telemetry.TrackEvent("StoreUserOptInStatus", propDictionary);
-
-            var existingDoc = await this.GetUserOptInStatus(obj.TenantId, obj.UserId);
+            var existingDoc = await this.GetUserInfo(obj.TenantId, obj.UserId);
             if (existingDoc != null)
             {
                 // update
@@ -262,8 +250,6 @@ namespace Icebreaker.Helpers
                 // Insert
                 var response = await this.documentClient.UpsertDocumentAsync(this.usersOptInStatusDocCol.SelfLink, obj);
             }
-
-            return obj;
         }
     }
 }
