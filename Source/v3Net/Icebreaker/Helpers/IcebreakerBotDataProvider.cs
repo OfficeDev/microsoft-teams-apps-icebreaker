@@ -239,17 +239,7 @@ namespace Icebreaker.Helpers
 
         private async Task StoreUserInfoAsync(UserInfo obj)
         {
-            var existingDoc = await this.GetUserInfo(obj.TenantId, obj.UserId);
-            if (existingDoc != null)
-            {
-                // update
-                var response = await this.documentClient.DeleteDocumentAsync(existingDoc.SelfLink);
-            }
-            else
-            {
-                // Insert
-                var response = await this.documentClient.UpsertDocumentAsync(this.usersOptInStatusDocCol.SelfLink, obj);
-            }
+            await this.documentClient.UpsertDocumentAsync(this.usersOptInStatusDocCol.SelfLink, obj);
         }
     }
 }
