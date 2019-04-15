@@ -25,15 +25,15 @@ namespace Icebreaker
     public class IcebreakerBot
     {
         private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
-        private readonly IcebreakerBotDataProvider dataProvider;
+        private readonly Task<IcebreakerBotDataProvider> dataProviderFactoryTask;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBot"/> class.
         /// </summary>
-        /// <param name="dataProvider">The data provider to use</param>
-        public IcebreakerBot(IcebreakerBotDataProvider dataProvider)
+        /// <param name="dataProviderFactoryTask">A task the produces the data provider to use</param>
+        public IcebreakerBot(Task<IcebreakerBotDataProvider> dataProviderFactoryTask)
         {
-            this.dataProvider = dataProvider;
+            this.dataProviderFactoryTask = dataProviderFactoryTask;
         }
 
         /// <summary>
@@ -54,7 +54,8 @@ namespace Icebreaker
             // When contacting the user in 1:1, give them the button to opt-out.
 
             // Get teams to which the app has been installed
-            var teams = await this.dataProvider.GetInstalledTeams();
+            var dataProvider = await this.dataProviderFactoryTask;
+            var teams = dataProvider.GetInstalledTeams();
 
             var countPairsNotified = 0;
             var maxPairUpsPerTeam = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"));
@@ -137,7 +138,8 @@ namespace Icebreaker
         /// <returns>Tracking task</returns>
         public async Task SaveAddedToTeam(string serviceUrl, string teamId, string tenantId)
         {
-            await this.dataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, true);
+            var dataProvider = await this.dataProviderFactoryTask;
+            await dataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, true);
         }
 
         /// <summary>
@@ -149,7 +151,8 @@ namespace Icebreaker
         /// <returns>Tracking task</returns>
         public async Task SaveRemoveFromTeam(string serviceUrl, string teamId, string tenantId)
         {
-            await this.dataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, false);
+            var dataProvider = await this.dataProviderFactoryTask;
+            await dataProvider.SaveTeamInstallStatus(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, false);
         }
 
         /// <summary>
@@ -161,7 +164,8 @@ namespace Icebreaker
         /// <returns>Tracking task</returns>
         public async Task OptOutUser(string tenantId, string userId, string serviceUrl)
         {
-            await this.dataProvider.SetUserOptInStatus(tenantId, userId, false, serviceUrl);
+            var dataProvider = await this.dataProviderFactoryTask;
+            await dataProvider.SetUserOptInStatus(tenantId, userId, false, serviceUrl);
         }
 
         /// <summary>
@@ -173,7 +177,8 @@ namespace Icebreaker
         /// <returns>Tracking task</returns>
         public async Task OptInUser(string tenantId, string userId, string serviceUrl)
         {
-            await this.dataProvider.SetUserOptInStatus(tenantId, userId, true, serviceUrl);
+            var dataProvider = await this.dataProviderFactoryTask;
+            await dataProvider.SetUserOptInStatus(tenantId, userId, true, serviceUrl);
         }
 
         /// <summary>
@@ -286,9 +291,10 @@ namespace Icebreaker
                 telemetry.TrackTrace("There are not enough members found: " + DateTime.Now.ToString());
             }
 
+            var dataProvider = await this.dataProviderFactoryTask;
             foreach (var member in members)
             {
-                var optInStatus = await this.dataProvider.GetUserOptInStatus(teamInfo.TenantId, member.AsTeamsChannelAccount().ObjectId);
+                var optInStatus = await dataProvider.GetUserOptInStatus(teamInfo.TenantId, member.AsTeamsChannelAccount().ObjectId);
                 if (optInStatus == null || optInStatus.OptedIn)
                 {
                     telemetry.TrackTrace($"Adding {member.Name} to the list at: " + DateTime.Now.ToString());
