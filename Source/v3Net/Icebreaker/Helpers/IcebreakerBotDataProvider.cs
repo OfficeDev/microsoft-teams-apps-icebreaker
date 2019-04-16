@@ -143,7 +143,7 @@ namespace Icebreaker.Helpers
             }
             catch (Exception ex)
             {
-                telemetry.TrackTrace($"Hit a snag - {ex.InnerException}");
+                telemetry.TrackException(ex.InnerException);
 
                 return null;
             }
@@ -179,7 +179,7 @@ namespace Icebreaker.Helpers
             }
             catch (Exception ex)
             {
-                telemetry.TrackTrace($"Hit a snag - {ex.InnerException}");
+                telemetry.TrackException(ex.InnerException);
                 return null;
             }
         }
@@ -254,6 +254,41 @@ namespace Icebreaker.Helpers
 
             telemetry.TrackTrace($"Having the PairUp stored for - {user2Id} inside of {tenantId}");
             await StoreUserOptInStatus(user2Info);
+        }
+
+        /// <summary>
+        /// Returns the team that the bot has been installed to
+        /// </summary>
+        /// <param name="tenantId">The tenant id</param>
+        /// <param name="teamId">The team id</param>
+        /// <returns>Team that the bot is installed to</returns>
+        public static TeamInstallInfo GetInstalledTeam(string tenantId, string teamId)
+        {
+            telemetry.TrackTrace("Hit the GetInstaller method");
+
+            InitDatabase();
+
+            var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
+            var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
+
+            // Set some common query options
+            FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true, PartitionKey = new PartitionKey("/teamId") };
+
+            // Find the name of the installer
+            try
+            {
+                var results = documentClient.CreateDocumentQuery<TeamInstallInfo>(
+                    UriFactory.CreateDocumentCollectionUri(databaseName, collectionName), queryOptions)
+                    .Where(f => f.TenantId == tenantId && f.TeamId == teamId);
+
+                var match = results.ToList();
+                return match.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                telemetry.TrackException(ex.InnerException);
+                return null;
+            }
         }
 
         private static async Task<UserInfo> StoreUserOptInStatus(UserInfo obj)

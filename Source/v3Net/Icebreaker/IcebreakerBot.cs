@@ -84,6 +84,17 @@ namespace Icebreaker
         }
 
         /// <summary>
+        /// Method that will return the information of the installed team
+        /// </summary>
+        /// <param name="tenantId">The tenant id</param>
+        /// <param name="teamId">The team id</param>
+        /// <returns>The team that the bot has been installed to</returns>
+        public static TeamInstallInfo GetInstalledTeam(string tenantId, string teamId)
+        {
+            return IcebreakerBotDataProvider.GetInstalledTeam(tenantId, teamId);
+        }
+
+        /// <summary>
         /// Send a welcome message to the user that was just added to a team.
         /// </summary>
         /// <param name="connectorClient">The connector client</param>

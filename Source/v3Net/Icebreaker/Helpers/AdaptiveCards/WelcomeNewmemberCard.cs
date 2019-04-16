@@ -26,7 +26,18 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <returns>The welcome new member card</returns>
         public static string GetCard(string teamName, string personFirstName, string botDisplayName, string botInstaller)
         {
-            var introductoryMessage = string.Format(Resources.TeamInstallMessage, botInstaller, teamName);
+            string introductoryMessage = string.Empty;
+
+            // Checking if the botInstaller value is null or empty
+            if (string.IsNullOrEmpty(botInstaller))
+            {
+                introductoryMessage = string.Format(Resources.InstallMessageUnknownInstaller, teamName);
+            }
+            else
+            {
+                introductoryMessage = string.Format(Resources.InstallMessageKnownInstaller, botInstaller, teamName);
+            }
+
             var variablesToValues = new Dictionary<string, string>()
             {
                 { "team", teamName },

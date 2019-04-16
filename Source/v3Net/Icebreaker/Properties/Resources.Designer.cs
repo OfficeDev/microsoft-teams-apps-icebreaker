@@ -79,6 +79,24 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to If you&apos;re reading this, it&apos;s most likely because {0} added me to {1}. I get to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It&apos;s a win-win-*win* situation..
+        /// </summary>
+        internal static string InstallMessageKnownInstaller {
+            get {
+                return ResourceManager.GetString("InstallMessageKnownInstaller", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you&apos;re reading this, it&apos;s because I was installed to {0} to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It&apos;s a win-win-*win* situation..
+        /// </summary>
+        internal static string InstallMessageUnknownInstaller {
+            get {
+                return ResourceManager.GetString("InstallMessageUnknownInstaller", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hey there, looks like we&apos;ve been matched by {0} this week. It&apos;d be great to meet up for a coffee or a lunch or a call if you&apos;ve got time..
         /// </summary>
         internal static string MeetupContent {
@@ -129,15 +147,6 @@ namespace Icebreaker.Properties {
         internal static string ResumePairingsButtonText {
             get {
                 return ResourceManager.GetString("ResumePairingsButtonText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to If you&apos;re reading this, it&apos;s most likely because {0} added me to {1}. I get to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It&apos;s a win-win-*win* situation..
-        /// </summary>
-        internal static string TeamInstallMessage {
-            get {
-                return ResourceManager.GetString("TeamInstallMessage", resourceCulture);
             }
         }
     }
