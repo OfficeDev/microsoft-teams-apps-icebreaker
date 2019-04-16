@@ -272,7 +272,7 @@ namespace Icebreaker.Helpers
             var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
 
             // Set some common query options
-            FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true, PartitionKey = new PartitionKey("/teamId") };
+            FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
 
             // Find the name of the installer
             try
