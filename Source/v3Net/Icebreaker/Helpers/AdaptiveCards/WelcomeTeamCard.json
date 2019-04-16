@@ -6,6 +6,15 @@
       "items": [
         {
           "type": "TextBlock",
+          "text": "Hi there!"
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
           "text": "%intro%",
           "wrap": true
         }

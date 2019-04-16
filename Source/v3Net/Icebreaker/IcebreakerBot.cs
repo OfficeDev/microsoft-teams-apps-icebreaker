@@ -365,9 +365,7 @@ namespace Icebreaker
                         ContentType = "application/vnd.microsoft.card.adaptive",
                         Content = JsonConvert.DeserializeObject(cardToSend)
                     }
-                },
-                Text = "Hi there!",
-                TextFormat = TextFormatTypes.Plain
+                }
             };
 
             await connectorClient.Conversations.SendToConversationAsync(activity);
