@@ -126,6 +126,7 @@ namespace Icebreaker
         /// <param name="addedBotId">The id of the added bot</param>
         /// <param name="tenantId">The tenant id</param>
         /// <param name="teamId">The id of the team that the bot is installed to</param>
+        /// <param name="botInstaller">The installer of the application</param>
         /// <returns>Tracking task</returns>
         public static async Task WelcomeTeam(ConnectorClient connectorClient, string addedBotId, string tenantId, string teamId, string botInstaller)
         {
