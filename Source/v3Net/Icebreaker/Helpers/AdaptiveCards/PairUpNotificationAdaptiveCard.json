@@ -48,7 +48,7 @@
   "actions": [
     {
       "type": "Action.OpenUrl",
-      "title": "Chat with %matchedPerson%",
+      "title": "Chat with %receiverName%",
       "url": "https://teams.microsoft.com/l/chat/0/0?users=%personUpn%&message=👋Hi%20there%20"
     },
     {
