@@ -32,7 +32,7 @@ namespace Icebreaker
         /// <returns>The number of pairups that were made</returns>
         public static async Task<int> MakePairsAndNotify()
         {
-            telemetry.TrackTrace("Hit the MakePairsAndNotify method at: " + DateTime.Now.ToString());
+            telemetry.TrackTrace("Hit the MakePairsAndNotify method");
 
             // Recall all the teams where we have been added
             // For each team where I have been added:
@@ -49,7 +49,7 @@ namespace Icebreaker
             var countPairsNotified = 0;
             var maxPairUpsPerTeam = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"));
 
-            telemetry.TrackTrace($"Retrieved {teams.Count} teams at: " + DateTime.Now.ToString());
+            telemetry.TrackTrace($"Retrieved {teams.Count} teams");
 
             telemetry.TrackTrace($"{maxPairUpsPerTeam} pairs maximum");
 
@@ -197,7 +197,7 @@ namespace Icebreaker
         /// <returns>The name of the team</returns>
         private static async Task<string> GetTeamNameAsync(ConnectorClient connectorClient, string teamId)
         {
-            telemetry.TrackTrace("Getting the team name now at: " + DateTime.Now.ToString());
+            telemetry.TrackTrace("Getting the team name now");
 
             var teamsConnectorClient = connectorClient.GetTeamsConnectorClient();
             var teamDetailsResult = await teamsConnectorClient.Teams.FetchTeamDetailsAsync(teamId);
@@ -214,7 +214,7 @@ namespace Icebreaker
         /// <returns>Tracking task</returns>
         private static async Task NotifyPair(ConnectorClient connectorClient, string tenantId, string teamName, Tuple<ChannelAccount, ChannelAccount> pair)
         {
-            telemetry.TrackTrace("Hit the NotifyPair method at: " + DateTime.Now.ToString());
+            telemetry.TrackTrace("Hit the NotifyPair method");
             var displayName = CloudConfigurationManager.GetSetting("BotDisplayName");
 
             var teamsPerson1 = pair.Item1.AsTeamsChannelAccount();
@@ -235,7 +235,7 @@ namespace Icebreaker
 
         private static async Task NotifyUser(ConnectorClient connectorClient, string cardToSend, ChannelAccount user, string tenantId)
         {
-            telemetry.TrackTrace("Hit the NotifyUser method at: " + DateTime.Now.ToString());
+            telemetry.TrackTrace("Hit the NotifyUser method");
 
             var me = new ChannelAccount()
             {
@@ -285,18 +285,18 @@ namespace Icebreaker
 
         private static async Task<List<ChannelAccount>> GetOptedInUsers(ConnectorClient connectorClient, TeamInstallInfo teamInfo)
         {
-            telemetry.TrackTrace("Hit the GetOptedInUsers method at: " + DateTime.Now.ToString());
+            telemetry.TrackTrace("Hit the GetOptedInUsers method");
             var optedInUsers = new List<ChannelAccount>();
 
             var members = await GetTeamMembers(connectorClient, teamInfo.TeamId, teamInfo.TenantId);
 
             if (members.Count > 1)
             {
-                telemetry.TrackTrace($"There are {members.Count} members found in {teamInfo.TeamId} at: " + DateTime.Now.ToString());
+                telemetry.TrackTrace($"There are {members.Count} members found in {teamInfo.TeamId}");
             }
             else
             {
-                telemetry.TrackTrace("There are not enough members found: " + DateTime.Now.ToString());
+                telemetry.TrackTrace("There are not enough members found");
             }
 
             foreach (var member in members)
@@ -305,7 +305,7 @@ namespace Icebreaker
 
                 if (optInStatus == null || optInStatus.OptedIn)
                 {
-                    telemetry.TrackTrace($"Adding {member.Name} to the list at: " + DateTime.Now.ToString());
+                    telemetry.TrackTrace($"Adding {member.Name} to the list at");
                     optedInUsers.Add(member);
                 }
             }
@@ -315,15 +315,15 @@ namespace Icebreaker
 
         private static List<Tuple<ChannelAccount, ChannelAccount>> MakePairs(List<ChannelAccount> users)
         {
-            telemetry.TrackTrace("Hit the MakePairs method at: " + DateTime.Now.ToString());
+            telemetry.TrackTrace("Hit the MakePairs method");
 
             if (users.Count > 1)
             {
-                telemetry.TrackTrace($"There could be {users.Count / 2} pairs that could be made at: " + DateTime.Now.ToString());
+                telemetry.TrackTrace($"There could be {users.Count / 2} pairs that could be made");
             }
             else
             {
-                telemetry.TrackTrace($"Pairs could not be made because of having - {users.Count} at: " + DateTime.Now.ToString());
+                telemetry.TrackTrace($"Pairs could not be made because of having - {users.Count}");
             }
 
             var pairs = new List<Tuple<ChannelAccount, ChannelAccount>>();
@@ -349,7 +349,7 @@ namespace Icebreaker
         /// <returns>A tracking task</returns>
         private static async Task NotifyTeam(ConnectorClient connectorClient, string cardToSend, string teamName, string teamId)
         {
-            telemetry.TrackTrace("Hit the NotifyTeam method at: " + DateTime.Now.ToString());
+            telemetry.TrackTrace("Hit the NotifyTeam method");
 
             var activity = new Activity()
             {

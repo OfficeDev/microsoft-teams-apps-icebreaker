@@ -81,7 +81,7 @@ namespace Icebreaker.Helpers
         /// <returns>Updated team installation info</returns>
         public static async Task<TeamInstallInfo> SaveTeamInstallStatus(TeamInstallInfo team, bool installed)
         {
-            telemetry.TrackTrace("Hit the method - SaveTeamInstallStatus at: " + DateTime.Now.ToString());
+            telemetry.TrackTrace("Hit the method SaveTeamInstallStatus");
 
             InitDatabase();
 
@@ -122,7 +122,7 @@ namespace Icebreaker.Helpers
         /// <returns>List of installed teams</returns>
         public static List<TeamInstallInfo> GetInstalledTeams()
         {
-            telemetry.TrackTrace("Hit the method - GetInstalledTeams at: " + DateTime.Now.ToString());
+            telemetry.TrackTrace("Hit the method GetInstalledTeams");
 
             InitDatabase();
 
@@ -143,7 +143,7 @@ namespace Icebreaker.Helpers
             }
             catch (Exception ex)
             {
-                telemetry.TrackTrace($"Hit a snag - {ex.InnerException} at: " + DateTime.Now.ToString());
+                telemetry.TrackTrace($"Hit a snag - {ex.InnerException}");
 
                 return null;
             }
@@ -157,7 +157,7 @@ namespace Icebreaker.Helpers
         /// <returns>User information</returns>
         public static UserInfo GetUserOptInStatus(string tenantId, string userId)
         {
-            telemetry.TrackTrace("Hit the GetUserOptInStatus method at: " + DateTime.Now.ToString());
+            telemetry.TrackTrace("Hit the GetUserOptInStatus method");
 
             InitDatabase();
 
@@ -179,7 +179,7 @@ namespace Icebreaker.Helpers
             }
             catch (Exception ex)
             {
-                telemetry.TrackTrace($"Hit a snag - {ex.InnerException} at: " + DateTime.Now.ToString());
+                telemetry.TrackTrace($"Hit a snag - {ex.InnerException}");
                 return null;
             }
         }
