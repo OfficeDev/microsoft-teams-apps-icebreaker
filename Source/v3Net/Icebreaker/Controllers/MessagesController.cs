@@ -169,6 +169,7 @@ namespace Icebreaker
                             {
                                 telemetryClient.TrackTrace($"Bot installed to team {message.Conversation.Id}");
 
+                                // The following lines are bringing in the installer of the application - which may be a team member
                                 var teamMembers = await connectorClient.Conversations.GetConversationMembersAsync(message.Conversation.Id);
 
                                 var personThatAddedBot = teamMembers.FirstOrDefault(x => x.Id == message.From.Id)?.Name;
@@ -183,6 +184,8 @@ namespace Icebreaker
                                 // Someome else must have been added to team, send them a welcome message
                                 telemetryClient.TrackTrace($"Adding a new member: {member.Id}");
 
+                                // We are extracting the name of the app installer because it may not be a member
+                                // of the team that a user is being added to
                                 var installedTeam = IcebreakerBot.GetInstalledTeam(tenantId, teamsChannelData.Team.Id);
 
                                 await IcebreakerBot.WelcomeUser(connectorClient, member.Id, tenantId, teamsChannelData.Team.Id, installedTeam.InstallerName);
