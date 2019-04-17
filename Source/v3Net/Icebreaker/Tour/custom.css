@@ -1,0 +1,22 @@
+﻿.bold-header {
+    align-content: flex-start;
+    text-align: left;
+    font-family: 'Segoe UI';
+    font-weight: bold;
+    font-size: 18px;
+    color: #252424;
+    letter-spacing: 0; 
+    line-height: 24px;
+}
+
+.regular-content {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    color: #000000;
+}
+
+.primary-button {
+    background: #6264A7;
+    box-shadow: 0 2px 4px 0; 
+    border-radius: 2px;
+}
