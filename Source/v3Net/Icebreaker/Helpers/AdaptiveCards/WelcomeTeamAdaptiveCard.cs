@@ -26,7 +26,6 @@ namespace Icebreaker.Helpers.AdaptiveCards
         {
             string teamIntroMessage = string.Empty;
 
-            // Checking if the botInstaller variable is null or empty
             if (string.IsNullOrEmpty(botInstaller))
             {
                 teamIntroMessage = string.Format(Resources.InstallMessageUnknownInstaller, teamName);
