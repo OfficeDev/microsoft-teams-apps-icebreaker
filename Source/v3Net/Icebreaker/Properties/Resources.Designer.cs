@@ -79,11 +79,20 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If you&apos;re reading this, it&apos;s because I was added to {0}. I get to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It&apos;s a win-win-*win* situation..
+        ///   Looks up a localized string similar to If you&apos;re reading this, it&apos;s most likely because {0} added me to {1}. I get to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It&apos;s a win-win-*win* situation..
         /// </summary>
-        internal static string InstallMessage {
+        internal static string InstallMessageKnownInstaller {
             get {
-                return ResourceManager.GetString("InstallMessage", resourceCulture);
+                return ResourceManager.GetString("InstallMessageKnownInstaller", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you&apos;re reading this, it&apos;s because I was installed to {0} to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It&apos;s a win-win-*win* situation..
+        /// </summary>
+        internal static string InstallMessageUnknownInstaller {
+            get {
+                return ResourceManager.GetString("InstallMessageUnknownInstaller", resourceCulture);
             }
         }
         

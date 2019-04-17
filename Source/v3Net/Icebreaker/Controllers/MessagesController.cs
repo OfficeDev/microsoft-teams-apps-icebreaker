@@ -70,7 +70,7 @@ namespace Icebreaker
 
                 if (optOutRequest || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    telemetryClient.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId} at {DateTime.Now.ToString()}");
+                    telemetryClient.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId}");
                     await IcebreakerBot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
                     var optInReply = activity.CreateReply();
@@ -169,17 +169,20 @@ namespace Icebreaker
                             {
                                 telemetryClient.TrackTrace($"Bot installed to team {message.Conversation.Id}");
 
-                                // we were just added to team
-                                await IcebreakerBot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, tenantId);
+                                // Try to determine the name of the person that installed the app, which is usually the sender of the message (From.Id)
+                                // Note that in some cases we cannot resolve it to a team member, because the app was installed to the team programmatically via Graph
+                                var teamMembers = await connectorClient.Conversations.GetConversationMembersAsync(message.Conversation.Id);
+                                var personThatAddedBot = teamMembers.FirstOrDefault(x => x.Id == message.From.Id)?.Name;
 
-                                // TODO: post activity.from has who added the bot. Can record it in schema.
+                                await IcebreakerBot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, tenantId, personThatAddedBot);
+                                await IcebreakerBot.WelcomeTeam(connectorClient, tenantId, message.Conversation.Id, personThatAddedBot);
                             }
                             else
                             {
-                                // Someome else must have been added to team, send them a welcome message
                                 telemetryClient.TrackTrace($"Adding a new member: {member.Id}");
 
-                                await IcebreakerBot.WelcomeUser(connectorClient, member.Id, tenantId, teamsChannelData.Team.Id);
+                                var installedTeam = IcebreakerBot.GetInstalledTeam(tenantId, teamsChannelData.Team.Id);
+                                await IcebreakerBot.WelcomeUser(connectorClient, member.Id, tenantId, teamsChannelData.Team.Id, installedTeam.InstallerName);
                             }
                         }
                     }

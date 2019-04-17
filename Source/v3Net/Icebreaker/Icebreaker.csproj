@@ -183,6 +183,7 @@
     </Compile>
     <Compile Include="Helpers\AdaptiveCards\PairUpNotificationAdaptiveCard.cs" />
     <Compile Include="Helpers\AdaptiveCards\WelcomeNewMemberCard.cs" />
+    <Compile Include="Helpers\AdaptiveCards\WelcomeTeamAdaptiveCard.cs" />
     <Compile Include="Helpers\IcebreakerBotDataProvider.cs" />
     <Compile Include="Helpers\TeamInstallInfo.cs" />
     <Compile Include="Helpers\UserInfo.cs" />
@@ -203,6 +204,7 @@
     <Content Include="Manifest\manifest.json" />
     <Content Include="Connected Services\Application Insights\ConnectedService.json" />
     <Content Include="ApplicationInsights.config" />
+    <Content Include="Helpers\AdaptiveCards\WelcomeTeamCard.json" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
