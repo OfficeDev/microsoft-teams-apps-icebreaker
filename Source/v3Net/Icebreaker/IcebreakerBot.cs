@@ -134,7 +134,6 @@ namespace Icebreaker
         /// Sends a welcome message to the General channel of the team that this bot has been installed to
         /// </summary>
         /// <param name="connectorClient">The connector client</param>
-        /// <param name="botId">The id of the added bot</param>
         /// <param name="tenantId">The tenant id</param>
         /// <param name="teamId">The id of the team that the bot is installed to</param>
         /// <param name="botInstaller">The installer of the application</param>
