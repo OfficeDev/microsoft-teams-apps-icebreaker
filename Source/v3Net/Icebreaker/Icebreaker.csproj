@@ -170,6 +170,7 @@
     <Content Include="Global.asax" />
     <Content Include="Manifest\color.png" />
     <Content Include="Manifest\outline.png" />
+    <Content Include="Tour\msteams-16.css" />
     <Content Include="Tour\tourpage1.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
