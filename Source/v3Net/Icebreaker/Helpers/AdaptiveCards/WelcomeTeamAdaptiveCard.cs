@@ -37,7 +37,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 teamIntroMessage = string.Format(Resources.InstallMessageKnownInstaller, botInstaller, teamName);
             }
 
-            var htmlUrl = Uri.EscapeDataString("meetup-xyj2f6z7fxuqa-svc.azurewebsites.net/tour/tourpage1.html");
+            var htmlUrl = Uri.EscapeDataString("meetup-xyj2f6z7fxuqa-svc.azurewebsites.net/default.htm");
             var tourUrl = $"https://teams.microsoft.com/l/task/" + CloudConfigurationManager.GetSetting("AppId") + $"?url={htmlUrl}&" + "height=600px&width=600px&title=Tour";
 
             var variablesToValues = new Dictionary<string, string>()
