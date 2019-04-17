@@ -176,7 +176,7 @@ namespace Icebreaker
                                 // we were just added to team
                                 await IcebreakerBot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, tenantId, personThatAddedBot);
 
-                                await IcebreakerBot.WelcomeTeam(connectorClient, member.Id, tenantId, message.Conversation.Id, personThatAddedBot);
+                                await IcebreakerBot.WelcomeTeam(connectorClient, tenantId, message.Conversation.Id, personThatAddedBot);
                             }
                             else
                             {

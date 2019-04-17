@@ -134,14 +134,14 @@ namespace Icebreaker
         /// Sends a welcome message to the General channel of the team that this bot has been installed to
         /// </summary>
         /// <param name="connectorClient">The connector client</param>
-        /// <param name="addedBotId">The id of the added bot</param>
+        /// <param name="botId">The id of the added bot</param>
         /// <param name="tenantId">The tenant id</param>
         /// <param name="teamId">The id of the team that the bot is installed to</param>
         /// <param name="botInstaller">The installer of the application</param>
         /// <returns>Tracking task</returns>
-        public static async Task WelcomeTeam(ConnectorClient connectorClient, string addedBotId, string tenantId, string teamId, string botInstaller)
+        public static async Task WelcomeTeam(ConnectorClient connectorClient, string tenantId, string teamId, string botInstaller)
         {
-            telemetry.TrackTrace("Hit the WelcomeTeam method at: " + DateTime.Now.ToString() + " teamId = " + teamId);
+            telemetry.TrackTrace("Hit the WelcomeTeam method with teamId = " + teamId);
 
             var teamName = await GetTeamNameAsync(connectorClient, teamId);
 
