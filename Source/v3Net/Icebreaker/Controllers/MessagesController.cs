@@ -169,7 +169,6 @@ namespace Icebreaker
                             {
                                 telemetryClient.TrackTrace($"Bot installed to team {message.Conversation.Id}");
 
-                                // TODO: post activity.from has who added the bot. Can record it in schema.
                                 var teamMembers = await connectorClient.Conversations.GetConversationMembersAsync(message.Conversation.Id);
 
                                 var personThatAddedBot = teamMembers.FirstOrDefault(x => x.Id == message.From.Id)?.Name;
@@ -184,10 +183,8 @@ namespace Icebreaker
                                 // Someome else must have been added to team, send them a welcome message
                                 telemetryClient.TrackTrace($"Adding a new member: {member.Id}");
 
-                                // TODO: Have an idea of the reverse lookup to see who installed the bot to the team
                                 var installedTeam = IcebreakerBot.GetInstalledTeam(tenantId, teamsChannelData.Team.Id);
 
-                                // Having a hardcoded string for the placeholder right now
                                 await IcebreakerBot.WelcomeUser(connectorClient, member.Id, tenantId, teamsChannelData.Team.Id, installedTeam.InstallerName);
                             }
                         }
