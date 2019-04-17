@@ -5,10 +5,12 @@
 //----------------------------------------------------------------------------------------------
 namespace Icebreaker.Helpers.AdaptiveCards
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Web.Hosting;
     using Icebreaker.Properties;
+    using Microsoft.Azure;
 
     /// <summary>
     /// Builder class for the team welcome message
@@ -35,9 +37,13 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 teamIntroMessage = string.Format(Resources.InstallMessageKnownInstaller, botInstaller, teamName);
             }
 
+            var htmlUrl = Uri.EscapeDataString("meetup-xyj2f6z7fxuqa-svc.azurewebsites.net/tour/tourpage1.html");
+            var tourUrl = $"https://teams.microsoft.com/l/task/" + CloudConfigurationManager.GetSetting("AppId") + $"?url={htmlUrl}&" + "height=600px&width=600px&title=Tour";
+
             var variablesToValues = new Dictionary<string, string>()
             {
-                { "intro", teamIntroMessage }
+                { "intro", teamIntroMessage },
+                { "tourUrl", tourUrl }
             };
 
             var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/WelcomeTeamCard.json");

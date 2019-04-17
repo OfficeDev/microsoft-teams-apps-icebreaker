@@ -24,7 +24,8 @@
   "actions": [
     {
       "type": "Action.OpenUrl",
-      "title": "Take a tour"
+      "title": "Take a tour",
+      "url": "%tourUrl%"
     }
   ],
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
