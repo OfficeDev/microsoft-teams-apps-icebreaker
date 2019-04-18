@@ -32,7 +32,7 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "Hi there again, I'm %botDisplayName%, the bot that pairs you with a new coworker to meet each week. This week your match is %matchedPerson%.",
+              "text": "Hi there again, I'm %botDisplayName% in %team%. A bot that pairs you with a new coworker to meet each week. This week your match is %matchedPerson%.",
               "wrap": true
             }
           ]
@@ -48,7 +48,7 @@
   "actions": [
     {
       "type": "Action.OpenUrl",
-      "title": "Chat with %matchedPerson%",
+      "title": "Chat with %receiverName%",
       "url": "https://teams.microsoft.com/l/chat/0/0?users=%personUpn%&message=👋Hi%20there%20"
     },
     {

@@ -91,7 +91,7 @@ namespace Icebreaker.Helpers
         /// <returns>Tracking task</returns>
         public async Task UpdateTeamInstallStatusAsync(TeamInstallInfo team, bool installed)
         {
-            telemetry.TrackTrace("Hit the method - SaveTeamInstallStatus at: " + DateTime.Now.ToString());
+            telemetry.TrackTrace("Hit the method SaveTeamInstallStatus");
 
             if (installed)
             {
@@ -119,7 +119,7 @@ namespace Icebreaker.Helpers
         /// <returns>List of installed teams</returns>
         public List<TeamInstallInfo> GetInstalledTeams()
         {
-            telemetry.TrackTrace("Hit the method - GetInstalledTeams at: " + DateTime.Now.ToString());
+            telemetry.TrackTrace("Hit the method GetInstalledTeams");
 
             // Set some common query options
             FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
@@ -133,7 +133,7 @@ namespace Icebreaker.Helpers
             }
             catch (Exception ex)
             {
-                telemetry.TrackTrace($"Hit a snag - {ex.InnerException} at: " + DateTime.Now.ToString());
+                telemetry.TrackException(ex.InnerException);
 
                 // Return no teams if we hit an error fetching
                 return new List<TeamInstallInfo>();
@@ -163,7 +163,7 @@ namespace Icebreaker.Helpers
             }
             catch (Exception ex)
             {
-                telemetry.TrackTrace($"Hit a snag - {ex.InnerException} at: " + DateTime.Now.ToString());
+                telemetry.TrackException(ex.InnerException);
                 return null;
             }
         }
@@ -232,6 +232,35 @@ namespace Icebreaker.Helpers
 
             telemetry.TrackTrace($"Having the PairUp stored for - {user2Id} inside of {tenantId}");
             await this.StoreUserInfoAsync(user2Info);
+        }
+
+        /// <summary>
+        /// Returns the team that the bot has been installed to
+        /// </summary>
+        /// <param name="tenantId">The tenant id</param>
+        /// <param name="teamId">The team id</param>
+        /// <returns>Team that the bot is installed to</returns>
+        public TeamInstallInfo GetInstalledTeam(string tenantId, string teamId)
+        {
+            telemetry.TrackTrace("Hit the GetInstaller method");
+
+            // Set some common query options
+            FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
+
+            // Find the name of the installer
+            try
+            {
+                var results = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(this.teamsInstalledDocCol.SelfLink, queryOptions)
+                    .Where(f => f.TenantId == tenantId && f.TeamId == teamId);
+
+                var match = results.ToList();
+                return match.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                telemetry.TrackException(ex.InnerException);
+                return null;
+            }
         }
 
         private async Task StoreUserInfoAsync(UserInfo obj)

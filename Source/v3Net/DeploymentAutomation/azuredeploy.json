@@ -67,13 +67,15 @@
             "type":"string", 
             "metadata": {
                 "description": "The frequency by which the bot will automatically pair up members of a team"
-            }
+            }, 
+            "defaultValue": "Week"
         },
         "logicAppInterval": {
             "type":"int", 
             "metadata": {
                 "description": "At which interval should the pair ups happen (i.e. 1 Week = Weekly, etc..)"
-            }
+            },
+            "defaultValue": "1"
         }, 
         "logicAppHour": {
             "type":"int", 

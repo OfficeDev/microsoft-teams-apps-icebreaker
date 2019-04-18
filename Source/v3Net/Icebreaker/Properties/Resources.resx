@@ -123,8 +123,13 @@
   <data name="IDontKnow" xml:space="preserve">
     <value>😕 no idea what you just said. My tiny 🤖 🧠 doesn't understand how to handle that yet!</value>
   </data>
-  <data name="InstallMessage" xml:space="preserve">
-    <value>If you're reading this, it's because I was added to {0}. I get to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It's a win-win-*win* situation.</value>
+  <data name="InstallMessageKnownInstaller" xml:space="preserve">
+    <value>If you're reading this, it's most likely because {0} added me to {1}. I get to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It's a win-win-*win* situation.</value>
+    <comment>Install message and also the welcome message when the app installer is known - {0} is the placeholder for the name of the user that has installed the app to the team, and {1} is the placeholder for the name of the team that the app has been installed to</comment>
+  </data>
+  <data name="InstallMessageUnknownInstaller" xml:space="preserve">
+    <value>If you're reading this, it's because I was installed to {0} to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It's a win-win-*win* situation.</value>
+    <comment>Install message and also the welcome message when the app installer is not known - {0} is the placeholder for the name of the team that the app has been installed to</comment>
   </data>
   <data name="MeetupContent" xml:space="preserve">
     <value>Hey there, looks like we've been matched by {0} this week. It'd be great to meet up for a coffee or a lunch or a call if you've got time.</value>
@@ -132,7 +137,7 @@
   </data>
   <data name="MeetupTitle" xml:space="preserve">
     <value>{0} / {1} Meet up</value>
-    <comment>The title for the Meetup</comment>
+    <comment>The title for the Meetup - {0} is the name of the first person that user has been matched with and {1} is the name of the user</comment>
   </data>
   <data name="OptInConfirmation" xml:space="preserve">
     <value>Welcome back! You've been missed. I've restarted your matches. Have fun!</value>

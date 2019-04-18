@@ -31,7 +31,7 @@
         "team"
       ],
       "supportsFiles": false,
-      "isNotificationOnly": false
+      "isNotificationOnly": true
     }
   ],
   "permissions": [

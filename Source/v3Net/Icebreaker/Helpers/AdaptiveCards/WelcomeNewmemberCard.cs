@@ -22,10 +22,21 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <param name="teamName">The team name</param>
         /// <param name="personFirstName">The first name of the new member</param>
         /// <param name="botDisplayName">The bot name</param>
+        /// <param name="botInstaller">The person that installed the bot to the team</param>
         /// <returns>The welcome new member card</returns>
-        public static string GetCard(string teamName, string personFirstName, string botDisplayName)
+        public static string GetCard(string teamName, string personFirstName, string botDisplayName, string botInstaller)
         {
-            var introductoryMessage = string.Format(Resources.InstallMessage, teamName);
+            string introductoryMessage = string.Empty;
+
+            if (string.IsNullOrEmpty(botInstaller))
+            {
+                introductoryMessage = string.Format(Resources.InstallMessageUnknownInstaller, teamName);
+            }
+            else
+            {
+                introductoryMessage = string.Format(Resources.InstallMessageKnownInstaller, botInstaller, teamName);
+            }
+
             var variablesToValues = new Dictionary<string, string>()
             {
                 { "team", teamName },
