@@ -40,7 +40,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
             }
 
             var htmlUrl = Uri.EscapeDataString("https://meetup-xyj2f6z7fxuqa-svc.azurewebsites.net/Tour/tour.html");
-            var tourUrl = $"https://teams.microsoft.com/l/task/" + CloudConfigurationManager.GetSetting("AppId") + $"?url={htmlUrl}&" + "height=600px&width=600px&title=Tour";
+            var tourUrl = $"https://teams.microsoft.com/l/task/" + CloudConfigurationManager.GetSetting("AppId") + $"?url={htmlUrl}&" + "height=450px&width=600px&title=Tour";
 
             var variablesToValues = new Dictionary<string, string>()
             {

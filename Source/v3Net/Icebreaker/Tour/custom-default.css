@@ -8,6 +8,7 @@
     letter-spacing: 0; 
     line-height: 24px;
     margin: 0;
+    padding-left: 32px;
 }
 
 .regular-content {
@@ -16,11 +17,13 @@
     color: #000000;
     margin: 0;
     padding-top: 6px;
+    padding-left: 32px;
 }
 
 .primary-button {
     background: #6264A7;
     border: 2px solid #6264A7;
+    border-radius: 2px;
     height: 32px;
     width: 90px;
     margin-top: 100px;
