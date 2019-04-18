@@ -42,10 +42,8 @@ namespace Icebreaker.Helpers
             var endpointUrl = CloudConfigurationManager.GetSetting("CosmosDBEndpointUrl");
             var primaryKey = CloudConfigurationManager.GetSetting("CosmosDBKey");
             var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
-
-            var teamsCollection = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
-            var usersCollection = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
-            var dbLink = endpointUrl + databaseName;
+            var teamsCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
+            var usersCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
 
             this.documentClient = new DocumentClient(new Uri(endpointUrl), primaryKey);
 
@@ -59,27 +57,27 @@ namespace Icebreaker.Helpers
             // Get a reference to the Teams collection, creating it if needed
             DocumentCollection teamsCollectionDef = new DocumentCollection
             {
-                Id = teamsCollection
+                Id = teamsCollectionName
             };
             teamsCollectionDef.PartitionKey.Paths.Add("/teamId");
 
             this.teamsInstalledDocCol = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseName), teamsCollectionDef, new RequestOptions { OfferThroughput = 400 });
             if (this.teamsInstalledDocCol != null)
             {
-                telemetry.TrackTrace($"Reference to Teams collection database {this.teamsInstalledDocCol.Id} was obtained successfully");
+                telemetry.TrackTrace($"Reference to Teams collection database {this.teamsInstalledDocCol.Id} obtained successfully");
             }
 
             // Get a reference to the Users collection, creating it if needed
             DocumentCollection usersCollectionDef = new DocumentCollection
             {
-                Id = usersCollection
+                Id = usersCollectionName
             };
             usersCollectionDef.PartitionKey.Paths.Add("/tenantId");
 
             this.usersOptInStatusDocCol = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseName), usersCollectionDef, new RequestOptions { OfferThroughput = 400 });
             if (this.usersOptInStatusDocCol != null)
             {
-                telemetry.TrackTrace($"Reference to Users collection database {this.usersOptInStatusDocCol.Id} was obtained successfully");
+                telemetry.TrackTrace($"Reference to Users collection database {this.usersOptInStatusDocCol.Id} obtained successfully");
             }
         }
 
@@ -121,12 +119,10 @@ namespace Icebreaker.Helpers
         {
             telemetry.TrackTrace("Hit the method GetInstalledTeams");
 
-            // Set some common query options
-            FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
-
             // Find matching activities
             try
             {
+                var queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
                 var lookupQuery = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(this.teamsInstalledDocCol.SelfLink, queryOptions);
                 var match = lookupQuery.ToList();
                 return match;
@@ -141,6 +137,32 @@ namespace Icebreaker.Helpers
         }
 
         /// <summary>
+        /// Returns the team that the bot has been installed to
+        /// </summary>
+        /// <param name="tenantId">The tenant id</param>
+        /// <param name="teamId">The team id</param>
+        /// <returns>Team that the bot is installed to</returns>
+        public TeamInstallInfo GetInstalledTeam(string tenantId, string teamId)
+        {
+            telemetry.TrackTrace("Hit the GetInstalledTeam method");
+
+            // Get team install info
+            try
+            {
+                var queryOptions = new FeedOptions { MaxItemCount = -1, PartitionKey = new PartitionKey(teamId) };
+                var results = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(this.teamsInstalledDocCol.SelfLink, queryOptions)
+                    .Where(f => f.TenantId == tenantId && f.TeamId == teamId);
+                var match = results.ToList();
+                return match.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                telemetry.TrackException(ex.InnerException);
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Get the stored information about the given user
         /// </summary>
         /// <param name="tenantId">Tenant id</param>
@@ -148,7 +170,7 @@ namespace Icebreaker.Helpers
         /// <returns>User information</returns>
         public UserInfo GetUserInfo(string tenantId, string userId)
         {
-            telemetry.TrackTrace("Hit the GetUserInfo method at: " + DateTime.Now.ToString());
+            telemetry.TrackTrace("Hit the GetUserInfo method");
 
             // Set some common query options
             FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, PartitionKey = new PartitionKey(tenantId) };
@@ -232,35 +254,6 @@ namespace Icebreaker.Helpers
 
             telemetry.TrackTrace($"Having the PairUp stored for - {user2Id} inside of {tenantId}");
             await this.StoreUserInfoAsync(user2Info);
-        }
-
-        /// <summary>
-        /// Returns the team that the bot has been installed to
-        /// </summary>
-        /// <param name="tenantId">The tenant id</param>
-        /// <param name="teamId">The team id</param>
-        /// <returns>Team that the bot is installed to</returns>
-        public TeamInstallInfo GetInstalledTeam(string tenantId, string teamId)
-        {
-            telemetry.TrackTrace("Hit the GetInstaller method");
-
-            // Set some common query options
-            FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
-
-            // Find the name of the installer
-            try
-            {
-                var results = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(this.teamsInstalledDocCol.SelfLink, queryOptions)
-                    .Where(f => f.TenantId == tenantId && f.TeamId == teamId);
-
-                var match = results.ToList();
-                return match.FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                telemetry.TrackException(ex.InnerException);
-                return null;
-            }
         }
 
         private async Task StoreUserInfoAsync(UserInfo obj)
