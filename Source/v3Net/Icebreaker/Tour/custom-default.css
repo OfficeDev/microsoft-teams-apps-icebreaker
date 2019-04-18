@@ -20,8 +20,7 @@
 
 .primary-button {
     background: #6264A7;
-    box-shadow: 0 2px 4px 0; 
-    border-radius: 2px;
+    border: 2px solid #6264A7;
     height: 32px;
     width: 90px;
     margin-top: 100px;

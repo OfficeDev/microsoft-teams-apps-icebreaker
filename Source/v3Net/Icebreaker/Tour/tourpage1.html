@@ -33,25 +33,66 @@
             microsoftTeams.registerOnThemeChangeHandler(setTheme);
         });
     </script>
+
+    <script>
+        function SwapDivsWithClick(div1, div2) {
+            d1 = document.getElementById(div1);
+            d2 = document.getElementById(div2);
+            if (d2.style.display == "none") {
+                d1.style.display = "none";
+                d2.style.display = "block";
+            }
+            else {
+                d1.style.display = "block";
+                d2.style.display = "none";
+            }
+        }
+    </script>
 </head>
 <body>
-    <!--Image placeholder-->
-    <svg height="243px" width="536px">
-        <rect style="fill:rgb(223,224,228);stroke-width:1;stroke:rgb(255,255,255);align-content:center" height="243px" width="536px" />
-    </svg>
+    <div id="introDiv" style="display:block;">
+        <!--Image placeholder-->
+        <svg height="243px" width="536px">
+            <rect style="fill:rgb(223,224,228);stroke-width:1;stroke:rgb(255,255,255);align-content:center" height="243px" width="536px" />
+        </svg>
 
-    <br />
+        <br />
 
-    <p class="bold-header">Make new friends and build community with them</p>
+        <p class="bold-header">Make new friends and build community with them</p>
 
-    <div style="height:36px; width:491px">
-        <p class="regular-content">
-            Every week, I'll pair you with someone new. If you have the inclination that week, you can meet up--grab a lunch, or a call if you're in different locations. Look out for another message <br /> in which I'll pair you with your first match.
-        </p>
+        <div style="height:36px; width:491px">
+            <p class="regular-content">
+                Every week, I'll pair you with someone new. If you have the inclination that week, you can meet up--grab a lunch, or a call if you're in different locations. Look out for another message <br /> in which I'll pair you with your first match.
+            </p>
+        </div>
+
+        <button class="primary-button" onclick="SwapDivsWithClick('introDiv', 'matchesDiv')">
+            <p class="primary-button-content">
+                Next
+            </p>
+        </button>
     </div>
+    <div id="matchesDiv" style="display:none;">
+        <!--Image placeholder-->
+        <svg height="243px" width="536px">
+            <rect style="fill:rgb(223,224,228);stroke-width:1;stroke:rgb(255,255,255);align-content:center" height="243px" width="536px" />
+        </svg>
 
-    <button class="primary-button">
-        <p class="primary-button-content">Next</p>
-    </button>
+        <br />
+
+        <p class="bold-header">Easily pause matches as needed</p>
+
+        <div style="height:36px; width:491px">
+            <p class="regular-content">
+                Pause matches whenever you need. Too busy that week? Out of the office? No problem. Just click the button when your weekly match arrives.
+            </p>
+        </div>
+
+        <button class="primary-button" href="#" onclick="SwapDivsWithClick('matchesDiv', 'introDiv')">
+            <p class="primary-button-content">
+                Back
+            </p>
+        </button>
+    </div>
 </body>
 </html>
