@@ -7,12 +7,15 @@
     color: #252424;
     letter-spacing: 0; 
     line-height: 24px;
+    margin: 0;
 }
 
 .regular-content {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 12px;
     color: #000000;
+    margin: 0;
+    padding-top: 6px;
 }
 
 .primary-button {
