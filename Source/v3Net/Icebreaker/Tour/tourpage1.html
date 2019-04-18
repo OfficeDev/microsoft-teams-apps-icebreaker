@@ -3,13 +3,41 @@
 <head>
     <meta charset="utf-8" />
     <title>Icebreaker Tour</title>
-    
-    <link rel="stylesheet" type="text/css" href="custom.css">
+
+    <link rel="stylesheet" type="text/css" id="themeCSS">
+    <script src="MicrosoftTeams.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            microsoftTeams.initialize();
+
+            microsoftTeams.getContext(function (context) {
+                setTheme(context.theme);
+            });
+
+            // Setup theme refs from the local directory
+            var themedStyles = [];
+            themedStyles.push("custom-default.css");
+            themedStyles.push("custom-darkTheme.css");
+            themedStyles.push("custom-highContrast.css");
+
+            var setTheme = function (theme) {
+                if (theme === "default")
+                    document.getElementById("themeCSS").setAttribute("href", themedStyles[0]);
+                else if (theme === "contrast")
+                    document.getElementById("themeCSS").setAttribute("href", themedStyles[2]);
+                else if (theme === "dark")
+                    document.getElementById("themeCSS").setAttribute("href", themedStyles[1]);
+            };
+            microsoftTeams.registerOnThemeChangeHandler(setTheme);
+        });
+    </script>
 </head>
 <body>
     <!--Image placeholder-->
     <svg height="243px" width="536px">
-        <rect style="fill:rgb(223,224,228);stroke-width:1;stroke:rgb(255,255,255);align-content:center" height="243px" width="536px"/>
+        <rect style="fill:rgb(223,224,228);stroke-width:1;stroke:rgb(255,255,255);align-content:center" height="243px" width="536px" />
     </svg>
 
     <br />
@@ -23,7 +51,7 @@
     </div>
 
     <button class="primary-button">
-        <p>Next</p>
+        <p class="primary-button-content">Next</p>
     </button>
 </body>
 </html>

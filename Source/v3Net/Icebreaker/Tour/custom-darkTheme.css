@@ -4,7 +4,7 @@
     font-family: 'Segoe UI';
     font-weight: bold;
     font-size: 18px;
-    color: #252424;
+    color: #FFFFFF;
     letter-spacing: 0; 
     line-height: 24px;
 }
@@ -12,7 +12,7 @@
 .regular-content {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 12px;
-    color: #000000;
+    color: #FFFFFF;
 }
 
 .primary-button {
@@ -21,4 +21,11 @@
     border-radius: 2px;
     height: 32px;
     width: 90px;
+    margin-top: 100px;
+    margin-left: 478px;
+}
+
+.primary-button-content{
+    color: #FFFFFF;
+    margin: 0;
 }
