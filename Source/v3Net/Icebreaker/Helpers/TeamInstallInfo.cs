@@ -15,10 +15,15 @@ namespace Icebreaker.Helpers
     public class TeamInstallInfo : Document
     {
         /// <summary>
-        /// Gets or sets the team id
+        /// Gets or sets the team id.
+        /// This is also the <see cref="Resource.Id"/>.
         /// </summary>
-        [JsonProperty("teamId")]
-        public string TeamId { get; set; }
+        [JsonIgnore]
+        public string TeamId
+        {
+            get { return this.Id; }
+            set { this.Id = value; }
+        }
 
         /// <summary>
         /// Gets or sets the tenant id
