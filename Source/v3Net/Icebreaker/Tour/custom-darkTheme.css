@@ -23,8 +23,8 @@
 }
 
 .primary-button {
-    background: #6264A7;
-    border: 2px solid #6264A7;
+    background: #2d2c2c;
+    border: 2px solid #5558AF;
     border-radius: 2px;
     height: 32px;
     width: 90px;
@@ -34,8 +34,15 @@
     padding-bottom: 32px;
 }
 
+    .primary-button:hover {
+        background-color: #9FA4FE;
+        opacity: 0.75;
+    }
+
 .primary-button-content {
-    color: #FFFFFF;
+    color: #5558AF;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
     font-size: 14px;
     letter-spacing: 0;
     margin: 0;
@@ -45,9 +52,8 @@
 }
 
 .back-button {
-    background: white;
-    border: 2px solid #16233A;
-    color: #16233A;
+    background: #2d2c2c;
+    border: 2px solid #5558AF;
     height: 32px;
     width: 90px;
     margin-top: 56px;
@@ -56,8 +62,15 @@
     padding-bottom: 32px;
 }
 
+    .back-button:hover {
+        background-color: #9FA4FE;
+        opacity: 0.75;
+    }
+
 .back-button-content {
-    color: #000000;
+    color: #5558AF;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
     font-size: 14px;
     letter-spacing: 0;
     margin: 0;

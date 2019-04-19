@@ -34,8 +34,10 @@
     padding-bottom: 32px;
 }
 
-.primary-button-content{
+.primary-button-content {
     color: #FFFFFF;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
     font-size: 14px;
     letter-spacing: 0;
     margin: 0;
@@ -46,8 +48,7 @@
 
 .back-button {
     background: white;
-    border: 2px solid #16233A;
-    color: #16233A;
+    border: 2px solid rgba(22,35,58, 0.36);
     height: 32px;
     width: 90px;
     margin-top: 56px;
@@ -58,6 +59,8 @@
 
 .back-button-content {
     color: #000000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
     font-size: 14px;
     letter-spacing: 0;
     margin: 0;
