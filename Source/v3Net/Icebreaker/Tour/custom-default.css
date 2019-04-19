@@ -9,6 +9,8 @@
     line-height: 24px;
     margin: 0;
     padding-left: 32px;
+    padding-right: 32px;
+    padding-top: 56px;
 }
 
 .regular-content {
@@ -36,12 +38,15 @@
     color: #FFFFFF;
     font-size: 14px;
     letter-spacing: 0;
+    margin: 0;
+    padding-top: 7px;
+    padding-left: 20px;
+    padding-bottom: 5px;
 }
 
 .back-button {
     background: white;
     border: 2px solid #16233A;
-    opacity: 0.14;
     color: #16233A;
     height: 32px;
     width: 90px;
@@ -55,4 +60,8 @@
     color: #000000;
     font-size: 14px;
     letter-spacing: 0;
+    margin: 0;
+    padding-top: 7px;
+    padding-left: 20px;
+    padding-bottom: 5px;
 }
