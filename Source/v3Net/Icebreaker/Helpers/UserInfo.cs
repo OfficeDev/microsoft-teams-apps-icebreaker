@@ -16,16 +16,21 @@ namespace Icebreaker.Helpers
     public class UserInfo : Document
     {
         /// <summary>
+        /// Gets or sets the user's id in Teams (29:xxx).
+        /// This is also the <see cref="Resource.Id"/>.
+        /// </summary>
+        [JsonIgnore]
+        public string UserId
+        {
+            get { return this.Id; }
+            set { this.Id = value; }
+        }
+
+        /// <summary>
         /// Gets or sets the tenant id
         /// </summary>
         [JsonProperty("tenantId")]
         public string TenantId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user's id in Teams (29:xxx)
-        /// </summary>
-        [JsonProperty("userId")]
-        public string UserId { get; set; }
 
         /// <summary>
         /// Gets or sets the service URL
