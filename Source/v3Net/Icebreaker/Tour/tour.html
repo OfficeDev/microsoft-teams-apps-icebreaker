@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <title>Tour</title>
 
-    <link rel="stylesheet" type="text/css" id="themeCSS">
     <script src="MicrosoftTeams-1.4.1.min.js"></script>
     <script src="../Scripts/jquery-3.3.1.min.js"></script>
+    <link href="styles.css" type="text/css" />
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -17,19 +17,13 @@
                 setTheme(context.theme);
             });
 
-            // Setup theme refs from the local directory
-            var themedStyles = [];
-            themedStyles.push("custom-default.css");
-            themedStyles.push("custom-darkTheme.css");
-            themedStyles.push("custom-highContrast.css");
-
             var setTheme = function (theme) {
                 if (theme === "default")
-                    document.getElementById("themeCSS").setAttribute("href", themedStyles[0]);
-                else if (theme === "contrast")
-                    document.getElementById("themeCSS").setAttribute("href", themedStyles[2]);
+                    document.getElementById("themeCSS").className = "theme-default";
                 else if (theme === "dark")
-                    document.getElementById("themeCSS").setAttribute("href", themedStyles[1]);
+                    document.getElementById("themeCSS").className = "theme-dark";
+                else if (theme === "contrast")
+                    document.getElementById("themeCSS").className = "theme-highContrast";
             };
             microsoftTeams.registerOnThemeChangeHandler(setTheme);
         });
@@ -48,8 +42,8 @@
         }
     </script>
 </head>
-<body style="margin: 0;">
-    <div id="introDiv" style="display:block;padding-top:24px;">
+<body id="themeCSS">
+    <div id="introDiv" style="display:block;padding-top:24px">
         <!--Image placeholder-->
         <svg height="243px" width="536px" style="padding-left:32px;padding-right:32px;">
             <rect style="fill:rgb(223,224,228);stroke-width:1;stroke:rgb(255,255,255);align-content:center" height="243px" width="536px" />

@@ -178,10 +178,8 @@
     <Content Include="Scripts\jquery-3.3.1.min.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
-    <Content Include="Tour\custom-highContrast.css" />
-    <Content Include="Tour\custom-darkTheme.css" />
-    <Content Include="Tour\custom-default.css" />
     <Content Include="Tour\MicrosoftTeams-1.4.1.min.js" />
+    <Content Include="Tour\styles.css" />
     <Content Include="Tour\tour.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -217,7 +215,9 @@
     <Content Include="Helpers\AdaptiveCards\WelcomeNewMemberCard.json" />
     <Content Include="Manifest\manifest.json" />
     <Content Include="Connected Services\Application Insights\ConnectedService.json" />
-    <Content Include="ApplicationInsights.config" />
+    <Content Include="ApplicationInsights.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Helpers\AdaptiveCards\WelcomeTeamCard.json" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.3.1.min.map" />

@@ -155,11 +155,9 @@ namespace Icebreaker.Helpers
             // Get team install info
             try
             {
-                var queryOptions = new FeedOptions { MaxItemCount = -1, PartitionKey = new PartitionKey(teamId) };
-                var results = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(this.teamsCollection.SelfLink, queryOptions)
-                    .Where(f => f.TenantId == tenantId && f.TeamId == teamId);
-                var match = results.ToList();
-                return match.FirstOrDefault();
+                var teams = this.GetInstalledTeams();
+                var singleMatch = teams.FirstOrDefault(f => f.Id == teamId && f.TenantId == tenantId);
+                return singleMatch;
             }
             catch (Exception ex)
             {
