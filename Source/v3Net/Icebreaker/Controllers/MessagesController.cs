@@ -168,7 +168,7 @@ namespace Icebreaker
                             if (member.Id == myBotId)
                             {
                                 telemetryClient.TrackTrace($"Bot installed to team {message.Conversation.Id}");
-                                
+
                                 // The following lines are bringing in the installer of the application - which may be a team member
                                 var teamMembers = await connectorClient.Conversations.GetConversationMembersAsync(message.Conversation.Id);
 
@@ -176,14 +176,7 @@ namespace Icebreaker
 
                                 // we were just added to team
                                 await IcebreakerBot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, tenantId, personThatAddedBot);
-                                
-                                // Try to determine the name of the person that installed the app, which is usually the sender of the message (From.Id)
-                                // Note that in some cases we cannot resolve it to a team member, because the app was installed to the team programmatically via Graph
-                                var teamMembers = await connectorClient.Conversations.GetConversationMembersAsync(message.Conversation.Id);
-                                var personThatAddedBot = teamMembers.FirstOrDefault(x => x.Id == message.From.Id)?.Name;
 
-                                await IcebreakerBot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, tenantId, personThatAddedBot);
-                                
                                 await IcebreakerBot.WelcomeTeam(connectorClient, tenantId, message.Conversation.Id, personThatAddedBot);
                             }
                             else
@@ -193,7 +186,7 @@ namespace Icebreaker
                                 // We are extracting the name of the app installer because it may not be a member
                                 // of the team that a user is being added to
                                 var installedTeam = IcebreakerBot.GetInstalledTeam(tenantId, teamsChannelData.Team.Id);
-                                
+
                                 await IcebreakerBot.WelcomeUser(connectorClient, member.Id, tenantId, teamsChannelData.Team.Id, installedTeam.InstallerName);
                             }
                         }

@@ -153,4 +153,7 @@
     <value>Resume matches</value>
     <comment>Button text to resume pairings</comment>
   </data>
+  <data name="WelcomeTourTitle" xml:space="preserve">
+    <value>Tour</value>
+  </data>
 </root>

@@ -149,5 +149,14 @@ namespace Icebreaker.Properties {
                 return ResourceManager.GetString("ResumePairingsButtonText", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tour.
+        /// </summary>
+        internal static string WelcomeTourTitle {
+            get {
+                return ResourceManager.GetString("WelcomeTourTitle", resourceCulture);
+            }
+        }
     }
 }

@@ -173,7 +173,7 @@
     <Content Include="Tour\custom-highContrast.css" />
     <Content Include="Tour\custom-darkTheme.css" />
     <Content Include="Tour\custom-default.css" />
-    <Content Include="Tour\MicrosoftTeams.min.js" />
+    <Content Include="Tour\MicrosoftTeams-1.4.1.min.js" />
     <Content Include="Tour\tour.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
