@@ -28,6 +28,16 @@ namespace Icebreaker
     public class MessagesController : ApiController
     {
         private static TelemetryClient telemetryClient = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
+        private readonly IcebreakerBot bot;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessagesController"/> class.
+        /// </summary>
+        /// <param name="bot">The Icebreaker bot instance</param>
+        public MessagesController(IcebreakerBot bot)
+        {
+            this.bot = bot;
+        }
 
         /// <summary>
         /// POST: api/messages
@@ -71,7 +81,7 @@ namespace Icebreaker
                 if (optOutRequest || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
                 {
                     telemetryClient.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId}");
-                    await IcebreakerBot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
+                    await this.bot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
                     var optInReply = activity.CreateReply();
                     optInReply.Attachments = new List<Attachment>();
@@ -102,7 +112,7 @@ namespace Icebreaker
                         };
 
                     telemetryClient.TrackEvent("UserOptIn", optInEventProps);
-                    await IcebreakerBot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
+                    await this.bot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
                     var optOutReply = activity.CreateReply();
                     optOutReply.Attachments = new List<Attachment>();
@@ -174,15 +184,15 @@ namespace Icebreaker
                                 var teamMembers = await connectorClient.Conversations.GetConversationMembersAsync(message.Conversation.Id);
                                 var personThatAddedBot = teamMembers.FirstOrDefault(x => x.Id == message.From.Id)?.Name;
 
-                                await IcebreakerBot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, tenantId, personThatAddedBot);
-                                await IcebreakerBot.WelcomeTeam(connectorClient, tenantId, message.Conversation.Id, personThatAddedBot);
+                                await this.bot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, tenantId, personThatAddedBot);
+                                await this.bot.WelcomeTeam(connectorClient, tenantId, message.Conversation.Id, personThatAddedBot);
                             }
                             else
                             {
                                 telemetryClient.TrackTrace($"Adding a new member: {member.Id}");
 
-                                var installedTeam = IcebreakerBot.GetInstalledTeam(tenantId, teamsChannelData.Team.Id);
-                                await IcebreakerBot.WelcomeUser(connectorClient, member.Id, tenantId, teamsChannelData.Team.Id, installedTeam.InstallerName);
+                                var installedTeam = await this.bot.GetInstalledTeam(tenantId, teamsChannelData.Team.Id);
+                                await this.bot.WelcomeUser(connectorClient, member.Id, tenantId, teamsChannelData.Team.Id, installedTeam.InstallerName);
                             }
                         }
                     }
@@ -192,7 +202,7 @@ namespace Icebreaker
                         telemetryClient.TrackTrace($"Bot removed from team {message.Conversation.Id}");
 
                         // we were just removed from a team
-                        await IcebreakerBot.SaveRemoveFromTeam(message.ServiceUrl, message.Conversation.Id, tenantId);
+                        await this.bot.SaveRemoveFromTeam(message.ServiceUrl, message.Conversation.Id, tenantId);
                     }
                 }
 

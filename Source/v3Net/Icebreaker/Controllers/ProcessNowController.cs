@@ -16,6 +16,17 @@ namespace Icebreaker.Controllers
     /// </summary>
     public class ProcessNowController : ApiController
     {
+        private readonly IcebreakerBot bot;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProcessNowController"/> class.
+        /// </summary>
+        /// <param name="bot">The Icebreaker bot instance</param>
+        public ProcessNowController(IcebreakerBot bot)
+        {
+            this.bot = bot;
+        }
+
         /// <summary>
         /// Action to process matches
         /// </summary>
@@ -26,7 +37,7 @@ namespace Icebreaker.Controllers
         {
             if (object.Equals(key, CloudConfigurationManager.GetSetting("Key")))
             {
-                HostingEnvironment.QueueBackgroundWorkItem(ct => MakePairs());
+                HostingEnvironment.QueueBackgroundWorkItem(ct => this.MakePairs());
                 return 1;
             }
             else
@@ -35,9 +46,9 @@ namespace Icebreaker.Controllers
             }
         }
 
-        private static async Task<int> MakePairs()
+        private async Task<int> MakePairs()
         {
-            return await IcebreakerBot.MakePairsAndNotify();
+            return await this.bot.MakePairsAndNotify();
         }
     }
 }

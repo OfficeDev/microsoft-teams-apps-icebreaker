@@ -19,125 +19,117 @@ namespace Icebreaker.Helpers
     /// <summary>
     /// Data provider routines
     /// </summary>
-    public static class IcebreakerBotDataProvider
+    public class IcebreakerBotDataProvider
     {
-        private static DocumentClient documentClient;
-        private static Database db;
-        private static DocumentCollection teamsInstalledDocCol;
-        private static DocumentCollection usersOptInStatusDocCol;
+        // Request the minimum throughput by default
+        private const int DefaultRequestThroughput = 400;
+
         private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
 
+        private DocumentClient documentClient;
+        private DocumentCollection teamsCollection;
+        private DocumentCollection usersCollection;
+
         /// <summary>
-        /// Initializes the database
+        /// Initializes a new instance of the <see cref="IcebreakerBotDataProvider"/> class.
         /// </summary>
-        public static void InitDatabase()
+        public IcebreakerBotDataProvider()
         {
-            if (documentClient == null)
+        }
+
+        /// <summary>
+        /// Initializes the database connection.
+        /// </summary>
+        /// <returns>Tracking task</returns>
+        public async Task InitializeAsync()
+        {
+            var endpointUrl = CloudConfigurationManager.GetSetting("CosmosDBEndpointUrl");
+            var primaryKey = CloudConfigurationManager.GetSetting("CosmosDBKey");
+            var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
+            var teamsCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
+            var usersCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
+
+            this.documentClient = new DocumentClient(new Uri(endpointUrl), primaryKey);
+
+            // Create the database if needed
+            Database db = await this.documentClient.CreateDatabaseIfNotExistsAsync(
+                new Database { Id = databaseName },
+                new RequestOptions { OfferThroughput = DefaultRequestThroughput });     // Set the throughput at database level by default
+            if (db != null)
             {
-                var endpointUrl = CloudConfigurationManager.GetSetting("CosmosDBEndpointUrl");
-                var primaryKey = CloudConfigurationManager.GetSetting("CosmosDBKey");
-                var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
+                telemetry.TrackTrace($"Reference to database {db.Id} obtained successfully");
+            }
 
-                var teamsCollection = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
-                var usersCollection = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
-                var dbLink = endpointUrl + databaseName;
+            // Get a reference to the Teams collection, creating it if needed
+            var teamsCollectionDefinition = new DocumentCollection
+            {
+                Id = teamsCollectionName
+            };
+            teamsCollectionDefinition.PartitionKey.Paths.Add("/teamId");
 
-                documentClient = new DocumentClient(new Uri(endpointUrl), primaryKey);
+            this.teamsCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseName), teamsCollectionDefinition);
+            if (this.teamsCollection != null)
+            {
+                telemetry.TrackTrace($"Reference to Teams collection database {this.teamsCollection.Id} obtained successfully");
+            }
 
-                db = documentClient.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseName }).Result;
-                if (db != null)
-                {
-                    telemetry.TrackTrace($"Database: {db.Id} has been successfully created");
-                }
+            // Get a reference to the Users collection, creating it if needed
+            var usersCollectionDefinition = new DocumentCollection
+            {
+                Id = usersCollectionName
+            };
+            usersCollectionDefinition.PartitionKey.Paths.Add("/tenantId");
 
-                DocumentCollection teamsCollectionDef = new DocumentCollection
-                {
-                    Id = teamsCollection
-                };
-                teamsCollectionDef.PartitionKey.Paths.Add("/teamId");
-
-                DocumentCollection usersCollectionDef = new DocumentCollection
-                {
-                    Id = usersCollection
-                };
-                usersCollectionDef.PartitionKey.Paths.Add("/tenantId");
-
-                // Using the .Result syntax as there are synchronous calls being made as opposed to the asynchronous calls
-                teamsInstalledDocCol = documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseName), teamsCollectionDef, new RequestOptions { OfferThroughput = 400 }).Result;
-                usersOptInStatusDocCol = documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseName), usersCollectionDef, new RequestOptions { OfferThroughput = 400 }).Result;
-
-                if (teamsInstalledDocCol != null && usersOptInStatusDocCol != null)
-                {
-                    telemetry.TrackTrace($"Collections: {teamsInstalledDocCol.Id} and {usersOptInStatusDocCol.Id} have been created successfully");
-                }
+            this.usersCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseName), usersCollectionDefinition);
+            if (this.usersCollection != null)
+            {
+                telemetry.TrackTrace($"Reference to Users collection database {this.usersCollection.Id} obtained successfully");
             }
         }
 
         /// <summary>
-        /// Save team installation status to store.
+        /// Updates team installation status in store. If the bot is installed, the info is saved, otherwise info for the team is deleted.
         /// </summary>
         /// <param name="team">The team installation info</param>
         /// <param name="installed">Value that indicates if bot is installed</param>
-        /// <returns>Updated team installation info</returns>
-        public static async Task<TeamInstallInfo> SaveTeamInstallStatus(TeamInstallInfo team, bool installed)
+        /// <returns>Tracking task</returns>
+        public async Task UpdateTeamInstallStatusAsync(TeamInstallInfo team, bool installed)
         {
             telemetry.TrackTrace("Hit the method SaveTeamInstallStatus");
 
-            InitDatabase();
-
-            var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
-            var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
-
             if (installed)
             {
-                var response = await documentClient.UpsertDocumentAsync(
-                UriFactory.CreateDocumentCollectionUri(databaseName, collectionName),
-                team);
+                var response = await this.documentClient.UpsertDocumentAsync(this.teamsCollection.SelfLink, team);
             }
             else
             {
-                // query first
+                var partitionKey = new PartitionKey(team.TeamId);
 
-                // Set some common query options
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
-
-                var lookupQuery = documentClient.CreateDocumentQuery<TeamInstallInfo>(
-                     UriFactory.CreateDocumentCollectionUri(databaseName, collectionName), queryOptions)
-                     .Where(t => t.TeamId == team.TeamId);
+                var lookupQuery = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(
+                    this.teamsCollection.SelfLink, new FeedOptions { MaxItemCount = -1, PartitionKey = partitionKey })
+                    .Where(t => t.TeamId == team.TeamId);
 
                 var match = lookupQuery.ToList();
-
                 if (match.Count > 0)
                 {
-                    var response = documentClient.DeleteDocumentAsync(match.First().SelfLink);
+                    var response = this.documentClient.DeleteDocumentAsync(match.First().SelfLink, new RequestOptions { PartitionKey = partitionKey });
                 }
             }
-
-            return team;
         }
 
         /// <summary>
         /// Get the list of teams to which the app was installed.
         /// </summary>
         /// <returns>List of installed teams</returns>
-        public static List<TeamInstallInfo> GetInstalledTeams()
+        public List<TeamInstallInfo> GetInstalledTeams()
         {
             telemetry.TrackTrace("Hit the method GetInstalledTeams");
-
-            InitDatabase();
-
-            var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
-            var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
-
-            // Set some common query options
-            FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
 
             // Find matching activities
             try
             {
-                var lookupQuery = documentClient.CreateDocumentQuery<TeamInstallInfo>(
-                UriFactory.CreateDocumentCollectionUri(databaseName, collectionName), queryOptions);
-
+                var queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
+                var lookupQuery = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(this.teamsCollection.SelfLink, queryOptions);
                 var match = lookupQuery.ToList();
                 return match;
             }
@@ -145,115 +137,9 @@ namespace Icebreaker.Helpers
             {
                 telemetry.TrackException(ex.InnerException);
 
-                return null;
+                // Return no teams if we hit an error fetching
+                return new List<TeamInstallInfo>();
             }
-        }
-
-        /// <summary>
-        /// Get the opt-in status of the given user
-        /// </summary>
-        /// <param name="tenantId">Tenant id</param>
-        /// <param name="userId">User id</param>
-        /// <returns>User information</returns>
-        public static UserInfo GetUserOptInStatus(string tenantId, string userId)
-        {
-            telemetry.TrackTrace("Hit the GetUserOptInStatus method");
-
-            InitDatabase();
-
-            var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
-            var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
-
-            // Set some common query options
-            FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true, PartitionKey = new PartitionKey("/tenantId") };
-
-            // Find matching activities
-            try
-            {
-                var lookupQuery = documentClient.CreateDocumentQuery<UserInfo>(
-                        UriFactory.CreateDocumentCollectionUri(databaseName, collectionName), queryOptions)
-                        .Where(f => f.TenantId == tenantId && f.UserId == userId);
-
-                var match = lookupQuery.ToList();
-                return match.FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                telemetry.TrackException(ex.InnerException);
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Set the opt-in status of the given user
-        /// </summary>
-        /// <param name="tenantId">Tenant id</param>
-        /// <param name="userId">User id</param>
-        /// <param name="optedIn">User opt-in status</param>
-        /// <param name="serviceUrl">User service URL</param>
-        /// <returns>Updated user information</returns>
-        public static async Task<UserInfo> SetUserOptInStatus(string tenantId, string userId, bool optedIn, string serviceUrl)
-        {
-            telemetry.TrackTrace("Hit the method - SetUserOptInStatus");
-
-            InitDatabase();
-
-            var obj = new UserInfo()
-            {
-                TenantId = tenantId,
-                UserId = userId,
-                OptedIn = optedIn,
-                ServiceUrl = serviceUrl
-            };
-
-            obj = await StoreUserOptInStatus(obj);
-
-            Dictionary<string, string> setUserOptInProps = new Dictionary<string, string>()
-            {
-                { "tenantId", tenantId },
-                { "userId", userId },
-                { "optedIn", optedIn.ToString() },
-                { "serviceUrl", serviceUrl }
-            };
-
-            telemetry.TrackEvent("SetUserOptInStatus", setUserOptInProps);
-
-            return obj;
-        }
-
-        /// <summary>
-        /// Stores the given pairup
-        /// </summary>
-        /// <param name="tenantId">Tenant id</param>
-        /// <param name="user1Id">First user</param>
-        /// <param name="user2Id">Second user</param>
-        /// <returns>Tracking task</returns>
-        public static async Task StorePairup(string tenantId, string user1Id, string user2Id)
-        {
-            InitDatabase();
-
-            var maxPairUpHistory = Convert.ToInt64(CloudConfigurationManager.GetSetting("MaxPairUpHistory"));
-
-            var user1Info = GetUserOptInStatus(tenantId, user1Id);
-            var user2Info = GetUserOptInStatus(tenantId, user2Id);
-
-            user1Info.RecentPairUps.Add(user2Info);
-            if (user1Info.RecentPairUps.Count >= maxPairUpHistory)
-            {
-                user1Info.RecentPairUps.RemoveAt(0);
-            }
-
-            telemetry.TrackTrace($"Having the PairUp stored for - {user1Id} inside of {tenantId}");
-            await StoreUserOptInStatus(user1Info);
-
-            user2Info.RecentPairUps.Add(user1Info);
-            if (user2Info.RecentPairUps.Count >= maxPairUpHistory)
-            {
-                user2Info.RecentPairUps.RemoveAt(0);
-            }
-
-            telemetry.TrackTrace($"Having the PairUp stored for - {user2Id} inside of {tenantId}");
-            await StoreUserOptInStatus(user2Info);
         }
 
         /// <summary>
@@ -262,25 +148,16 @@ namespace Icebreaker.Helpers
         /// <param name="tenantId">The tenant id</param>
         /// <param name="teamId">The team id</param>
         /// <returns>Team that the bot is installed to</returns>
-        public static TeamInstallInfo GetInstalledTeam(string tenantId, string teamId)
+        public TeamInstallInfo GetInstalledTeam(string tenantId, string teamId)
         {
-            telemetry.TrackTrace("Hit the GetInstaller method");
+            telemetry.TrackTrace("Hit the GetInstalledTeam method");
 
-            InitDatabase();
-
-            var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
-            var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
-
-            // Set some common query options
-            FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
-
-            // Find the name of the installer
+            // Get team install info
             try
             {
-                var results = documentClient.CreateDocumentQuery<TeamInstallInfo>(
-                    UriFactory.CreateDocumentCollectionUri(databaseName, collectionName), queryOptions)
+                var queryOptions = new FeedOptions { MaxItemCount = -1, PartitionKey = new PartitionKey(teamId) };
+                var results = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(this.teamsCollection.SelfLink, queryOptions)
                     .Where(f => f.TenantId == tenantId && f.TeamId == teamId);
-
                 var match = results.ToList();
                 return match.FirstOrDefault();
             }
@@ -291,38 +168,103 @@ namespace Icebreaker.Helpers
             }
         }
 
-        private static async Task<UserInfo> StoreUserOptInStatus(UserInfo obj)
+        /// <summary>
+        /// Get the stored information about the given user
+        /// </summary>
+        /// <param name="tenantId">Tenant id</param>
+        /// <param name="userId">User id</param>
+        /// <returns>User information</returns>
+        public UserInfo GetUserInfo(string tenantId, string userId)
         {
-            Dictionary<string, string> propDictionary = new Dictionary<string, string>
+            telemetry.TrackTrace("Hit the GetUserInfo method");
+
+            // Set some common query options
+            FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, PartitionKey = new PartitionKey(tenantId) };
+
+            // Find matching activities
+            try
             {
-                { "optedIn", obj.OptedIn.ToString() },
-                { "userId", obj.UserId },
-                { "tenantId", obj.TenantId }
+                var lookupQuery = this.documentClient.CreateDocumentQuery<UserInfo>(this.usersCollection.SelfLink, queryOptions)
+                    .Where(f => f.TenantId == tenantId && f.UserId == userId);
+                var match = lookupQuery.ToList();
+                return match.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                telemetry.TrackException(ex.InnerException);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Set the user info for the given user
+        /// </summary>
+        /// <param name="tenantId">Tenant id</param>
+        /// <param name="userId">User id</param>
+        /// <param name="optedIn">User opt-in status</param>
+        /// <param name="serviceUrl">User service URL</param>
+        /// <returns>Tracking task</returns>
+        public async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl)
+        {
+            telemetry.TrackTrace("Hit the method - SetUserInfoAsync");
+
+            var obj = new UserInfo()
+            {
+                TenantId = tenantId,
+                UserId = userId,
+                OptedIn = optedIn,
+                ServiceUrl = serviceUrl
             };
 
-            telemetry.TrackEvent("StoreUserOptInStatus", propDictionary);
+            await this.StoreUserInfoAsync(obj);
 
-            InitDatabase();
-
-            var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
-            var collectionName = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
-
-            var existingDoc = GetUserOptInStatus(obj.TenantId, obj.UserId);
-
-            if (existingDoc != null)
+            Dictionary<string, string> setUserOptInProps = new Dictionary<string, string>()
             {
-                // update
-                var response = await documentClient.DeleteDocumentAsync(existingDoc.SelfLink);
-            }
-            else
+                { "tenantId", tenantId },
+                { "userId", userId },
+                { "optedIn", optedIn.ToString() },
+                { "serviceUrl", serviceUrl }
+            };
+
+            telemetry.TrackEvent("SetUserInfoAsync", setUserOptInProps);
+        }
+
+        /// <summary>
+        /// Stores the given pairup
+        /// </summary>
+        /// <param name="tenantId">Tenant id</param>
+        /// <param name="user1Id">First user</param>
+        /// <param name="user2Id">Second user</param>
+        /// <returns>Tracking task</returns>
+        public async Task StorePairupAsync(string tenantId, string user1Id, string user2Id)
+        {
+            var maxPairUpHistory = Convert.ToInt64(CloudConfigurationManager.GetSetting("MaxPairUpHistory"));
+
+            var user1Info = this.GetUserInfo(tenantId, user1Id);
+            var user2Info = this.GetUserInfo(tenantId, user2Id);
+
+            user1Info.RecentPairUps.Add(user2Info);
+            if (user1Info.RecentPairUps.Count >= maxPairUpHistory)
             {
-                // Insert
-                var response = await documentClient.UpsertDocumentAsync(
-                UriFactory.CreateDocumentCollectionUri(databaseName, collectionName),
-                obj);
+                user1Info.RecentPairUps.RemoveAt(0);
             }
 
-            return obj;
+            telemetry.TrackTrace($"Having the PairUp stored for - {user1Id} inside of {tenantId}");
+            await this.StoreUserInfoAsync(user1Info);
+
+            user2Info.RecentPairUps.Add(user1Info);
+            if (user2Info.RecentPairUps.Count >= maxPairUpHistory)
+            {
+                user2Info.RecentPairUps.RemoveAt(0);
+            }
+
+            telemetry.TrackTrace($"Having the PairUp stored for - {user2Id} inside of {tenantId}");
+            await this.StoreUserInfoAsync(user2Info);
+        }
+
+        private async Task StoreUserInfoAsync(UserInfo obj)
+        {
+            await this.documentClient.UpsertDocumentAsync(this.usersCollection.SelfLink, obj);
         }
     }
 }
