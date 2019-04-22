@@ -1,7 +1,6 @@
 ﻿.bold-header {
     align-content: flex-start;
     text-align: left;
-    font-family: 'Segoe UI';
     font-weight: bold;
     font-size: 18px;
     color: #FFFFFF;
@@ -14,7 +13,6 @@
 }
 
 .regular-content {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 12px;
     color: #FFFFFF;
     margin: 0;
@@ -41,7 +39,6 @@
 
 .primary-button-content {
     color: #5558AF;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: 600;
     font-size: 14px;
     letter-spacing: 0;
@@ -69,7 +66,6 @@
 
 .back-button-content {
     color: #5558AF;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: 600;
     font-size: 14px;
     letter-spacing: 0;

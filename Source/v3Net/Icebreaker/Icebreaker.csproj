@@ -173,6 +173,11 @@
     <Content Include="Global.asax" />
     <Content Include="Manifest\color.png" />
     <Content Include="Manifest\outline.png" />
+    <None Include="Scripts\jquery-3.3.1.intellisense.js" />
+    <Content Include="Scripts\jquery-3.3.1.js" />
+    <Content Include="Scripts\jquery-3.3.1.min.js" />
+    <Content Include="Scripts\jquery-3.3.1.slim.js" />
+    <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
     <Content Include="Tour\custom-highContrast.css" />
     <Content Include="Tour\custom-darkTheme.css" />
     <Content Include="Tour\custom-default.css" />
@@ -214,6 +219,8 @@
     <Content Include="Connected Services\Application Insights\ConnectedService.json" />
     <Content Include="ApplicationInsights.config" />
     <Content Include="Helpers\AdaptiveCards\WelcomeTeamCard.json" />
+    <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
+    <Content Include="Scripts\jquery-3.3.1.min.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
