@@ -179,6 +179,7 @@
     <Content Include="Scripts\jquery-3.3.1.slim.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
     <Content Include="Tour\MicrosoftTeams-1.4.1.min.js" />
+    <Content Include="Tour\SfbFreWelcomeDialog.png" />
     <Content Include="Tour\styles.css" />
     <Content Include="Tour\tour.html" />
     <Content Include="Web.config">
