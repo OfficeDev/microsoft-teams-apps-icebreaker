@@ -14,22 +14,17 @@
 }
 
 /*Dark Theme rules*/
-body.theme-dark {
-    color: #FFFFFF;
-}
-
 .theme-dark .bold-header {
-    align-content: flex-start;
     text-align: left;
     font-weight: bold;
     font-size: 18px;
     color: #FFFFFF;
-    letter-spacing: 0;
+    letter-spacing: normal;
     line-height: 24px;
     margin: 0;
     padding-left: 32px;
     padding-right: 32px;
-    padding-top: 56px;
+    padding-top: 6px;
 }
 
 .theme-dark .regular-content {
@@ -43,17 +38,17 @@ body.theme-dark {
 .theme-dark .primary-button {
     background: #2d2c2c;
     border: 2px solid #5558AF;
+    font-weight: 600;
     border-radius: 2px;
     height: 32px;
     width: 90px;
-    margin-top: 56px;
-    margin-left: 478px;
-    padding-right: 32px;
-    padding-bottom: 32px;
+    margin: 67px 32px 32px 478px;
+    padding: 0px 32px 32px 0;
 }
 
     .theme-dark .primary-button:hover {
         background-color: #9FA4FE;
+        font-weight: 600;
         opacity: 0.75;
     }
 
@@ -61,26 +56,28 @@ body.theme-dark {
     color: #5558AF;
     font-weight: 600;
     font-size: 14px;
-    letter-spacing: 0;
+    width: 50px;
+    height: 20px;
+    letter-spacing: normal;
     margin: 0;
-    padding-top: 7px;
-    padding-left: 20px;
-    padding-bottom: 5px;
+    padding: 7.5px 20px 7.5px 15px;
+    text-align: center;
 }
 
 .theme-dark .back-button {
     background: #2d2c2c;
     border: 2px solid #5558AF;
+    font-weight: 600;
+    border-radius: 2px;
     height: 32px;
     width: 90px;
-    margin-top: 56px;
-    margin-left: 478px;
-    padding-right: 32px;
-    padding-bottom: 32px;
+    margin: 67px 32px 32px 478px;
+    padding: 0px 32px 32px 0;
 }
 
     .theme-dark .back-button:hover {
         background-color: #9FA4FE;
+        font-weight: 600;
         opacity: 0.75;
     }
 
@@ -88,11 +85,12 @@ body.theme-dark {
     color: #5558AF;
     font-weight: 600;
     font-size: 14px;
-    letter-spacing: 0;
+    width: 50px;
+    height: 20px;
+    letter-spacing: normal;
     margin: 0;
-    padding-top: 7px;
-    padding-left: 20px;
-    padding-bottom: 5px;
+    padding: 7.5px 20px 7.5px 15px;
+    text-align: center;
 }
 
 body.theme-default {
@@ -103,19 +101,22 @@ body.theme-highContrast {
     color: #FFFFFF;
 }
 
-/*Default Theme rulese*/
+body.theme-dark {
+    color: #FFFFFF;
+}
+
+/*Default Theme rules*/
 .theme-default .bold-header {
-    align-content: flex-start;
     text-align: left;
     font-weight: bold;
     font-size: 18px;
     color: #252424;
-    letter-spacing: 0;
+    letter-spacing: normal;
     line-height: 24px;
     margin: 0;
     padding-left: 32px;
     padding-right: 32px;
-    padding-top: 56px;
+    padding-top: 6px;
 }
 
 .theme-default .regular-content {
@@ -132,53 +133,50 @@ body.theme-highContrast {
     border-radius: 2px;
     height: 32px;
     width: 90px;
-    margin-top: 56px;
-    margin-left: 478px;
-    padding-right: 32px;
-    padding-bottom: 32px;
+    margin: 67px 32px 32px 478px;
+    padding: 0px 32px 32px 0; 
 }
 
 .theme-default .primary-button-content {
     color: #FFFFFF;
     font-weight: 600;
     font-size: 14px;
-    letter-spacing: 0;
+    width: 50px;
+    height: 20px;
+    letter-spacing: normal;
     margin: 0;
-    padding-top: 7px;
-    padding-left: 20px;
-    padding-bottom: 5px;
+    padding: 7.5px 20px 7.5px 15px;
+    text-align: center;
 }
 
 .theme-default .back-button {
-    background: white;
-    border: 2px solid rgba(22,35,58, 0.36);
+    background: #FFFFFF;
+    border: 2px solid rgb(22,35,58);
     height: 32px;
     width: 90px;
-    margin-top: 56px;
-    margin-left: 478px;
-    padding-right: 32px;
-    padding-bottom: 32px;
+    margin: 67px 32px 32px 478px;
+    padding: 0px 32px 32px 0;
 }
 
 .theme-default .back-button-content {
     color: #000000;
     font-weight: 600;
     font-size: 14px;
-    letter-spacing: 0;
+    width: 50px;
+    height: 20px;
+    letter-spacing: normal;
     margin: 0;
-    padding-top: 7px;
-    padding-left: 20px;
-    padding-bottom: 5px;
+    padding: 7.5px 20px 7.5px 15px;
+    text-align: center;
 }
 
 /*High Contrast Theme rules*/
 .theme-highContrast .bold-header {
-    align-content: flex-start;
     text-align: left;
     font-weight: bold;
     font-size: 18px;
     color: #FFFFFF;
-    letter-spacing: 0;
+    letter-spacing: normal;
     line-height: 24px;
     margin: 0;
     padding-left: 32px;
@@ -198,76 +196,83 @@ body.theme-highContrast {
     background: #000000;
     border: 2px solid #FFFFFF;
     color: #000000;
+    border-radius: 2px;
     height: 32px;
     width: 90px;
-    margin-top: 56px;
-    margin-left: 478px;
-    padding-right: 32px;
-    padding-bottom: 32px;
+    margin: 67px 32px 32px 478px;
+    padding: 0px 32px 32px 0;
 }
 
     .theme-highContrast .primary-button:hover {
         background-color: #FF0;
+        font-weight: 600;
         color: #000000;
     }
 
 .theme-highContrast .primary-button-content {
     color: #FFFFFF;
     font-size: 14px;
-    letter-spacing: 0;
+    font-weight: 600;
+    font-size: 14px;
+    width: 50px;
+    height: 20px;
+    letter-spacing: normal;
     margin: 0;
-    padding-top: 7px;
-    padding-left: 20px;
-    padding-bottom: 5px;
+    padding: 7.5px 20px 7.5px 15px;
+    text-align: center;
 }
 
     .theme-highContrast .primary-button-content:hover {
         color: #000000;
+        font-weight: 600;
+        background-color: #FF0;
     }
 
 .theme-highContrast .back-button {
     background: #000000;
     border: 2px solid #FFFFFF;
     color: #000000;
+    border-radius: 2px;
     height: 32px;
     width: 90px;
-    margin-top: 56px;
-    margin-left: 478px;
-    padding-right: 32px;
-    padding-bottom: 32px;
+    margin: 67px 32px 32px 478px;
+    padding: 0px 32px 32px 0;
 }
 
     .theme-highContrast .back-button:hover {
         background-color: #FF0;
         color: #000000;
+        font-weight: 600;
     }
 
 .theme-highContrast .back-button-content {
     color: #FFFFFF;
+    font-weight: 600;
     font-size: 14px;
-    letter-spacing: 0;
+    width: 50px;
+    height: 20px;
+    letter-spacing: normal;
     margin: 0;
-    padding-top: 7px;
-    padding-left: 20px;
-    padding-bottom: 5px;
+    padding: 7.5px 20px 7.5px 15px;
+    text-align: center;
 }
 
     .theme-highContrast .back-button-content:hover {
         color: #000000;
+        background-color: #FF0;
     }
 
 .theme-highContrast .bold-header {
-    align-content: flex-start;
     text-align: left;
     font-weight: bold;
     font-size: 18px;
     color: #FFFFFF;
-    letter-spacing: 0;
+    letter-spacing: normal;
     line-height: 24px;
     margin: 0;
     padding-left: 32px;
     padding-right: 32px;
-    padding-top: 56px;
+    padding-top: 6px;
 }
 
 .theme-highContrast .regular-content {
@@ -282,12 +287,11 @@ body.theme-highContrast {
     background: #000000;
     border: 2px solid #FFFFFF;
     color: #000000;
+    border-radius: 2px;
     height: 32px;
     width: 90px;
-    margin-top: 56px;
-    margin-left: 478px;
-    padding-right: 32px;
-    padding-bottom: 32px;
+    margin: 67px 32px 32px 478px;
+    padding: 0px 32px 32px 0;
 }
 
     .theme-highContrast .primary-button:hover {
@@ -313,12 +317,11 @@ body.theme-highContrast {
     background: #000000;
     border: 2px solid #FFFFFF;
     color: #000000;
+    border-radius: 2px;
     height: 32px;
     width: 90px;
-    margin-top: 56px;
-    margin-left: 478px;
-    padding-right: 32px;
-    padding-bottom: 32px;
+    margin: 67px 32px 32px 478px;
+    padding: 0px 32px 32px 0;
 }
 
     .theme-highContrast .back-button:hover {
