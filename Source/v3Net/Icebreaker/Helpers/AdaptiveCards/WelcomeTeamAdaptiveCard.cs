@@ -42,7 +42,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
             var tourTitle = Resources.WelcomeTourTitle;
             var appId = CloudConfigurationManager.GetSetting("AppId");
 
-            var tourUrl = $"https://teams.microsoft.com/l/task/" + appId + $"?url={htmlUrl}&" + $"height=500px&width=610px&title={tourTitle}";
+            var tourUrl = $"https://teams.microsoft.com/l/task/" + appId + $"?url={htmlUrl}&" + $"height=600px&width=600px&title={tourTitle}";
 
             var variablesToValues = new Dictionary<string, string>()
             {
