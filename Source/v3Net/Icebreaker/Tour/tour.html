@@ -33,55 +33,59 @@
             d2 = document.getElementById(div2);
             if (d2.style.display == "none") {
                 d1.style.display = "none";
-                d2.style.display = "block";
+                d2.style.display = "flex";
             }
             else {
-                d1.style.display = "block";
+                d1.style.display = "flex";
                 d2.style.display = "none";
             }
         }
     </script>
 </head>
-<body id="themeCSS" class="theme-dark" style="margin: 0; height:100%; width:100%;">
-    <div id="introDiv" style="flex-direction: column;">
+<body id="themeCSS" class="theme-default" style="margin: 0; height:100%; width:100%;">
+    <div id="introDiv" style="display:flex; flex-direction: column; flex-wrap: nowrap; padding: 0px 32px 32px 32px">
         <!--Image placeholder-->
-        <img src="SfbFreWelcomeDialog.png" alt="Welcome image" style="align-content: center; margin: 0; padding-left: 100px; padding-top: 21px;"/>
+        <div style="text-align:center;">
+            <img src="SfbFreWelcomeDialog.png" alt="Welcome image" style="padding-top:21px;" />
+        </div>
 
-        <br />
+        <div style="height:36px; width:536px; display:flex; flex-direction:column; flex: 1 auto;">
+            <p class="bold-header">Make new friends and build community with them</p>
 
-        <p class="bold-header">Make new friends and build community with them</p>
-
-        <div style="height:36px; width:491px">
-            <p class="regular-content" style="flex: 0 1 auto;">
+            <p class="regular-content">
                 Every week, I'll pair you with someone new. If you have the inclination that week, you can meet up--grab a lunch, or a call if you're in different locations. Look out for another message in which I'll pair you with your first match.
             </p>
         </div>
 
-        <button class="primary-button" href="#" onclick="SwapDivsWithClick('introDiv', 'matchesDiv')">
-            <p class="primary-button-content">
-                Next
-            </p>
-        </button>
+        <div style="display:flex; flex-direction: row-reverse">
+            <button class="primary-button" href="#" onclick="SwapDivsWithClick('introDiv', 'matchesDiv')">
+                <p class="primary-button-content">
+                    Next
+                </p>
+            </button>
+        </div>
     </div>
-    <div id="matchesDiv" style="flex-direction:column;">
+    <div id="matchesDiv" style="display:none; flex-direction: column; flex-wrap: nowrap; padding: 0px 32px 32px 32px">
         <!--Image placeholder-->
-        <img src="SfbFreWelcomeDialog.png" alt="Welcome image" style="align-content: center; margin: 0; padding-left: 100px; padding-top: 21px;" />
+        <div style="text-align:center;">
+            <img src="SfbFreWelcomeDialog.png" alt="Welcome image" style="padding-top:21px;" />
+        </div>
 
-        <br />
+        <div style="height:36px; width:536px; display:flex; flex-direction:column; flex: 1 auto;">
+            <p class="bold-header">Easily pause matches as needed</p>
 
-        <p class="bold-header">Easily pause matches as needed</p>
-
-        <div style="height:36px; width:491px">
-            <p class="regular-content" style="flex: 0 1 auto; flex-direction: row;">
+            <p class="regular-content">
                 Pause matches whenever you need. Too busy that week? Out of the office? No problem. Just click the button when your weekly match arrives.
             </p>
         </div>
 
-        <button class="back-button" href="#" onclick="SwapDivsWithClick('matchesDiv', 'introDiv')">
-            <p class="back-button-content">
-                Back
-            </p>
-        </button>
+        <div style="display:flex; flex-direction: row-reverse">
+            <button class="primary-button" href="#" onclick="SwapDivsWithClick('matchesDiv', 'introDiv')">
+                <p class="primary-button-content">
+                    Done
+                </p>
+            </button>
+        </div>
     </div>
 </body>
 </html>

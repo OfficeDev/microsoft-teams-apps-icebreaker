@@ -22,9 +22,7 @@
     letter-spacing: normal;
     line-height: 24px;
     margin: 0;
-    padding-left: 32px;
-    padding-right: 32px;
-    padding-top: 6px;
+    padding-top: 32px;
 }
 
 .theme-dark .regular-content {
@@ -32,64 +30,34 @@
     color: #FFFFFF;
     margin: 0;
     padding-top: 6px;
-    padding-left: 32px;
 }
 
 .theme-dark .primary-button {
     background: #2d2c2c;
     border: 2px solid #5558AF;
-    font-weight: 600;
     border-radius: 2px;
     height: 32px;
-    width: 90px;
-    margin: 67px 32px 32px 478px;
-    padding: 0px 32px 32px 0;
+    min-width: 90px;
+    margin: 136px 32px 32px 478px;
 }
 
     .theme-dark .primary-button:hover {
-        background-color: #9FA4FE;
-        font-weight: 600;
-        opacity: 0.75;
+        background: rgba(255,255,255,0.10);
+    }
+
+    .theme-dark .primary-button:active {
+        background: rgba(255,255,255,0.20);
     }
 
 .theme-dark .primary-button-content {
-    color: #5558AF;
-    font-weight: 600;
+    color: #FFFFFF;
+    font-weight: 500;
     font-size: 14px;
-    width: 50px;
-    height: 20px;
     letter-spacing: normal;
     margin: 0;
-    padding: 7.5px 20px 7.5px 15px;
-    text-align: center;
-}
-
-.theme-dark .back-button {
-    background: #2d2c2c;
-    border: 2px solid #5558AF;
-    font-weight: 600;
-    border-radius: 2px;
-    height: 32px;
-    width: 90px;
-    margin: 67px 32px 32px 478px;
-    padding: 0px 32px 32px 0;
-}
-
-    .theme-dark .back-button:hover {
-        background-color: #9FA4FE;
-        font-weight: 600;
-        opacity: 0.75;
-    }
-
-.theme-dark .back-button-content {
-    color: #5558AF;
-    font-weight: 600;
-    font-size: 14px;
     width: 50px;
     height: 20px;
-    letter-spacing: normal;
-    margin: 0;
-    padding: 7.5px 20px 7.5px 15px;
+    padding: 5px 20px 7px 15px;
     text-align: center;
 }
 
@@ -114,9 +82,7 @@ body.theme-dark {
     letter-spacing: normal;
     line-height: 24px;
     margin: 0;
-    padding-left: 32px;
-    padding-right: 32px;
-    padding-top: 6px;
+    padding-top: 32px;
 }
 
 .theme-default .regular-content {
@@ -124,7 +90,6 @@ body.theme-dark {
     color: #000000;
     margin: 0;
     padding-top: 6px;
-    padding-left: 32px;
 }
 
 .theme-default .primary-button {
@@ -132,41 +97,27 @@ body.theme-dark {
     border: 2px solid #6264A7;
     border-radius: 2px;
     height: 32px;
-    width: 90px;
-    margin: 67px 32px 32px 478px;
-    padding: 0px 32px 32px 0; 
+    min-width: 90px;
+    margin: 136px 32px 32px 478px;
 }
+
+    .theme-default .primary-button:hover {
+        background: #8B8CC7;
+    }
+
+    .theme-default .primary-button:active {
+        background: #464775;
+    }
 
 .theme-default .primary-button-content {
     color: #FFFFFF;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 14px;
-    width: 50px;
-    height: 20px;
     letter-spacing: normal;
     margin: 0;
-    padding: 7.5px 20px 7.5px 15px;
-    text-align: center;
-}
-
-.theme-default .back-button {
-    background: #FFFFFF;
-    border: 2px solid rgb(22,35,58);
-    height: 32px;
-    width: 90px;
-    margin: 67px 32px 32px 478px;
-    padding: 0px 32px 32px 0;
-}
-
-.theme-default .back-button-content {
-    color: #000000;
-    font-weight: 600;
-    font-size: 14px;
     width: 50px;
     height: 20px;
-    letter-spacing: normal;
-    margin: 0;
-    padding: 7.5px 20px 7.5px 15px;
+    padding: 5px 20px 7px 15px;
     text-align: center;
 }
 
@@ -179,9 +130,7 @@ body.theme-dark {
     letter-spacing: normal;
     line-height: 24px;
     margin: 0;
-    padding-left: 32px;
-    padding-right: 32px;
-    padding-top: 56px;
+    padding-top: 32px;
 }
 
 .theme-highContrast .regular-content {
@@ -189,7 +138,6 @@ body.theme-dark {
     color: #FFFFFF;
     margin: 0;
     padding-top: 6px;
-    padding-left: 32px;
 }
 
 .theme-highContrast .primary-button {
@@ -198,147 +146,31 @@ body.theme-dark {
     color: #000000;
     border-radius: 2px;
     height: 32px;
-    width: 90px;
-    margin: 67px 32px 32px 478px;
-    padding: 0px 32px 32px 0;
+    min-width: 90px;
+    margin: 136px 32px 32px 478px;
 }
 
     .theme-highContrast .primary-button:hover {
         background-color: #FF0;
-        font-weight: 600;
+        font-weight: 500;
         color: #000000;
     }
 
 .theme-highContrast .primary-button-content {
     color: #FFFFFF;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 14px;
-    width: 50px;
-    height: 20px;
     letter-spacing: normal;
     margin: 0;
-    padding: 7.5px 20px 7.5px 15px;
+    width: 50px;
+    height: 20px;
+    padding: 5px 20px 7px 15px;
     text-align: center;
 }
 
     .theme-highContrast .primary-button-content:hover {
         color: #000000;
-        font-weight: 600;
+        font-weight: 500;
         background-color: #FF0;
-    }
-
-.theme-highContrast .back-button {
-    background: #000000;
-    border: 2px solid #FFFFFF;
-    color: #000000;
-    border-radius: 2px;
-    height: 32px;
-    width: 90px;
-    margin: 67px 32px 32px 478px;
-    padding: 0px 32px 32px 0;
-}
-
-    .theme-highContrast .back-button:hover {
-        background-color: #FF0;
-        color: #000000;
-        font-weight: 600;
-    }
-
-.theme-highContrast .back-button-content {
-    color: #FFFFFF;
-    font-weight: 600;
-    font-size: 14px;
-    width: 50px;
-    height: 20px;
-    letter-spacing: normal;
-    margin: 0;
-    padding: 7.5px 20px 7.5px 15px;
-    text-align: center;
-}
-
-    .theme-highContrast .back-button-content:hover {
-        color: #000000;
-        background-color: #FF0;
-    }
-
-.theme-highContrast .bold-header {
-    text-align: left;
-    font-weight: bold;
-    font-size: 18px;
-    color: #FFFFFF;
-    letter-spacing: normal;
-    line-height: 24px;
-    margin: 0;
-    padding-left: 32px;
-    padding-right: 32px;
-    padding-top: 6px;
-}
-
-.theme-highContrast .regular-content {
-    font-size: 12px;
-    color: #FFFFFF;
-    margin: 0;
-    padding-top: 6px;
-    padding-left: 32px;
-}
-
-.theme-highContrast .primary-button {
-    background: #000000;
-    border: 2px solid #FFFFFF;
-    color: #000000;
-    border-radius: 2px;
-    height: 32px;
-    width: 90px;
-    margin: 67px 32px 32px 478px;
-    padding: 0px 32px 32px 0;
-}
-
-    .theme-highContrast .primary-button:hover {
-        background-color: #FF0;
-        color: #000000;
-    }
-
-.theme-highContrast .primary-button-content {
-    color: #FFFFFF;
-    font-size: 14px;
-    letter-spacing: 0;
-    margin: 0;
-    padding-top: 7px;
-    padding-left: 20px;
-    padding-bottom: 5px;
-}
-
-    .theme-highContrast .primary-button-content:hover {
-        color: #000000;
-    }
-
-.theme-highContrast .back-button {
-    background: #000000;
-    border: 2px solid #FFFFFF;
-    color: #000000;
-    border-radius: 2px;
-    height: 32px;
-    width: 90px;
-    margin: 67px 32px 32px 478px;
-    padding: 0px 32px 32px 0;
-}
-
-    .theme-highContrast .back-button:hover {
-        background-color: #FF0;
-        color: #000000;
-    }
-
-.theme-highContrast .back-button-content {
-    color: #FFFFFF;
-    font-size: 14px;
-    letter-spacing: 0;
-    margin: 0;
-    padding-top: 7px;
-    padding-left: 20px;
-    padding-bottom: 5px;
-}
-
-    .theme-highContrast .back-button-content:hover {
-        color: #000000;
     }
