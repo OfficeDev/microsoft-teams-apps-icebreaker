@@ -40,6 +40,10 @@
                 d2.style.display = "none";
             }
         }
+
+        function CloseWindow() {
+            microsoftTeams.tasks.submitTask(null); 
+        }
     </script>
 </head>
 <body id="themeCSS" class="theme-default" style="margin: 0; height:100%; width:100%;">
@@ -80,7 +84,7 @@
         </div>
 
         <div style="display:flex; flex-direction: row-reverse">
-            <button class="primary-button" href="#" onclick="SwapDivsWithClick('matchesDiv', 'introDiv')">
+            <button class="primary-button" href="#" onclick="CloseWindow()">
                 <p class="primary-button-content">
                     Done
                 </p>

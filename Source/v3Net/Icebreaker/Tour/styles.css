@@ -58,14 +58,15 @@
 
 .theme-dark .primary-button-content {
     color: #201F1F;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 14px;
     letter-spacing: normal;
     margin: 0;
     width: 50px;
     height: 20px;
-    padding: 5px 20px 7px 10px;
+    padding: 5px 20px 7px 15px;
     text-align: center;
+    font-family: 'Segoe UI Semibold', 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
 }
 
 body.theme-default {
@@ -126,14 +127,15 @@ body.theme-dark {
 
 .theme-default .primary-button-content {
     color: #FFFFFF;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 14px;
     letter-spacing: normal;
     margin: 0;
     width: 50px;
     height: 20px;
-    padding: 5px 20px 7px 10px;
+    padding: 5px 20px 7px 15px;
     text-align: center;
+    font-family: 'Segoe UI Semibold', 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
 }
 
 /*High Contrast Theme rules*/
@@ -183,12 +185,13 @@ body.theme-dark {
 .theme-highContrast .primary-button-content {
     color: #000000;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 14px;
     letter-spacing: normal;
     margin: 0;
     width: 50px;
     height: 20px;
-    padding: 5px 20px 7px 10px;
+    padding: 5px 20px 7px 15px;
     text-align: center;
+    font-family: 'Segoe UI Semibold', 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
 }
