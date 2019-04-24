@@ -30,34 +30,41 @@
     color: #FFFFFF;
     margin: 0;
     padding-top: 6px;
+    height: 36px;
 }
 
 .theme-dark .primary-button {
-    background: #2d2c2c;
+    background: #6264A7;
     border: 2px solid #5558AF;
     border-radius: 2px;
     height: 32px;
-    min-width: 90px;
-    margin: 136px 32px 32px 478px;
+    min-width: 96px;
+    margin: 160px 0px 0px 478px;
 }
 
     .theme-dark .primary-button:hover {
-        background: rgba(255,255,255,0.10);
+        background-color: #BDBDE6;
+        color: #201F1F;
+        border-color: transparent;
     }
 
-    .theme-dark .primary-button:active {
-        background: rgba(255,255,255,0.20);
+    .theme-dark .primary-button:active:focus {
+        background: #6264A7;
+        border-color: transparent;
+        color: #201F1F;
+        outline: 0.125rem solid #201F1F;
+        outline-offset: -0.25rem
     }
 
 .theme-dark .primary-button-content {
-    color: #FFFFFF;
+    color: #201F1F;
     font-weight: 500;
     font-size: 14px;
     letter-spacing: normal;
     margin: 0;
     width: 50px;
     height: 20px;
-    padding: 5px 20px 7px 15px;
+    padding: 5px 20px 7px 10px;
     text-align: center;
 }
 
@@ -90,23 +97,31 @@ body.theme-dark {
     color: #000000;
     margin: 0;
     padding-top: 6px;
+    height: 36px;
 }
 
 .theme-default .primary-button {
     background: #6264A7;
-    border: 2px solid #6264A7;
-    border-radius: 2px;
+    border: 0.125rem solid;
+    border-color: transparent;
+    border-radius: 0.1875rem;
     height: 32px;
-    min-width: 90px;
-    margin: 136px 32px 32px 478px;
+    min-width: 96px;
+    margin: 160px 0px 0px 478px;
 }
 
     .theme-default .primary-button:hover {
-        background: #8B8CC7;
+        background: #464775;
+        border-color: transparent;
+        color: #FFFFFF
     }
 
-    .theme-default .primary-button:active {
+    .theme-default .primary-button:active:focus {
         background: #464775;
+        border-color: transparent;
+        color: #FFFFFF;
+        outline: 0.125rem solid #FFFFFF;
+        outline-offset: -0.25rem
     }
 
 .theme-default .primary-button-content {
@@ -117,7 +132,7 @@ body.theme-dark {
     margin: 0;
     width: 50px;
     height: 20px;
-    padding: 5px 20px 7px 15px;
+    padding: 5px 20px 7px 10px;
     text-align: center;
 }
 
@@ -138,26 +153,35 @@ body.theme-dark {
     color: #FFFFFF;
     margin: 0;
     padding-top: 6px;
+    height: 36px;
 }
 
 .theme-highContrast .primary-button {
-    background: #000000;
-    border: 2px solid #FFFFFF;
-    color: #000000;
-    border-radius: 2px;
+    background: #FFFFFF;
+    border: 0.125rem solid;
+    border-color: transparent;
+    border-radius: 0.1875rem;
     height: 32px;
     min-width: 90px;
-    margin: 136px 32px 32px 478px;
+    margin: 160px 0px 0px 478px;
 }
 
     .theme-highContrast .primary-button:hover {
-        background-color: #FF0;
-        font-weight: 500;
+        background: #FFFF00;
+        border-color: transparent;
+        color: #000000
+    }
+
+    .theme-highContrast .primary-button:active:focus {
+        background: #FFFF00;
+        border-color: transparent;
         color: #000000;
+        outline: 0.125rem solid transparent;
+        outline-offset: -0.25rem
     }
 
 .theme-highContrast .primary-button-content {
-    color: #FFFFFF;
+    color: #000000;
     font-size: 14px;
     font-weight: 500;
     font-size: 14px;
@@ -165,12 +189,6 @@ body.theme-dark {
     margin: 0;
     width: 50px;
     height: 20px;
-    padding: 5px 20px 7px 15px;
+    padding: 5px 20px 7px 10px;
     text-align: center;
 }
-
-    .theme-highContrast .primary-button-content:hover {
-        color: #000000;
-        font-weight: 500;
-        background-color: #FF0;
-    }
