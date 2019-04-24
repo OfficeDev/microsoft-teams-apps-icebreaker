@@ -39,7 +39,7 @@
     border-radius: 2px;
     height: 32px;
     min-width: 96px;
-    margin: 160px 0px 0px 478px;
+    margin: 90px 0px 0px 478px;
     color: #201F1F;
 }
 
@@ -96,7 +96,7 @@ body.theme-dark {
     border-radius: 0.1875rem;
     height: 32px;
     min-width: 96px;
-    margin: 160px 0px 0px 478px;
+    margin: 90px 0px 0px 478px;
     color: #FFFFFF;
 }
 
@@ -141,7 +141,7 @@ body.theme-dark {
     border-radius: 0.1875rem;
     height: 32px;
     min-width: 90px;
-    margin: 160px 0px 0px 478px;
+    margin: 90px 0px 0px 478px;
     color: #000000;
 }
 
