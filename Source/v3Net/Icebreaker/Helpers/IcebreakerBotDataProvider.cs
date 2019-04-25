@@ -11,7 +11,6 @@ namespace Icebreaker.Helpers
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
-    using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.Azure;
     using Microsoft.Azure.Documents;
     using Microsoft.Azure.Documents.Client;

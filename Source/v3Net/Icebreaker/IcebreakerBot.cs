@@ -13,7 +13,6 @@ namespace Icebreaker
     using Helpers;
     using Helpers.AdaptiveCards;
     using Microsoft.ApplicationInsights;
-    using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.Azure;
     using Microsoft.Bot.Connector;
     using Microsoft.Bot.Connector.Teams;
@@ -26,6 +25,10 @@ namespace Icebreaker
     {
         private readonly Task<IcebreakerBotDataProvider> dataProviderFactoryTask;
         private readonly TelemetryClient telemetryClient;
+        private readonly int maxPairUpsPerTeam;
+        private readonly string botDisplayName;
+        private readonly string botId;
+        private readonly bool isTesting;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBot"/> class.
@@ -36,6 +39,10 @@ namespace Icebreaker
         {
             this.dataProviderFactoryTask = dataProviderFactoryTask;
             this.telemetryClient = telemetryClient;
+            this.maxPairUpsPerTeam = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"));
+            this.botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
+            this.botId = CloudConfigurationManager.GetSetting("MicrosoftAppId");
+            this.isTesting = Convert.ToBoolean(CloudConfigurationManager.GetSetting("Testing"));
         }
 
         /// <summary>
@@ -60,11 +67,10 @@ namespace Icebreaker
             var teams = dataProvider.GetInstalledTeams();
 
             var countPairsNotified = 0;
-            var maxPairUpsPerTeam = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"));
 
             this.telemetryClient.TrackTrace($"Retrieved {teams.Count} teams");
 
-            this.telemetryClient.TrackTrace($"{maxPairUpsPerTeam} pairs maximum");
+            this.telemetryClient.TrackTrace($"{this.maxPairUpsPerTeam} pairs maximum");
 
             foreach (var team in teams)
             {
@@ -78,7 +84,7 @@ namespace Icebreaker
 
                     this.telemetryClient.TrackTrace($"Trying to pair members of {teamName} at: " + DateTime.Now.ToString());
 
-                    foreach (var pair in this.MakePairs(optedInUsers).Take(maxPairUpsPerTeam))
+                    foreach (var pair in this.MakePairs(optedInUsers).Take(this.maxPairUpsPerTeam))
                     {
                         await this.NotifyPair(connectorClient, team.TenantId, teamName, pair);
 
@@ -123,8 +129,6 @@ namespace Icebreaker
 
             var allMembers = await this.GetTeamMembers(connectorClient, teamId, tenantId);
 
-            var botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
-
             ChannelAccount userThatJustJoined = null;
 
             foreach (var m in allMembers)
@@ -139,7 +143,7 @@ namespace Icebreaker
             if (userThatJustJoined != null)
             {
                 this.telemetryClient.TrackTrace($"A new user just joined - {userThatJustJoined.AsTeamsChannelAccount().ObjectId}, {userThatJustJoined.AsTeamsChannelAccount().GivenName}");
-                var welcomeMessageCard = WelcomeNewMemberCard.GetCard(teamName, userThatJustJoined.Name, botDisplayName, botInstaller);
+                var welcomeMessageCard = WelcomeNewMemberCard.GetCard(teamName, userThatJustJoined.Name, this.botDisplayName, botInstaller);
                 await this.NotifyUser(connectorClient, welcomeMessageCard, userThatJustJoined, tenantId);
             }
         }
@@ -158,9 +162,7 @@ namespace Icebreaker
 
             var teamName = await this.GetTeamNameAsync(connectorClient, teamId);
 
-            var botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
-
-            var welcomeTeamMessageCard = WelcomeTeamAdaptiveCard.GetCard(teamName, botDisplayName, botInstaller);
+            var welcomeTeamMessageCard = WelcomeTeamAdaptiveCard.GetCard(teamName, this.botDisplayName, botInstaller);
 
             await this.NotifyTeam(connectorClient, welcomeTeamMessageCard, teamId);
         }
@@ -244,16 +246,15 @@ namespace Icebreaker
         private async Task NotifyPair(ConnectorClient connectorClient, string tenantId, string teamName, Tuple<ChannelAccount, ChannelAccount> pair)
         {
             this.telemetryClient.TrackTrace("Hit the NotifyPair method");
-            var displayName = CloudConfigurationManager.GetSetting("BotDisplayName");
 
             var teamsPerson1 = pair.Item1.AsTeamsChannelAccount();
             var teamsPerson2 = pair.Item2.AsTeamsChannelAccount();
 
             // Fill in person1's info in the card for person2
-            var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson1.Name, teamsPerson2.Name, teamsPerson1.GivenName, teamsPerson2.GivenName, teamsPerson2.GivenName, teamsPerson1.UserPrincipalName, displayName);
+            var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson1.Name, teamsPerson2.Name, teamsPerson1.GivenName, teamsPerson2.GivenName, teamsPerson2.GivenName, teamsPerson1.UserPrincipalName, this.botDisplayName);
 
             // Fill in person2's info in the card for person1
-            var cardForPerson1 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2.Name, teamsPerson1.Name, teamsPerson2.GivenName, teamsPerson1.GivenName, teamsPerson1.GivenName, teamsPerson2.UserPrincipalName, displayName);
+            var cardForPerson1 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2.Name, teamsPerson1.Name, teamsPerson2.GivenName, teamsPerson1.GivenName, teamsPerson1.GivenName, teamsPerson2.UserPrincipalName, this.botDisplayName);
 
             this.telemetryClient.TrackTrace($"Notifying user - {teamsPerson1.ObjectId}, {teamsPerson1.GivenName}");
             await this.NotifyUser(connectorClient, cardForPerson1, teamsPerson1, tenantId);
@@ -266,13 +267,8 @@ namespace Icebreaker
         {
             this.telemetryClient.TrackTrace("Hit the NotifyUser method");
 
-            var me = new ChannelAccount()
-            {
-                Id = CloudConfigurationManager.GetSetting("MicrosoftAppId"),
-                Name = CloudConfigurationManager.GetSetting("BotDisplayName")
-            };
-
             // ensure conversation exists
+            var me = new ChannelAccount { Id = this.botId };
             var response = connectorClient.Conversations.CreateOrGetDirectConversation(me, user, tenantId);
 
             // construct the activity we want to post
@@ -293,9 +289,7 @@ namespace Icebreaker
                     }
             };
 
-            var isTesting = bool.Parse(CloudConfigurationManager.GetSetting("Testing"));
-
-            if (!isTesting)
+            if (!this.isTesting)
             {
                 // shoot the activity over
                 await connectorClient.Conversations.SendToConversationAsync(activity);
