@@ -53,12 +53,16 @@ namespace Icebreaker.Helpers
 
             // Create the database if needed
             Database db = await this.documentClient.CreateDatabaseIfNotExistsAsync(
-                new Database { Id = databaseName },
-                new RequestOptions { OfferThroughput = DefaultRequestThroughput });     // Set the throughput at database level by default
+                new Database { Id = databaseName });     // Set the throughput at database level by default
             if (db != null)
             {
                 telemetry.TrackTrace($"Reference to database {db.Id} obtained successfully");
             }
+
+            var requestOptions = new RequestOptions()
+            {
+                OfferThroughput = DefaultRequestThroughput
+            };
 
             // Get a reference to the Teams collection, creating it if needed
             var teamsCollectionDefinition = new DocumentCollection
@@ -67,7 +71,7 @@ namespace Icebreaker.Helpers
             };
             teamsCollectionDefinition.PartitionKey.Paths.Add("/teamId");
 
-            this.teamsCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseName), teamsCollectionDefinition);
+            this.teamsCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(db.SelfLink, teamsCollectionDefinition, requestOptions);
             if (this.teamsCollection != null)
             {
                 telemetry.TrackTrace($"Reference to Teams collection database {this.teamsCollection.Id} obtained successfully");
@@ -80,7 +84,7 @@ namespace Icebreaker.Helpers
             };
             usersCollectionDefinition.PartitionKey.Paths.Add("/tenantId");
 
-            this.usersCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(UriFactory.CreateDatabaseUri(databaseName), usersCollectionDefinition);
+            this.usersCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(db.SelfLink, usersCollectionDefinition, requestOptions);
             if (this.usersCollection != null)
             {
                 telemetry.TrackTrace($"Reference to Users collection database {this.usersCollection.Id} obtained successfully");
