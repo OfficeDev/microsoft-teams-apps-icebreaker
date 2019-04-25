@@ -41,6 +41,7 @@
     min-width: 96px;
     margin: 90px 0px 0px 478px;
     color: #201F1F;
+    font-family: 'Segoe UI Semibold', 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
 }
 
     .theme-dark .primary-button:hover {
@@ -98,6 +99,7 @@ body.theme-dark {
     min-width: 96px;
     margin: 90px 0px 0px 478px;
     color: #FFFFFF;
+    font-family: 'Segoe UI Semibold', 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
 }
 
     .theme-default .primary-button:hover {
@@ -143,6 +145,7 @@ body.theme-dark {
     min-width: 90px;
     margin: 90px 0px 0px 478px;
     color: #000000;
+    font-family: 'Segoe UI Semibold', 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
 }
 
     .theme-highContrast .primary-button:hover {
