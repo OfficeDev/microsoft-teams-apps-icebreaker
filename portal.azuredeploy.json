@@ -67,13 +67,15 @@
             ],
             "metadata": {
                 "description": "The frequency by which the bot will automatically pair up members of a team"
-            }
+            },
+            "defaultValue": "Week"
         },
         "logicAppInterval": {
             "type": "int",
             "metadata": {
                 "description": "How many times per the frequency the bot will randomly pair up members of a team (i.e. 1 Month, or 1 Week)"
-            }
+            }, 
+            "defaultValue": "1"
         },
         "logicAppHour": {
             "type": "int",
@@ -105,7 +107,8 @@
             ],
             "metadata": {
                 "description": "Select the hour at which the bot will automatically pair members of a team"
-            }
+            },
+            "defaultValue": "10"
         },
         "logicAppMins": {
             "type": "int",
@@ -171,8 +174,9 @@
                 59
             ],
             "metadata": {
-                "description": "Select the hour at which the bot will automatically pair members of a team"
-            }
+                "description": "Select the minute at which the bot will automatically pair members of a team"
+            },
+            "defaultValue": "0"
         },
         "logicAppDOW": {
             "type":"string", 
@@ -187,14 +191,15 @@
             ], 
             "metadata":{
                 "description": "The day of the week that your bot can automatically pair up team members"
-            }
+            },
+            "defaultValue": "Monday"
         }, 
         "logicAppTimeZone": {
             "type":"string", 
             "metadata": {
                 "description": "If there are some custom code changes that were made to the Meetuply source code on a separate branch, include the branch name here"
             },
-            "defaultValue": "master"
+            "defaultValue": "Pacific Standard Time"
         }
     },
     "variables": {
