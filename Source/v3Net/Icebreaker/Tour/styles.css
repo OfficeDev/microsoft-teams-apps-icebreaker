@@ -35,13 +35,17 @@
 
 .theme-dark .primary-button {
     background: #6264A7;
-    border: 2px solid #5558AF;
-    border-radius: 2px;
+    border: 0.125rem solid;
+    border-color: transparent;
+    border-radius: 0.1875rem;
+    box-sizing: border-box;
+    color: #201F1F;
+    cursor: pointer;
+    font: inherit;
+    margin: 90px 0px 0px 478px;
     height: 32px;
     min-width: 96px;
-    margin: 90px 0px 0px 478px;
-    color: #201F1F;
-    font-family: 'Segoe UI Semibold', 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
+    font-size: 14px;
 }
 
     .theme-dark .primary-button:hover {
@@ -58,16 +62,25 @@
         outline-offset: -0.25rem
     }
 
-body.theme-default {
+.theme-default .surface {
     color: #252424;
+    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
+    font-size: 0.875rem;
+    font-weight: 400;
 }
 
-body.theme-highContrast {
+.theme-highContrast .surface {
     color: #FFFFFF;
+    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
+    font-size: 0.875rem;
+    font-weight: 400;
 }
 
-body.theme-dark {
+.theme-dark .surface {
     color: #FFFFFF;
+    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
+    font-size: 0.875rem;
+    font-weight: 400;
 }
 
 /*Default Theme rules*/
@@ -95,11 +108,15 @@ body.theme-dark {
     border: 0.125rem solid;
     border-color: transparent;
     border-radius: 0.1875rem;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    cursor: pointer;
     height: 32px;
     min-width: 96px;
     margin: 90px 0px 0px 478px;
     color: #FFFFFF;
-    font-family: 'Segoe UI Semibold', 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
+    font: inherit;
+    font-size: 14px;
 }
 
     .theme-default .primary-button:hover {
@@ -141,11 +158,14 @@ body.theme-dark {
     border: 0.125rem solid;
     border-color: transparent;
     border-radius: 0.1875rem;
+    box-sizing: border-box;
+    color: #000000;
+    cursor: pointer;
+    font: inherit;
     height: 32px;
     min-width: 90px;
     margin: 90px 0px 0px 478px;
-    color: #000000;
-    font-family: 'Segoe UI Semibold', 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
+    font-size: 14px;
 }
 
     .theme-highContrast .primary-button:hover {
