@@ -48,6 +48,8 @@ namespace Icebreaker
         /// <returns>Task that resolves to the HTTP response message</returns>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
+            this.LogActivityTelemetry(activity);
+
             using (var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl)))
             {
                 if (activity.Type == ActivityTypes.Message)
@@ -205,6 +207,33 @@ namespace Icebreaker
                 this.telemetryClient.TrackException(ex);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Log telemetry about the incoming activity.
+        /// </summary>
+        /// <param name="activity">The activity</param>
+        private void LogActivityTelemetry(Activity activity)
+        {
+            var fromObjectId = activity.From?.Properties["aadObjectId"]?.ToString();
+            var clientInfoEntity = activity.Entities?.Where(e => e.Type == "clientInfo")?.FirstOrDefault();
+            var channelData = activity.GetChannelData<TeamsChannelData>();
+
+            var properties = new Dictionary<string, string>
+            {
+                { "ActivityId", activity.Id },
+                { "ActivityType", activity.Type },
+                { "UserAadObjectId", fromObjectId },
+                {
+                    "ConversationType",
+                    string.IsNullOrWhiteSpace(activity.Conversation?.ConversationType) ? "personal" : activity.Conversation.ConversationType
+                },
+                { "ConversationId", activity.Conversation?.Id },
+                { "TeamId", channelData?.Team?.Id },
+                { "Locale", clientInfoEntity?.Properties["locale"]?.ToString() },
+                { "Platform", clientInfoEntity?.Properties["platform"]?.ToString() }
+            };
+            this.telemetryClient.TrackEvent("UserActivity", properties);
         }
     }
 }
