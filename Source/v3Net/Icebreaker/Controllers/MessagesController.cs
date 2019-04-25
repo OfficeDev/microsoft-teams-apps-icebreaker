@@ -16,7 +16,6 @@ namespace Icebreaker
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.Bot.Connector;
-    using Microsoft.Bot.Connector.Teams;
     using Microsoft.Bot.Connector.Teams.Models;
     using Properties;
 
@@ -69,58 +68,79 @@ namespace Icebreaker
         {
             try
             {
-                // Looking at the sender of the message
-                var senderAadId = activity.From.AsTeamsChannelAccount().Properties["aadObjectId"].ToString();
+                var senderAadId = activity.From.Properties["aadObjectId"].ToString();
+                var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
 
                 if ((((dynamic)activity?.Value)?.optout == true) ||
                     string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    await this.bot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
-
-                    var optInReply = activity.CreateReply();
-                    optInReply.Attachments = new List<Attachment>();
-                    var optOutCard = new HeroCard()
+                    // User opted out
+                    this.telemetryClient.TrackTrace($"User {senderAadId} opted out");
+                    var properties = new Dictionary<string, string>
                     {
-                        Text = Resources.OptOutConfirmation,
-                        Buttons = new List<CardAction>()
-                        {
-                            new CardAction()
-                            {
-                                Title = Resources.ResumePairingsButtonText,
-                                Type = ActionTypes.MessageBack,
-                                Text = "optin"
-                            }
-                        }
+                        { "UserAadId", senderAadId },
+                        { "OptInStatus", "false" },
                     };
-                    optInReply.Attachments.Add(optOutCard.ToAttachment());
+                    this.telemetryClient.TrackEvent("UserOptInStausSet", properties);
 
-                    await connectorClient.Conversations.ReplyToActivityAsync(optInReply);
-                }
-                else if (string.Equals(activity.Text, "optin", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    await this.bot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
+                    await this.bot.OptOutUser(tenantId, senderAadId, activity.ServiceUrl);
 
                     var optOutReply = activity.CreateReply();
-                    optOutReply.Attachments = new List<Attachment>();
-                    var optOutCard = new HeroCard()
+                    optOutReply.Attachments = new List<Attachment>
                     {
-                        Text = Resources.OptInConfirmation,
-                        Buttons = new List<CardAction>()
+                        new HeroCard()
                         {
-                            new CardAction()
+                            Text = Resources.OptOutConfirmation,
+                            Buttons = new List<CardAction>()
                             {
-                                Title = Resources.PausePairingsButtonText,
-                                Type = ActionTypes.MessageBack,
-                                Text = "optout"
+                                new CardAction()
+                                {
+                                    Title = Resources.ResumePairingsButtonText,
+                                    Type = ActionTypes.MessageBack,
+                                    Text = "optin"
+                                }
                             }
-                        }
+                        }.ToAttachment(),
                     };
-                    optOutReply.Attachments.Add(optOutCard.ToAttachment());
 
                     await connectorClient.Conversations.ReplyToActivityAsync(optOutReply);
                 }
+                else if (string.Equals(activity.Text, "optin", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    // User opted in
+                    this.telemetryClient.TrackTrace($"User {senderAadId} opted in");
+                    var properties = new Dictionary<string, string>
+                    {
+                        { "UserAadId", senderAadId },
+                        { "OptInStatus", "true" },
+                    };
+                    this.telemetryClient.TrackEvent("UserOptInStausSet", properties);
+
+                    await this.bot.OptInUser(tenantId, senderAadId, activity.ServiceUrl);
+
+                    var optInReply = activity.CreateReply();
+                    optInReply.Attachments = new List<Attachment>
+                    {
+                        new HeroCard()
+                        {
+                            Text = Resources.OptInConfirmation,
+                            Buttons = new List<CardAction>()
+                            {
+                                new CardAction()
+                                {
+                                    Title = Resources.PausePairingsButtonText,
+                                    Type = ActionTypes.MessageBack,
+                                    Text = "optout"
+                                }
+                            }
+                        }.ToAttachment(),
+                    };
+
+                    await connectorClient.Conversations.ReplyToActivityAsync(optInReply);
+                }
                 else
                 {
+                    // Unknown input
                     this.telemetryClient.TrackTrace($"Cannot process the following: {activity.Text}");
 
                     var replyActivity = activity.CreateReply(Resources.IDontKnow);
@@ -154,6 +174,7 @@ namespace Icebreaker
                     }
 
                     string myBotId = message.Recipient.Id;
+                    string teamId = message.Conversation.Id;
 
                     if (message.MembersAdded?.Count() > 0)
                     {
@@ -161,15 +182,22 @@ namespace Icebreaker
                         {
                             if (member.Id == myBotId)
                             {
-                                this.telemetryClient.TrackTrace($"Bot installed to team {message.Conversation.Id}");
+                                this.telemetryClient.TrackTrace($"Bot installed to team {teamId}");
+                                var properties = new Dictionary<string, string>
+                                {
+                                    { "Scope", message.Conversation?.ConversationType },
+                                    { "TeamId", teamId },
+                                    { "InstallerId", message.From.Id },
+                                };
+                                this.telemetryClient.TrackEvent("AppInstalled", properties);
 
                                 // Try to determine the name of the person that installed the app, which is usually the sender of the message (From.Id)
                                 // Note that in some cases we cannot resolve it to a team member, because the app was installed to the team programmatically via Graph
-                                var teamMembers = await connectorClient.Conversations.GetConversationMembersAsync(message.Conversation.Id);
+                                var teamMembers = await connectorClient.Conversations.GetConversationMembersAsync(teamId);
                                 var personThatAddedBot = teamMembers.FirstOrDefault(x => x.Id == message.From.Id)?.Name;
 
-                                await this.bot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, tenantId, personThatAddedBot);
-                                await this.bot.WelcomeTeam(connectorClient, tenantId, message.Conversation.Id, personThatAddedBot);
+                                await this.bot.SaveAddedToTeam(message.ServiceUrl, teamId, tenantId, personThatAddedBot);
+                                await this.bot.WelcomeTeam(connectorClient, tenantId, teamId, personThatAddedBot);
                             }
                             else
                             {
@@ -183,10 +211,17 @@ namespace Icebreaker
 
                     if (message.MembersRemoved?.Any(x => x.Id == myBotId) == true)
                     {
-                        this.telemetryClient.TrackTrace($"Bot removed from team {message.Conversation.Id}");
+                        this.telemetryClient.TrackTrace($"Bot removed from team {teamId}");
+                        var properties = new Dictionary<string, string>
+                        {
+                            { "Scope", message.Conversation?.ConversationType },
+                            { "TeamId", teamId },
+                            { "UninstallerId", message.From.Id },
+                        };
+                        this.telemetryClient.TrackEvent("AppUninstalled", properties);
 
                         // we were just removed from a team
-                        await this.bot.SaveRemoveFromTeam(message.ServiceUrl, message.Conversation.Id, tenantId);
+                        await this.bot.SaveRemoveFromTeam(message.ServiceUrl, teamId, tenantId);
                     }
                 }
 

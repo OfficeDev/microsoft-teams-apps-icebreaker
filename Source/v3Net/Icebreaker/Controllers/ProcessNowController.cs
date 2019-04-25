@@ -6,9 +6,11 @@
 
 namespace Icebreaker.Controllers
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using System.Web.Hosting;
     using System.Web.Http;
+    using Microsoft.ApplicationInsights;
     using Microsoft.Azure;
 
     /// <summary>
@@ -17,14 +19,17 @@ namespace Icebreaker.Controllers
     public class ProcessNowController : ApiController
     {
         private readonly IcebreakerBot bot;
+        private readonly TelemetryClient telemetryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProcessNowController"/> class.
         /// </summary>
         /// <param name="bot">The Icebreaker bot instance</param>
-        public ProcessNowController(IcebreakerBot bot)
+        /// <param name="telemetryClient">The telemetry client to use</param>
+        public ProcessNowController(IcebreakerBot bot, TelemetryClient telemetryClient)
         {
             this.bot = bot;
+            this.telemetryClient = telemetryClient;
         }
 
         /// <summary>
@@ -35,7 +40,15 @@ namespace Icebreaker.Controllers
         [Route("api/processnow/{key}")]
         public int Get([FromUri]string key)
         {
-            if (object.Equals(key, CloudConfigurationManager.GetSetting("Key")))
+            var keyMatches = object.Equals(key, CloudConfigurationManager.GetSetting("Key"));
+
+            var parameters = new Dictionary<string, string>
+            {
+                { "KeyMatches", keyMatches.ToString() },
+            };
+            this.telemetryClient.TrackEvent("ProcessNowRequest", parameters);
+
+            if (keyMatches)
             {
                 HostingEnvironment.QueueBackgroundWorkItem(ct => this.MakePairs());
                 return 1;
