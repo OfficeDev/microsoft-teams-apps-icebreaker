@@ -14,8 +14,7 @@ namespace Icebreaker
     using System.Threading.Tasks;
     using System.Web.Http;
     using Microsoft.ApplicationInsights;
-    using Microsoft.ApplicationInsights.Extensibility;
-    using Microsoft.Azure;
+    using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.Bot.Connector;
     using Microsoft.Bot.Connector.Teams;
     using Microsoft.Bot.Connector.Teams.Models;
@@ -27,16 +26,18 @@ namespace Icebreaker
     [BotAuthentication]
     public class MessagesController : ApiController
     {
-        private static TelemetryClient telemetryClient = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
         private readonly IcebreakerBot bot;
+        private readonly TelemetryClient telemetryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagesController"/> class.
         /// </summary>
         /// <param name="bot">The Icebreaker bot instance</param>
-        public MessagesController(IcebreakerBot bot)
+        /// <param name="telemetryClient">The telemetry client instance</param>
+        public MessagesController(IcebreakerBot bot, TelemetryClient telemetryClient)
         {
             this.bot = bot;
+            this.telemetryClient = telemetryClient;
         }
 
         /// <summary>
@@ -59,28 +60,20 @@ namespace Icebreaker
                 }
             }
 
-            var response = this.Request.CreateResponse(HttpStatusCode.OK);
-            return response;
+            return this.Request.CreateResponse(HttpStatusCode.OK);
         }
 
         private async Task HandleMessageActivity(ConnectorClient connectorClient, Activity activity)
         {
-            string replyText = null;
-            var optOutRequest = false;
-
-            if (activity.Value != null && ((dynamic)activity.Value).optout == true)
-            {
-                optOutRequest = true;
-            }
-
             try
             {
                 // Looking at the sender of the message
                 var senderAadId = activity.From.AsTeamsChannelAccount().Properties["aadObjectId"].ToString();
 
-                if (optOutRequest || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
+                if ((((dynamic)activity?.Value)?.optout == true) ||
+                    string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    telemetryClient.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId}");
+                    this.telemetryClient.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId}");
                     await this.bot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
                     var optInReply = activity.CreateReply();
@@ -111,7 +104,7 @@ namespace Icebreaker
                             { "messageTimeStamp", DateTime.Now.ToString() }
                         };
 
-                    telemetryClient.TrackEvent("UserOptIn", optInEventProps);
+                    this.telemetryClient.TrackEvent("UserOptIn", optInEventProps);
                     await this.bot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
                     var optOutReply = activity.CreateReply();
@@ -135,24 +128,22 @@ namespace Icebreaker
                 }
                 else
                 {
-                    var botName = CloudConfigurationManager.GetSetting("BotDisplayName");
-                    telemetryClient.TrackTrace($"Cannot process the following: {activity.Text}");
-                    replyText = Resources.IDontKnow;
+                    this.telemetryClient.TrackTrace($"Cannot process the following: {activity.Text}");
 
-                    var replyActivity = activity.CreateReply(replyText);
+                    var replyActivity = activity.CreateReply(Resources.IDontKnow);
                     await connectorClient.Conversations.ReplyToActivityAsync(replyActivity);
                 }
             }
             catch (Exception ex)
             {
-                telemetryClient.TrackException(ex);
-                replyText = Resources.ErrorOccured;
+                this.telemetryClient.TrackTrace($"Error while handling message activity: {ex.Message}", SeverityLevel.Warning);
+                this.telemetryClient.TrackException(ex);
             }
         }
 
         private async Task<Activity> HandleSystemActivity(ConnectorClient connectorClient, Activity message)
         {
-            telemetryClient.TrackTrace("Processing system message");
+            this.telemetryClient.TrackTrace("Processing system message");
 
             try
             {
@@ -177,7 +168,7 @@ namespace Icebreaker
                         {
                             if (member.Id == myBotId)
                             {
-                                telemetryClient.TrackTrace($"Bot installed to team {message.Conversation.Id}");
+                                this.telemetryClient.TrackTrace($"Bot installed to team {message.Conversation.Id}");
 
                                 // Try to determine the name of the person that installed the app, which is usually the sender of the message (From.Id)
                                 // Note that in some cases we cannot resolve it to a team member, because the app was installed to the team programmatically via Graph
@@ -189,7 +180,7 @@ namespace Icebreaker
                             }
                             else
                             {
-                                telemetryClient.TrackTrace($"Adding a new member: {member.Id}");
+                                this.telemetryClient.TrackTrace($"Adding a new member: {member.Id}");
 
                                 var installedTeam = await this.bot.GetInstalledTeam(tenantId, teamsChannelData.Team.Id);
                                 await this.bot.WelcomeUser(connectorClient, member.Id, tenantId, teamsChannelData.Team.Id, installedTeam.InstallerName);
@@ -199,7 +190,7 @@ namespace Icebreaker
 
                     if (message.MembersRemoved?.Any(x => x.Id == myBotId) == true)
                     {
-                        telemetryClient.TrackTrace($"Bot removed from team {message.Conversation.Id}");
+                        this.telemetryClient.TrackTrace($"Bot removed from team {message.Conversation.Id}");
 
                         // we were just removed from a team
                         await this.bot.SaveRemoveFromTeam(message.ServiceUrl, message.Conversation.Id, tenantId);
@@ -210,7 +201,8 @@ namespace Icebreaker
             }
             catch (Exception ex)
             {
-                telemetryClient.TrackException(ex);
+                this.telemetryClient.TrackTrace($"Error while handling system activity: {ex.Message}", SeverityLevel.Warning);
+                this.telemetryClient.TrackException(ex);
                 throw;
             }
         }

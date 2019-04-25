@@ -6,6 +6,9 @@ namespace Icebreaker
 {
     using Autofac;
     using Icebreaker.Helpers;
+    using Microsoft.ApplicationInsights;
+    using Microsoft.ApplicationInsights.Extensibility;
+    using Microsoft.Azure;
 
     /// <summary>
     /// Autofac Module
@@ -17,12 +20,17 @@ namespace Icebreaker
         {
             base.Load(builder);
 
+            builder.Register(c =>
+            {
+                return new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
+            }).SingleInstance();
+
             builder.RegisterType<IcebreakerBot>()
                 .SingleInstance();
 
             builder.Register(async (c) =>
             {
-                var provider = new IcebreakerBotDataProvider();
+                var provider = new IcebreakerBotDataProvider(c.Resolve<TelemetryClient>());
                 await provider.InitializeAsync();
                 return provider;
             }).SingleInstance();

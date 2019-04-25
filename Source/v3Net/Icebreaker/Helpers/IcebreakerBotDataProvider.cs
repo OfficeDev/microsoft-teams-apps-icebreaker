@@ -24,8 +24,7 @@ namespace Icebreaker.Helpers
         // Request the minimum throughput by default
         private const int DefaultRequestThroughput = 400;
 
-        private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
-
+        private readonly TelemetryClient telemetryClient;
         private DocumentClient documentClient;
         private DocumentCollection teamsCollection;
         private DocumentCollection usersCollection;
@@ -33,8 +32,10 @@ namespace Icebreaker.Helpers
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBotDataProvider"/> class.
         /// </summary>
-        public IcebreakerBotDataProvider()
+        /// <param name="telemetryClient">The telemetry client to use</param>
+        public IcebreakerBotDataProvider(TelemetryClient telemetryClient)
         {
+            this.telemetryClient = telemetryClient;
         }
 
         /// <summary>
@@ -55,7 +56,7 @@ namespace Icebreaker.Helpers
             Database db = await this.documentClient.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseName });
             if (db != null)
             {
-                telemetry.TrackTrace($"Reference to database {db.Id} obtained successfully");
+                this.telemetryClient.TrackTrace($"Reference to database {db.Id} obtained successfully");
             }
 
             var requestOptions = new RequestOptions { OfferThroughput = DefaultRequestThroughput };
@@ -70,7 +71,7 @@ namespace Icebreaker.Helpers
             this.teamsCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(db.SelfLink, teamsCollectionDefinition, requestOptions);
             if (this.teamsCollection != null)
             {
-                telemetry.TrackTrace($"Reference to Teams collection database {this.teamsCollection.Id} obtained successfully");
+                this.telemetryClient.TrackTrace($"Reference to Teams collection database {this.teamsCollection.Id} obtained successfully");
             }
 
             // Get a reference to the Users collection, creating it if needed
@@ -83,7 +84,7 @@ namespace Icebreaker.Helpers
             this.usersCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(db.SelfLink, usersCollectionDefinition, requestOptions);
             if (this.usersCollection != null)
             {
-                telemetry.TrackTrace($"Reference to Users collection database {this.usersCollection.Id} obtained successfully");
+                this.telemetryClient.TrackTrace($"Reference to Users collection database {this.usersCollection.Id} obtained successfully");
             }
         }
 
@@ -95,7 +96,7 @@ namespace Icebreaker.Helpers
         /// <returns>Tracking task</returns>
         public async Task UpdateTeamInstallStatusAsync(TeamInstallInfo team, bool installed)
         {
-            telemetry.TrackTrace("Hit the method SaveTeamInstallStatus");
+            this.telemetryClient.TrackTrace("Hit the method SaveTeamInstallStatus");
 
             if (installed)
             {
@@ -123,7 +124,7 @@ namespace Icebreaker.Helpers
         /// <returns>List of installed teams</returns>
         public List<TeamInstallInfo> GetInstalledTeams()
         {
-            telemetry.TrackTrace("Hit the method GetInstalledTeams");
+            this.telemetryClient.TrackTrace("Hit the method GetInstalledTeams");
 
             // Find matching activities
             try
@@ -135,7 +136,7 @@ namespace Icebreaker.Helpers
             }
             catch (Exception ex)
             {
-                telemetry.TrackException(ex.InnerException);
+                this.telemetryClient.TrackException(ex.InnerException);
 
                 // Return no teams if we hit an error fetching
                 return new List<TeamInstallInfo>();
@@ -150,7 +151,7 @@ namespace Icebreaker.Helpers
         /// <returns>Team that the bot is installed to</returns>
         public TeamInstallInfo GetInstalledTeam(string tenantId, string teamId)
         {
-            telemetry.TrackTrace("Hit the GetInstalledTeam method");
+            this.telemetryClient.TrackTrace("Hit the GetInstalledTeam method");
 
             // Get team install info
             try
@@ -163,7 +164,7 @@ namespace Icebreaker.Helpers
             }
             catch (Exception ex)
             {
-                telemetry.TrackException(ex.InnerException);
+                this.telemetryClient.TrackException(ex.InnerException);
                 return null;
             }
         }
@@ -176,7 +177,7 @@ namespace Icebreaker.Helpers
         /// <returns>User information</returns>
         public UserInfo GetUserInfo(string tenantId, string userId)
         {
-            telemetry.TrackTrace("Hit the GetUserInfo method");
+            this.telemetryClient.TrackTrace("Hit the GetUserInfo method");
 
             // Set some common query options
             FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, PartitionKey = new PartitionKey(tenantId) };
@@ -191,7 +192,7 @@ namespace Icebreaker.Helpers
             }
             catch (Exception ex)
             {
-                telemetry.TrackException(ex.InnerException);
+                this.telemetryClient.TrackException(ex.InnerException);
                 return null;
             }
         }
@@ -206,7 +207,7 @@ namespace Icebreaker.Helpers
         /// <returns>Tracking task</returns>
         public async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl)
         {
-            telemetry.TrackTrace("Hit the method - SetUserInfoAsync");
+            this.telemetryClient.TrackTrace("Hit the method - SetUserInfoAsync");
 
             var obj = new UserInfo()
             {
@@ -226,7 +227,7 @@ namespace Icebreaker.Helpers
                 { "serviceUrl", serviceUrl }
             };
 
-            telemetry.TrackEvent("SetUserInfoAsync", setUserOptInProps);
+            this.telemetryClient.TrackEvent("SetUserInfoAsync", setUserOptInProps);
         }
 
         /// <summary>
@@ -249,7 +250,7 @@ namespace Icebreaker.Helpers
                 user1Info.RecentPairUps.RemoveAt(0);
             }
 
-            telemetry.TrackTrace($"Having the PairUp stored for - {user1Id} inside of {tenantId}");
+            this.telemetryClient.TrackTrace($"Having the PairUp stored for - {user1Id} inside of {tenantId}");
             await this.StoreUserInfoAsync(user1Info);
 
             user2Info.RecentPairUps.Add(user1Info);
@@ -258,7 +259,7 @@ namespace Icebreaker.Helpers
                 user2Info.RecentPairUps.RemoveAt(0);
             }
 
-            telemetry.TrackTrace($"Having the PairUp stored for - {user2Id} inside of {tenantId}");
+            this.telemetryClient.TrackTrace($"Having the PairUp stored for - {user2Id} inside of {tenantId}");
             await this.StoreUserInfoAsync(user2Info);
         }
 
