@@ -75,7 +75,6 @@ namespace Icebreaker
                 if ((((dynamic)activity?.Value)?.optout == true) ||
                     string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    this.telemetryClient.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId}");
                     await this.bot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
                     var optInReply = activity.CreateReply();
@@ -99,14 +98,6 @@ namespace Icebreaker
                 }
                 else if (string.Equals(activity.Text, "optin", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    Dictionary<string, string> optInEventProps = new Dictionary<string, string>()
-                        {
-                            { "message", activity.Text },
-                            { "messageSender", senderAadId },
-                            { "messageTimeStamp", DateTime.Now.ToString() }
-                        };
-
-                    this.telemetryClient.TrackEvent("UserOptIn", optInEventProps);
                     await this.bot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
 
                     var optOutReply = activity.CreateReply();

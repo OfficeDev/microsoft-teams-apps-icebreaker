@@ -215,18 +215,7 @@ namespace Icebreaker.Helpers
                 OptedIn = optedIn,
                 ServiceUrl = serviceUrl
             };
-
             await this.StoreUserInfoAsync(obj);
-
-            Dictionary<string, string> setUserOptInProps = new Dictionary<string, string>()
-            {
-                { "tenantId", tenantId },
-                { "userId", userId },
-                { "optedIn", optedIn.ToString() },
-                { "serviceUrl", serviceUrl }
-            };
-
-            this.telemetryClient.TrackEvent("SetUserInfoAsync", setUserOptInProps);
         }
 
         /// <summary>
