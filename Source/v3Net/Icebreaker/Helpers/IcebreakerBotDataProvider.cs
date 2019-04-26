@@ -25,7 +25,6 @@ namespace Icebreaker.Helpers
 
         private readonly TelemetryClient telemetryClient;
         private readonly Lazy<Task> initializeTask;
-        private readonly long maxPairUpHistory;
         private DocumentClient documentClient;
         private DocumentCollection teamsCollection;
         private DocumentCollection usersCollection;
@@ -38,7 +37,6 @@ namespace Icebreaker.Helpers
         {
             this.telemetryClient = telemetryClient;
             this.initializeTask = new Lazy<Task>(() => this.InitializeAsync());
-            this.maxPairUpHistory = Convert.ToInt64(CloudConfigurationManager.GetSetting("MaxPairUpHistory"));
         }
 
         /// <summary>
@@ -180,39 +178,6 @@ namespace Icebreaker.Helpers
                 ServiceUrl = serviceUrl
             };
             await this.StoreUserInfoAsync(obj);
-        }
-
-        /// <summary>
-        /// Stores the given pairup
-        /// </summary>
-        /// <param name="tenantId">Tenant id</param>
-        /// <param name="user1Id">First user</param>
-        /// <param name="user2Id">Second user</param>
-        /// <returns>Tracking task</returns>
-        public async Task StorePairupAsync(string tenantId, string user1Id, string user2Id)
-        {
-            await this.EnsureInitializedAsync();
-
-            var user1Info = await this.GetUserInfoAsync(tenantId, user1Id);
-            var user2Info = await this.GetUserInfoAsync(tenantId, user2Id);
-
-            user1Info.RecentPairUps.Add(user2Info);
-            if (user1Info.RecentPairUps.Count >= this.maxPairUpHistory)
-            {
-                user1Info.RecentPairUps.RemoveAt(0);
-            }
-
-            this.telemetryClient.TrackTrace($"Having the PairUp stored for - {user1Id} inside of {tenantId}");
-            await this.StoreUserInfoAsync(user1Info);
-
-            user2Info.RecentPairUps.Add(user1Info);
-            if (user2Info.RecentPairUps.Count >= this.maxPairUpHistory)
-            {
-                user2Info.RecentPairUps.RemoveAt(0);
-            }
-
-            this.telemetryClient.TrackTrace($"Having the PairUp stored for - {user2Id} inside of {tenantId}");
-            await this.StoreUserInfoAsync(user2Info);
         }
 
         /// <summary>

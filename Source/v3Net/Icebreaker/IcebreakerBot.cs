@@ -124,10 +124,9 @@ namespace Icebreaker
         public async Task WelcomeUser(ConnectorClient connectorClient, string memberAddedId, string tenantId, string teamId, string botInstaller)
         {
             var teamName = await this.GetTeamNameAsync(connectorClient, teamId);
-            var allMembers = await this.GetTeamMembers(connectorClient, teamId, tenantId);
+            var allMembers = await connectorClient.Conversations.GetConversationMembersAsync(teamId);
 
             ChannelAccount userThatJustJoined = null;
-
             foreach (var m in allMembers)
             {
                 // both values are 29: values
@@ -321,23 +320,13 @@ namespace Icebreaker
             await connectorClient.Conversations.SendToConversationAsync(activity);
         }
 
-        private async Task<List<ChannelAccount>> GetTeamMembers(ConnectorClient connectorClient, string teamId, string tenantId)
-        {
-            // Pull the roster of specified team and then remove everyone who has opted out explicitly
-#pragma warning disable CS0618 // Type or member is obsolete
-            var membersIList = await connectorClient.Conversations.GetConversationMembersAsync(teamId);
-#pragma warning restore CS0618 // Type or member is obsolete
-            var members = membersIList as List<ChannelAccount>;
-            return members;
-        }
-
         private async Task<List<ChannelAccount>> GetOptedInUsers(ConnectorClient connectorClient, TeamInstallInfo teamInfo)
         {
             this.telemetryClient.TrackTrace("Hit the GetOptedInUsers method");
             var optedInUsers = new List<ChannelAccount>();
 
-            var members = await this.GetTeamMembers(connectorClient, teamInfo.TeamId, teamInfo.TenantId);
-
+            // Pull the roster of specified team and then remove everyone who has opted out explicitly
+            var members = await connectorClient.Conversations.GetConversationMembersAsync(teamInfo.TeamId);
             if (members.Count > 1)
             {
                 this.telemetryClient.TrackTrace($"There are {members.Count} members found in {teamInfo.TeamId}");
