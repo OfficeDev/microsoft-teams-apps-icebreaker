@@ -11,12 +11,6 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            microsoftTeams.initialize();
-
-            microsoftTeams.getContext(function (context) {
-                setTheme(context.theme);
-            });
-
             var setTheme = function (theme) {
                 if (theme === "default")
                     document.getElementById("themeCSS").className = "theme-default";
@@ -25,6 +19,11 @@
                 else if (theme === "contrast")
                     document.getElementById("themeCSS").className = "theme-highContrast";
             };
+
+            microsoftTeams.initialize();
+            microsoftTeams.getContext(function (context) {
+                setTheme(context.theme);
+            });
             microsoftTeams.registerOnThemeChangeHandler(setTheme);
         });
     
