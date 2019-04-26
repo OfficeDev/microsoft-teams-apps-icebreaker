@@ -45,11 +45,11 @@ namespace Icebreaker.Helpers.AdaptiveCards
             }
 
             var baseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain");
-            var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Tour/tour.html");
+            var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html");
             var tourTitle = Resources.WelcomeTourTitle;
             var appId = CloudConfigurationManager.GetSetting("AppId");
 
-            var tourUrl = $"https://teams.microsoft.com/l/task/" + appId + $"?url={htmlUrl}&" + $"height=533px&width=600px&title={tourTitle}";
+            var tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}";
 
             var variablesToValues = new Dictionary<string, string>()
             {
