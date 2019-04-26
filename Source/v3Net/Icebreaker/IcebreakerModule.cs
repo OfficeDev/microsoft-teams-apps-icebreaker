@@ -20,12 +20,8 @@ namespace Icebreaker
             builder.RegisterType<IcebreakerBot>()
                 .SingleInstance();
 
-            builder.Register(async (c) =>
-            {
-                var provider = new IcebreakerBotDataProvider();
-                await provider.InitializeAsync();
-                return provider;
-            }).SingleInstance();
+            builder.RegisterType<IcebreakerBotDataProvider>()
+                .SingleInstance();
         }
     }
 }
