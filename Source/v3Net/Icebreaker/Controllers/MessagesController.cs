@@ -76,6 +76,7 @@ namespace Icebreaker
                 {
                     // User opted out
                     this.telemetryClient.TrackTrace($"User {senderAadId} opted out");
+
                     var properties = new Dictionary<string, string>
                     {
                         { "UserAadId", senderAadId },
@@ -109,6 +110,7 @@ namespace Icebreaker
                 {
                     // User opted in
                     this.telemetryClient.TrackTrace($"User {senderAadId} opted in");
+
                     var properties = new Dictionary<string, string>
                     {
                         { "UserAadId", senderAadId },
@@ -183,6 +185,7 @@ namespace Icebreaker
                             if (member.Id == myBotId)
                             {
                                 this.telemetryClient.TrackTrace($"Bot installed to team {teamId}");
+
                                 var properties = new Dictionary<string, string>
                                 {
                                     { "Scope", message.Conversation?.ConversationType },
@@ -197,11 +200,11 @@ namespace Icebreaker
                                 var personThatAddedBot = teamMembers.FirstOrDefault(x => x.Id == message.From.Id)?.Name;
 
                                 await this.bot.SaveAddedToTeam(message.ServiceUrl, teamId, tenantId, personThatAddedBot);
-                                await this.bot.WelcomeTeam(connectorClient, tenantId, teamId, personThatAddedBot);
+                                await this.bot.WelcomeTeam(connectorClient, teamId, personThatAddedBot);
                             }
                             else
                             {
-                                this.telemetryClient.TrackTrace($"Adding a new member: {member.Id}");
+                                this.telemetryClient.TrackTrace($"New member {member.Id} added to team {teamsChannelData.Team.Id}");
 
                                 var installedTeam = await this.bot.GetInstalledTeam(tenantId, teamsChannelData.Team.Id);
                                 await this.bot.WelcomeUser(connectorClient, member.Id, tenantId, teamsChannelData.Team.Id, installedTeam.InstallerName);
@@ -212,6 +215,7 @@ namespace Icebreaker
                     if (message.MembersRemoved?.Any(x => x.Id == myBotId) == true)
                     {
                         this.telemetryClient.TrackTrace($"Bot removed from team {teamId}");
+
                         var properties = new Dictionary<string, string>
                         {
                             { "Scope", message.Conversation?.ConversationType },

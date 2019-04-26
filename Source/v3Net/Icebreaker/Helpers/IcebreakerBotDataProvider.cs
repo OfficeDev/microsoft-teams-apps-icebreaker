@@ -47,8 +47,6 @@ namespace Icebreaker.Helpers
         /// <returns>Tracking task</returns>
         public async Task UpdateTeamInstallStatusAsync(TeamInstallInfo team, bool installed)
         {
-            this.telemetryClient.TrackTrace("Hit the method SaveTeamInstallStatus");
-
             await this.EnsureInitializedAsync();
 
             if (installed)
@@ -77,8 +75,6 @@ namespace Icebreaker.Helpers
         /// <returns>List of installed teams</returns>
         public async Task<IList<TeamInstallInfo>> GetInstalledTeamsAsync()
         {
-            this.telemetryClient.TrackTrace("Hit the method GetInstalledTeams");
-
             await this.EnsureInitializedAsync();
 
             // Find matching activities
@@ -106,8 +102,6 @@ namespace Icebreaker.Helpers
         /// <returns>Team that the bot is installed to</returns>
         public async Task<TeamInstallInfo> GetTeamInstallInfoAsync(string tenantId, string teamId)
         {
-            this.telemetryClient.TrackTrace("Hit the GetInstalledTeam method");
-
             await this.EnsureInitializedAsync();
 
             // Get team install info
@@ -134,8 +128,6 @@ namespace Icebreaker.Helpers
         /// <returns>User information</returns>
         public async Task<UserInfo> GetUserInfoAsync(string tenantId, string userId)
         {
-            this.telemetryClient.TrackTrace("Hit the GetUserInfo method");
-
             await this.EnsureInitializedAsync();
 
             // Set some common query options
@@ -166,18 +158,16 @@ namespace Icebreaker.Helpers
         /// <returns>Tracking task</returns>
         public async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl)
         {
-            this.telemetryClient.TrackTrace("Hit the method - SetUserInfoAsync");
-
             await this.EnsureInitializedAsync();
 
-            var obj = new UserInfo()
+            var userInfo = new UserInfo
             {
                 TenantId = tenantId,
                 UserId = userId,
                 OptedIn = optedIn,
                 ServiceUrl = serviceUrl
             };
-            await this.StoreUserInfoAsync(obj);
+            await this.documentClient.UpsertDocumentAsync(this.usersCollection.SelfLink, userInfo);
         }
 
         /// <summary>
@@ -186,6 +176,8 @@ namespace Icebreaker.Helpers
         /// <returns>Tracking task</returns>
         private async Task InitializeAsync()
         {
+            this.telemetryClient.TrackTrace("Initializing data store");
+
             var endpointUrl = CloudConfigurationManager.GetSetting("CosmosDBEndpointUrl");
             var primaryKey = CloudConfigurationManager.GetSetting("CosmosDBKey");
             var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
@@ -228,16 +220,13 @@ namespace Icebreaker.Helpers
             {
                 this.telemetryClient.TrackTrace($"Reference to Users collection database {this.usersCollection.Id} obtained successfully");
             }
+
+            this.telemetryClient.TrackTrace("Data store initialized");
         }
 
         private async Task EnsureInitializedAsync()
         {
             await this.initializeTask.Value;
-        }
-
-        private async Task StoreUserInfoAsync(UserInfo obj)
-        {
-            await this.documentClient.UpsertDocumentAsync(this.usersCollection.SelfLink, obj);
         }
     }
 }
