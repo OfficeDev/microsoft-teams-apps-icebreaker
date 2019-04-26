@@ -6,7 +6,6 @@
 
 namespace Icebreaker.Controllers
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using System.Web.Hosting;
     using System.Web.Http;
@@ -41,13 +40,6 @@ namespace Icebreaker.Controllers
         public IHttpActionResult Get([FromUri]string key)
         {
             var isKeyMatch = object.Equals(key, CloudConfigurationManager.GetSetting("Key"));
-
-            var parameters = new Dictionary<string, string>
-            {
-                { "IsKeyMatch", isKeyMatch.ToString() },
-            };
-            this.telemetryClient.TrackEvent("ProcessNowRequest", parameters);
-
             if (isKeyMatch)
             {
                 HostingEnvironment.QueueBackgroundWorkItem(ct => this.MakePairs());
