@@ -17,6 +17,14 @@ namespace Icebreaker.Helpers.AdaptiveCards
     /// </summary>
     public static class PairUpNotificationAdaptiveCard
     {
+        private static readonly string CardTemplate;
+
+        static PairUpNotificationAdaptiveCard()
+        {
+            var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/PairUpNotificationAdaptiveCard.json");
+            CardTemplate = File.ReadAllText(cardJsonFilePath);
+        }
+
         /// <summary>
         /// Creates the pairup notification card.
         /// </summary>
@@ -36,6 +44,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
 
             var content = string.Format(Resources.MeetupContent, botDisplayName);
             var escapedContent = Uri.EscapeDataString(content);
+
             var meetingLink = "https://teams.microsoft.com/l/meeting/new?subject=" + escapedTitle + "&attendees=" + personUpn + "&content=" + escapedContent;
 
             var variablesToValues = new Dictionary<string, string>()
@@ -50,11 +59,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 { "pauseMatches", Resources.PausePairingsButtonText }
             };
 
-            var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/PairUpNotificationAdaptiveCard.json");
-            var cardTemplate = File.ReadAllText(cardJsonFilePath);
-
-            var cardBody = cardTemplate;
-
+            var cardBody = CardTemplate;
             foreach (var kvp in variablesToValues)
             {
                 cardBody = cardBody.Replace($"%{kvp.Key}%", kvp.Value);
