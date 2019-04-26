@@ -17,6 +17,14 @@ namespace Icebreaker.Helpers.AdaptiveCards
     /// </summary>
     public class WelcomeTeamAdaptiveCard
     {
+        private static readonly string CardTemplate;
+
+        static WelcomeTeamAdaptiveCard()
+        {
+            var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/WelcomeTeamCard.json");
+            CardTemplate = File.ReadAllText(cardJsonFilePath);
+        }
+
         /// <summary>
         /// Creates the adaptive card for the team welcome message
         /// </summary>
@@ -27,7 +35,6 @@ namespace Icebreaker.Helpers.AdaptiveCards
         public static string GetCard(string teamName, string botDisplayName, string botInstaller)
         {
             string teamIntroMessage = string.Empty;
-
             if (string.IsNullOrEmpty(botInstaller))
             {
                 teamIntroMessage = string.Format(Resources.InstallMessageUnknownInstaller, teamName);
@@ -50,11 +57,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 { "tourUrl", tourUrl }
             };
 
-            var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/WelcomeTeamCard.json");
-            var cardTemplate = File.ReadAllText(cardJsonFilePath);
-
-            var cardBody = cardTemplate;
-
+            var cardBody = CardTemplate;
             foreach (var kvp in variablesToValues)
             {
                 cardBody = cardBody.Replace($"%{kvp.Key}%", kvp.Value);
