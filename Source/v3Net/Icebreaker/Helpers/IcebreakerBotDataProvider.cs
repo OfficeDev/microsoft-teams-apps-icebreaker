@@ -113,9 +113,10 @@ namespace Icebreaker.Helpers
             // Get team install info
             try
             {
-                var teams = this.GetInstalledTeams();
-                var singleMatch = teams.FirstOrDefault(f => f.Id == teamId && f.TenantId == tenantId);
-                return singleMatch;
+                var teams = this.GetInstalledTeamsAsync();
+                var teamsList = await teams;
+                var singleTeam = teamsList.FirstOrDefault(g => g.Id == teamId && g.TenantId == tenantId);
+                return singleTeam;
             }
             catch (Exception ex)
             {
