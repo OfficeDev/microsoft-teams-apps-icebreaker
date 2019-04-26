@@ -1,4 +1,4 @@
-﻿//----------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // <copyright file="IcebreakerBotDataProvider.cs" company="Microsoft">
 // Copyright (c) Microsoft. All rights reserved.
 // </copyright>
@@ -52,22 +52,19 @@ namespace Icebreaker.Helpers
             this.documentClient = new DocumentClient(new Uri(endpointUrl), primaryKey);
 
             // Create the database if needed
-            Database db = await this.documentClient.CreateDatabaseIfNotExistsAsync(
-                new Database { Id = databaseName });     // Set the throughput at database level by default
+            Database db = await this.documentClient.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseName });
+          
             if (db != null)
             {
                 telemetry.TrackTrace($"Reference to database {db.Id} obtained successfully");
             }
 
-            var requestOptions = new RequestOptions()
-            {
-                OfferThroughput = DefaultRequestThroughput
-            };
+            var requestOptions = new RequestOptions { OfferThroughput = DefaultRequestThroughput };
 
             // Get a reference to the Teams collection, creating it if needed
             var teamsCollectionDefinition = new DocumentCollection
             {
-                Id = teamsCollectionName
+                Id = teamsCollectionName,
             };
             teamsCollectionDefinition.PartitionKey.Paths.Add("/teamId");
 
