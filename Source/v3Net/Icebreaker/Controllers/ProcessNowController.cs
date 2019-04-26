@@ -38,24 +38,24 @@ namespace Icebreaker.Controllers
         /// <param name="key">API key</param>
         /// <returns>Success (1) or failure (-1) code</returns>
         [Route("api/processnow/{key}")]
-        public int Get([FromUri]string key)
+        public IHttpActionResult Get([FromUri]string key)
         {
-            var keyMatches = object.Equals(key, CloudConfigurationManager.GetSetting("Key"));
+            var isKeyMatch = object.Equals(key, CloudConfigurationManager.GetSetting("Key"));
 
             var parameters = new Dictionary<string, string>
             {
-                { "KeyMatches", keyMatches.ToString() },
+                { "IsKeyMatch", isKeyMatch.ToString() },
             };
             this.telemetryClient.TrackEvent("ProcessNowRequest", parameters);
 
-            if (keyMatches)
+            if (isKeyMatch)
             {
                 HostingEnvironment.QueueBackgroundWorkItem(ct => this.MakePairs());
-                return 1;
+                return this.StatusCode(System.Net.HttpStatusCode.OK);
             }
             else
             {
-                return -1;
+                return this.Unauthorized();
             }
         }
 
