@@ -25,6 +25,7 @@ namespace Icebreaker.Helpers
 
         private readonly TelemetryClient telemetryClient;
         private readonly Lazy<Task> initializeTask;
+        private readonly long maxPairUpHistory;
         private DocumentClient documentClient;
         private DocumentCollection teamsCollection;
         private DocumentCollection usersCollection;
@@ -37,6 +38,7 @@ namespace Icebreaker.Helpers
         {
             this.telemetryClient = telemetryClient;
             this.initializeTask = new Lazy<Task>(() => this.InitializeAsync());
+            this.maxPairUpHistory = Convert.ToInt64(CloudConfigurationManager.GetSetting("MaxPairUpHistory"));
         }
 
         /// <summary>
@@ -191,13 +193,11 @@ namespace Icebreaker.Helpers
         {
             await this.EnsureInitializedAsync();
 
-            var maxPairUpHistory = Convert.ToInt64(CloudConfigurationManager.GetSetting("MaxPairUpHistory"));
-
             var user1Info = await this.GetUserInfoAsync(tenantId, user1Id);
             var user2Info = await this.GetUserInfoAsync(tenantId, user2Id);
 
             user1Info.RecentPairUps.Add(user2Info);
-            if (user1Info.RecentPairUps.Count >= maxPairUpHistory)
+            if (user1Info.RecentPairUps.Count >= this.maxPairUpHistory)
             {
                 user1Info.RecentPairUps.RemoveAt(0);
             }
@@ -206,7 +206,7 @@ namespace Icebreaker.Helpers
             await this.StoreUserInfoAsync(user1Info);
 
             user2Info.RecentPairUps.Add(user1Info);
-            if (user2Info.RecentPairUps.Count >= maxPairUpHistory)
+            if (user2Info.RecentPairUps.Count >= this.maxPairUpHistory)
             {
                 user2Info.RecentPairUps.RemoveAt(0);
             }
