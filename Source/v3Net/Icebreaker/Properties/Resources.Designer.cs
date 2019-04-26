@@ -79,7 +79,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If you&apos;re reading this, it&apos;s most likely because {0} added me to {1}. I get to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It&apos;s a win-win-*win* situation..
+        ///   Looks up a localized string similar to If you&apos;re reading this, it&apos;s most likely because {0} added me to the {1} Team. I get to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It&apos;s a win-win-*win* situation..
         /// </summary>
         internal static string InstallMessageKnownInstaller {
             get {
