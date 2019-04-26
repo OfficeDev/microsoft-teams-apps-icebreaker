@@ -19,7 +19,7 @@
             "metadata": {
                 "description": "This is the name of the bot that would show when the bot gives a reply"
             },
-            "defaultValue": "Meetuply"
+            "defaultValue": "Icebreaker"
         },
         "botDescription": {
             "type": "string",
@@ -32,7 +32,7 @@
             "metadata": {
                 "description": "This is the link to the icon for the bot and it must resolve to a PNG file"
             }, 
-            "defaultValue": "https://raw.githubusercontent.com/coderkrishna/TeamsMeetuplyBot/master/Source/v3Net/MeetupBot/manifest/color.png"
+            "defaultValue": "https://raw.githubusercontent.com/OfficeDev/microsoft-teams-icebreaker-app/master/Source/v3Net/Icebreaker/Manifest/color.png"
         },
         "key": {
             "type": "string",
