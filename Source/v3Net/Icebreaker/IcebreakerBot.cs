@@ -25,15 +25,15 @@ namespace Icebreaker
     public class IcebreakerBot
     {
         private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
-        private readonly Task<IcebreakerBotDataProvider> dataProviderFactoryTask;
+        private readonly IcebreakerBotDataProvider dataProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBot"/> class.
         /// </summary>
-        /// <param name="dataProviderFactoryTask">A task the produces the data provider to use</param>
-        public IcebreakerBot(Task<IcebreakerBotDataProvider> dataProviderFactoryTask)
+        /// <param name="dataProvider">The data provider to use</param>
+        public IcebreakerBot(IcebreakerBotDataProvider dataProvider)
         {
-            this.dataProviderFactoryTask = dataProviderFactoryTask;
+            this.dataProvider = dataProvider;
         }
 
         /// <summary>
@@ -54,8 +54,7 @@ namespace Icebreaker
             // When contacting the user in 1:1, give them the button to opt-out.
 
             // Get teams to which the app has been installed
-            var dataProvider = await this.dataProviderFactoryTask;
-            var teams = dataProvider.GetInstalledTeams();
+            var teams = await this.dataProvider.GetInstalledTeamsAsync();
 
             var countPairsNotified = 0;
             var maxPairUpsPerTeam = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"));
@@ -100,10 +99,9 @@ namespace Icebreaker
         /// <param name="tenantId">The tenant id</param>
         /// <param name="teamId">The team id</param>
         /// <returns>The team that the bot has been installed to</returns>
-        public async Task<TeamInstallInfo> GetInstalledTeam(string tenantId, string teamId)
+        public Task<TeamInstallInfo> GetInstalledTeam(string tenantId, string teamId)
         {
-            var dataProvider = await this.dataProviderFactoryTask;
-            return dataProvider.GetInstalledTeam(tenantId, teamId);
+            return this.dataProvider.GetInstalledTeamAsync(tenantId, teamId);
         }
 
         /// <summary>
@@ -171,10 +169,9 @@ namespace Icebreaker
         /// <param name="tenantId">The tenant id</param>
         /// <param name="botInstaller">Person that has added the bot to the team</param>
         /// <returns>Tracking task</returns>
-        public async Task SaveAddedToTeam(string serviceUrl, string teamId, string tenantId, string botInstaller)
+        public Task SaveAddedToTeam(string serviceUrl, string teamId, string tenantId, string botInstaller)
         {
-            var dataProvider = await this.dataProviderFactoryTask;
-            await dataProvider.UpdateTeamInstallStatusAsync(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId, InstallerName = botInstaller }, true);
+            return this.dataProvider.UpdateTeamInstallStatusAsync(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId, InstallerName = botInstaller }, true);
         }
 
         /// <summary>
@@ -184,10 +181,9 @@ namespace Icebreaker
         /// <param name="teamId">The team id</param>
         /// <param name="tenantId">The tenant id</param>
         /// <returns>Tracking task</returns>
-        public async Task SaveRemoveFromTeam(string serviceUrl, string teamId, string tenantId)
+        public Task SaveRemoveFromTeam(string serviceUrl, string teamId, string tenantId)
         {
-            var dataProvider = await this.dataProviderFactoryTask;
-            await dataProvider.UpdateTeamInstallStatusAsync(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, false);
+            return this.dataProvider.UpdateTeamInstallStatusAsync(new TeamInstallInfo() { ServiceUrl = serviceUrl, TeamId = teamId, TenantId = tenantId }, false);
         }
 
         /// <summary>
@@ -197,10 +193,9 @@ namespace Icebreaker
         /// <param name="userId">The user id</param>
         /// <param name="serviceUrl">The service url</param>
         /// <returns>Tracking task</returns>
-        public async Task OptOutUser(string tenantId, string userId, string serviceUrl)
+        public Task OptOutUser(string tenantId, string userId, string serviceUrl)
         {
-            var dataProvider = await this.dataProviderFactoryTask;
-            await dataProvider.SetUserInfoAsync(tenantId, userId, false, serviceUrl);
+            return this.dataProvider.SetUserInfoAsync(tenantId, userId, false, serviceUrl);
         }
 
         /// <summary>
@@ -210,10 +205,9 @@ namespace Icebreaker
         /// <param name="userId">The user id</param>
         /// <param name="serviceUrl">The service url</param>
         /// <returns>Tracking task</returns>
-        public async Task OptInUser(string tenantId, string userId, string serviceUrl)
+        public Task OptInUser(string tenantId, string userId, string serviceUrl)
         {
-            var dataProvider = await this.dataProviderFactoryTask;
-            await dataProvider.SetUserInfoAsync(tenantId, userId, true, serviceUrl);
+            return this.dataProvider.SetUserInfoAsync(tenantId, userId, true, serviceUrl);
         }
 
         /// <summary>
@@ -358,10 +352,9 @@ namespace Icebreaker
                 telemetry.TrackTrace("There are not enough members found");
             }
 
-            var dataProvider = await this.dataProviderFactoryTask;
             foreach (var member in members)
             {
-                var userInfo = dataProvider.GetUserInfo(teamInfo.TenantId, member.AsTeamsChannelAccount().ObjectId);
+                var userInfo = await this.dataProvider.GetUserInfoAsync(teamInfo.TenantId, member.AsTeamsChannelAccount().ObjectId);
                 if (userInfo == null || userInfo.OptedIn)
                 {
                     telemetry.TrackTrace($"Adding {member.Name} to the list at");
