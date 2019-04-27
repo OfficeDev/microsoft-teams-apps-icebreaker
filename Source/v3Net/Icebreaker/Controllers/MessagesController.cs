@@ -137,10 +137,11 @@ namespace Icebreaker
                 {
                     var botName = CloudConfigurationManager.GetSetting("BotDisplayName");
                     telemetryClient.TrackTrace($"Cannot process the following: {activity.Text}");
-                    replyText = Resources.IDontKnow;
+                    // replyText = Resources.IDontKnow;
 
-                    var replyActivity = activity.CreateReply(replyText);
-                    await connectorClient.Conversations.ReplyToActivityAsync(replyActivity);
+                    // var replyActivity = activity.CreateReply(replyText);
+                    // await connectorClient.Conversations.ReplyToActivityAsync(replyActivity);
+                    await this.HandleSystemActivity(connectorClient, activity);
                 }
             }
             catch (Exception ex)
@@ -203,6 +204,11 @@ namespace Icebreaker
                         // we were just removed from a team
                         await this.bot.SaveRemoveFromTeam(message.ServiceUrl, message.Conversation.Id, tenantId);
                     }
+                }
+                else
+                {
+                    var installedPlace = await this.bot.GetInstalledTeam(tenantId, teamsChannelData.Team.Id);
+                    await this.bot.WelcomeTeam(connectorClient, tenantId, message.Conversation.Id, installedPlace.InstallerName);
                 }
 
                 return null;
