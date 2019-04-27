@@ -190,24 +190,24 @@ namespace Icebreaker
         /// Opt out the user from further pairups
         /// </summary>
         /// <param name="tenantId">The tenant id</param>
-        /// <param name="userId">The user id</param>
+        /// <param name="userAadObjectId">The user AAD object id</param>
         /// <param name="serviceUrl">The service url</param>
         /// <returns>Tracking task</returns>
-        public Task OptOutUser(string tenantId, string userId, string serviceUrl)
+        public Task OptOutUser(string tenantId, string userAadObjectId, string serviceUrl)
         {
-            return this.dataProvider.SetUserInfoAsync(tenantId, userId, false, serviceUrl);
+            return this.dataProvider.SetUserInfoAsync(tenantId, userAadObjectId, false, serviceUrl);
         }
 
         /// <summary>
         /// Opt in the user to pairups
         /// </summary>
         /// <param name="tenantId">The tenant id</param>
-        /// <param name="userId">The user id</param>
+        /// <param name="userAadObjectId">The user AAD object id</param>
         /// <param name="serviceUrl">The service url</param>
         /// <returns>Tracking task</returns>
-        public Task OptInUser(string tenantId, string userId, string serviceUrl)
+        public Task OptInUser(string tenantId, string userAadObjectId, string serviceUrl)
         {
-            return this.dataProvider.SetUserInfoAsync(tenantId, userId, true, serviceUrl);
+            return this.dataProvider.SetUserInfoAsync(tenantId, userAadObjectId, true, serviceUrl);
         }
 
         /// <summary>

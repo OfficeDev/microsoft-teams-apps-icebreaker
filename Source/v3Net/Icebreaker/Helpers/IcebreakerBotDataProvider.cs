@@ -130,9 +130,9 @@ namespace Icebreaker.Helpers
         /// Get the stored information about the given user
         /// </summary>
         /// <param name="tenantId">Tenant id</param>
-        /// <param name="userId">User id</param>
+        /// <param name="userAadObjectId">User AAD object id</param>
         /// <returns>User information</returns>
-        public async Task<UserInfo> GetUserInfoAsync(string tenantId, string userId)
+        public async Task<UserInfo> GetUserInfoAsync(string tenantId, string userAadObjectId)
         {
             telemetry.TrackTrace("Hit the GetUserInfo method");
 
@@ -145,7 +145,7 @@ namespace Icebreaker.Helpers
             try
             {
                 var lookupQuery = this.documentClient.CreateDocumentQuery<UserInfo>(this.usersCollection.SelfLink, queryOptions)
-                    .Where(f => f.TenantId == tenantId && f.UserId == userId);
+                    .Where(f => f.TenantId == tenantId && f.UserAadObjectId == userAadObjectId);
                 var match = lookupQuery.ToList();
                 return match.FirstOrDefault();
             }
@@ -160,11 +160,11 @@ namespace Icebreaker.Helpers
         /// Set the user info for the given user
         /// </summary>
         /// <param name="tenantId">Tenant id</param>
-        /// <param name="userId">User id</param>
+        /// <param name="userAadObjectId">User AAD object id</param>
         /// <param name="optedIn">User opt-in status</param>
         /// <param name="serviceUrl">User service URL</param>
         /// <returns>Tracking task</returns>
-        public async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl)
+        public async Task SetUserInfoAsync(string tenantId, string userAadObjectId, bool optedIn, string serviceUrl)
         {
             telemetry.TrackTrace("Hit the method - SetUserInfoAsync");
 
@@ -173,7 +173,7 @@ namespace Icebreaker.Helpers
             var obj = new UserInfo()
             {
                 TenantId = tenantId,
-                UserId = userId,
+                UserAadObjectId = userAadObjectId,
                 OptedIn = optedIn,
                 ServiceUrl = serviceUrl
             };
@@ -183,7 +183,7 @@ namespace Icebreaker.Helpers
             Dictionary<string, string> setUserOptInProps = new Dictionary<string, string>()
             {
                 { "tenantId", tenantId },
-                { "userId", userId },
+                { "userId", userAadObjectId },
                 { "optedIn", optedIn.ToString() },
                 { "serviceUrl", serviceUrl }
             };
@@ -195,17 +195,17 @@ namespace Icebreaker.Helpers
         /// Stores the given pairup
         /// </summary>
         /// <param name="tenantId">Tenant id</param>
-        /// <param name="user1Id">First user</param>
-        /// <param name="user2Id">Second user</param>
+        /// <param name="user1AadObjectId">First user</param>
+        /// <param name="user2AadObjectId">Second user</param>
         /// <returns>Tracking task</returns>
-        public async Task StorePairupAsync(string tenantId, string user1Id, string user2Id)
+        public async Task StorePairupAsync(string tenantId, string user1AadObjectId, string user2AadObjectId)
         {
             await this.EnsureInitializedAsync();
 
             var maxPairUpHistory = Convert.ToInt64(CloudConfigurationManager.GetSetting("MaxPairUpHistory"));
 
-            var user1Info = await this.GetUserInfoAsync(tenantId, user1Id);
-            var user2Info = await this.GetUserInfoAsync(tenantId, user2Id);
+            var user1Info = await this.GetUserInfoAsync(tenantId, user1AadObjectId);
+            var user2Info = await this.GetUserInfoAsync(tenantId, user2AadObjectId);
 
             user1Info.RecentPairUps.Add(user2Info);
             if (user1Info.RecentPairUps.Count >= maxPairUpHistory)
@@ -213,7 +213,7 @@ namespace Icebreaker.Helpers
                 user1Info.RecentPairUps.RemoveAt(0);
             }
 
-            telemetry.TrackTrace($"Having the PairUp stored for - {user1Id} inside of {tenantId}");
+            telemetry.TrackTrace($"Having the PairUp stored for - {user1AadObjectId} inside of {tenantId}");
             await this.StoreUserInfoAsync(user1Info);
 
             user2Info.RecentPairUps.Add(user1Info);
@@ -222,7 +222,7 @@ namespace Icebreaker.Helpers
                 user2Info.RecentPairUps.RemoveAt(0);
             }
 
-            telemetry.TrackTrace($"Having the PairUp stored for - {user2Id} inside of {tenantId}");
+            telemetry.TrackTrace($"Having the PairUp stored for - {user2AadObjectId} inside of {tenantId}");
             await this.StoreUserInfoAsync(user2Info);
         }
 
