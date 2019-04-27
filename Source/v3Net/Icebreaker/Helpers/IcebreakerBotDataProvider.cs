@@ -49,6 +49,8 @@ namespace Icebreaker.Helpers
         {
             await this.EnsureInitializedAsync();
 
+            await this.EnsureInitializedAsync();
+
             if (installed)
             {
                 var response = await this.documentClient.UpsertDocumentAsync(this.teamsCollection.SelfLink, team);
@@ -75,6 +77,8 @@ namespace Icebreaker.Helpers
         /// <returns>List of installed teams</returns>
         public async Task<IList<TeamInstallInfo>> GetInstalledTeamsAsync()
         {
+            await this.EnsureInitializedAsync();
+
             await this.EnsureInitializedAsync();
 
             // Find matching activities
@@ -104,6 +108,8 @@ namespace Icebreaker.Helpers
         {
             await this.EnsureInitializedAsync();
 
+            await this.EnsureInitializedAsync();
+
             // Get team install info
             try
             {
@@ -128,6 +134,8 @@ namespace Icebreaker.Helpers
         /// <returns>User information</returns>
         public async Task<UserInfo> GetUserInfoAsync(string tenantId, string userId)
         {
+            await this.EnsureInitializedAsync();
+
             await this.EnsureInitializedAsync();
 
             // Set some common query options
