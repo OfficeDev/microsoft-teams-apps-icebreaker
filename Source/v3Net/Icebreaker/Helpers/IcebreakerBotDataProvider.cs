@@ -8,13 +8,13 @@ namespace Icebreaker.Helpers
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.Azure;
     using Microsoft.Azure.Documents;
     using Microsoft.Azure.Documents.Client;
+    using Microsoft.Azure.Documents.Linq;
 
     /// <summary>
     /// Data provider routines
@@ -28,6 +28,7 @@ namespace Icebreaker.Helpers
 
         private readonly Lazy<Task> initializeTask;
         private DocumentClient documentClient;
+        private Database database;
         private DocumentCollection teamsCollection;
         private DocumentCollection usersCollection;
 
@@ -57,17 +58,8 @@ namespace Icebreaker.Helpers
             }
             else
             {
-                var partitionKey = new PartitionKey(team.TeamId);
-
-                var lookupQuery = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(
-                    this.teamsCollection.SelfLink, new FeedOptions { MaxItemCount = -1, PartitionKey = partitionKey })
-                    .Where(t => t.TeamId == team.TeamId);
-
-                var match = lookupQuery.ToList();
-                if (match.Count > 0)
-                {
-                    var response = this.documentClient.DeleteDocumentAsync(match.First().SelfLink, new RequestOptions { PartitionKey = partitionKey });
-                }
+                var documentUri = UriFactory.CreateDocumentUri(this.database.Id, this.teamsCollection.Id, team.Id);
+                var response = await this.documentClient.DeleteDocumentAsync(documentUri);
             }
         }
 
@@ -81,21 +73,25 @@ namespace Icebreaker.Helpers
 
             await this.EnsureInitializedAsync();
 
-            // Find matching activities
+            var installedTeams = new List<TeamInstallInfo>();
+
             try
             {
-                var queryOptions = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
-                var lookupQuery = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(this.teamsCollection.SelfLink, queryOptions);
-                var match = lookupQuery.ToList();
-                return match;
+                var lookupQuery = this.documentClient
+                    .CreateDocumentQuery<TeamInstallInfo>(this.teamsCollection.SelfLink)
+                    .AsDocumentQuery();
+                while (lookupQuery.HasMoreResults)
+                {
+                    var response = await lookupQuery.ExecuteNextAsync<TeamInstallInfo>();
+                    installedTeams.AddRange(response);
+                }
             }
             catch (Exception ex)
             {
                 telemetry.TrackException(ex.InnerException);
-
-                // Return no teams if we hit an error fetching
-                return new List<TeamInstallInfo>();
             }
+
+            return installedTeams;
         }
 
         /// <summary>
@@ -113,11 +109,8 @@ namespace Icebreaker.Helpers
             // Get team install info
             try
             {
-                var queryOptions = new FeedOptions { MaxItemCount = -1, PartitionKey = new PartitionKey(teamId) };
-                var results = this.documentClient.CreateDocumentQuery<TeamInstallInfo>(this.teamsCollection.SelfLink, queryOptions)
-                    .Where(f => f.TenantId == tenantId && f.TeamId == teamId);
-                var match = results.ToList();
-                return match.FirstOrDefault();
+                var documentUri = UriFactory.CreateDocumentUri(this.database.Id, this.teamsCollection.Id, teamId);
+                return await this.documentClient.ReadDocumentAsync<TeamInstallInfo>(documentUri);
             }
             catch (Exception ex)
             {
@@ -138,16 +131,11 @@ namespace Icebreaker.Helpers
 
             await this.EnsureInitializedAsync();
 
-            // Set some common query options
-            FeedOptions queryOptions = new FeedOptions { MaxItemCount = -1, PartitionKey = new PartitionKey(tenantId) };
-
             // Find matching activities
             try
             {
-                var lookupQuery = this.documentClient.CreateDocumentQuery<UserInfo>(this.usersCollection.SelfLink, queryOptions)
-                    .Where(f => f.TenantId == tenantId && f.UserId == userId);
-                var match = lookupQuery.ToList();
-                return match.FirstOrDefault();
+                var documentUri = UriFactory.CreateDocumentUri(this.database.Id, this.usersCollection.Id, userId);
+                return await this.documentClient.ReadDocumentAsync<UserInfo>(documentUri);
             }
             catch (Exception ex)
             {
@@ -241,10 +229,10 @@ namespace Icebreaker.Helpers
             this.documentClient = new DocumentClient(new Uri(endpointUrl), primaryKey);
 
             // Create the database if needed
-            Database db = await this.documentClient.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseName });
-            if (db != null)
+            this.database = await this.documentClient.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseName });
+            if (this.database != null)
             {
-                telemetry.TrackTrace($"Reference to database {db.Id} obtained successfully");
+                telemetry.TrackTrace($"Reference to database {this.database.Id} obtained successfully");
             }
 
             var requestOptions = new RequestOptions { OfferThroughput = DefaultRequestThroughput };
@@ -254,9 +242,8 @@ namespace Icebreaker.Helpers
             {
                 Id = teamsCollectionName,
             };
-            teamsCollectionDefinition.PartitionKey.Paths.Add("/teamId");
 
-            this.teamsCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(db.SelfLink, teamsCollectionDefinition, requestOptions);
+            this.teamsCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, teamsCollectionDefinition, requestOptions);
             if (this.teamsCollection != null)
             {
                 telemetry.TrackTrace($"Reference to Teams collection database {this.teamsCollection.Id} obtained successfully");
@@ -267,9 +254,8 @@ namespace Icebreaker.Helpers
             {
                 Id = usersCollectionName
             };
-            usersCollectionDefinition.PartitionKey.Paths.Add("/tenantId");
 
-            this.usersCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(db.SelfLink, usersCollectionDefinition, requestOptions);
+            this.usersCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, usersCollectionDefinition, requestOptions);
             if (this.usersCollection != null)
             {
                 telemetry.TrackTrace($"Reference to Users collection database {this.usersCollection.Id} obtained successfully");
