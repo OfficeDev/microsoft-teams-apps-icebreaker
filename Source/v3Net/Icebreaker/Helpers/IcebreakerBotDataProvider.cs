@@ -100,10 +100,9 @@ namespace Icebreaker.Helpers
         /// <summary>
         /// Returns the team that the bot has been installed to
         /// </summary>
-        /// <param name="tenantId">The tenant id</param>
         /// <param name="teamId">The team id</param>
         /// <returns>Team that the bot is installed to</returns>
-        public async Task<TeamInstallInfo> GetInstalledTeamAsync(string tenantId, string teamId)
+        public async Task<TeamInstallInfo> GetInstalledTeamAsync(string teamId)
         {
             telemetry.TrackTrace("Hit the GetInstalledTeam method");
 
@@ -125,10 +124,9 @@ namespace Icebreaker.Helpers
         /// <summary>
         /// Get the stored information about the given user
         /// </summary>
-        /// <param name="tenantId">Tenant id</param>
         /// <param name="userId">User id</param>
         /// <returns>User information</returns>
-        public async Task<UserInfo> GetUserInfoAsync(string tenantId, string userId)
+        public async Task<UserInfo> GetUserInfoAsync(string userId)
         {
             telemetry.TrackTrace("Hit the GetUserInfo method");
 
@@ -195,8 +193,8 @@ namespace Icebreaker.Helpers
 
             var maxPairUpHistory = Convert.ToInt64(CloudConfigurationManager.GetSetting("MaxPairUpHistory"));
 
-            var user1Info = await this.GetUserInfoAsync(tenantId, user1Id);
-            var user2Info = await this.GetUserInfoAsync(tenantId, user2Id);
+            var user1Info = await this.GetUserInfoAsync(user1Id);
+            var user2Info = await this.GetUserInfoAsync(user2Id);
 
             user1Info.RecentPairUps.Add(user2Info);
             if (user1Info.RecentPairUps.Count >= maxPairUpHistory)
