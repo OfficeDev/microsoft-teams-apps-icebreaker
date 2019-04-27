@@ -10,6 +10,7 @@ namespace Icebreaker.Helpers
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
+    using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.Azure;
     using Microsoft.Azure.Documents;
@@ -59,7 +60,7 @@ namespace Icebreaker.Helpers
             else
             {
                 var documentUri = UriFactory.CreateDocumentUri(this.database.Id, this.teamsCollection.Id, team.Id);
-                var response = await this.documentClient.DeleteDocumentAsync(documentUri);
+                var response = await this.documentClient.DeleteDocumentAsync(documentUri, new RequestOptions { PartitionKey = new PartitionKey(team.Id) });
             }
         }
 
@@ -77,13 +78,15 @@ namespace Icebreaker.Helpers
 
             try
             {
-                var lookupQuery = this.documentClient
-                    .CreateDocumentQuery<TeamInstallInfo>(this.teamsCollection.SelfLink)
-                    .AsDocumentQuery();
-                while (lookupQuery.HasMoreResults)
+                using (var lookupQuery = this.documentClient
+                    .CreateDocumentQuery<TeamInstallInfo>(this.teamsCollection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true })
+                    .AsDocumentQuery())
                 {
-                    var response = await lookupQuery.ExecuteNextAsync<TeamInstallInfo>();
-                    installedTeams.AddRange(response);
+                    while (lookupQuery.HasMoreResults)
+                    {
+                        var response = await lookupQuery.ExecuteNextAsync<TeamInstallInfo>();
+                        installedTeams.AddRange(response);
+                    }
                 }
             }
             catch (Exception ex)
@@ -110,7 +113,7 @@ namespace Icebreaker.Helpers
             try
             {
                 var documentUri = UriFactory.CreateDocumentUri(this.database.Id, this.teamsCollection.Id, teamId);
-                return await this.documentClient.ReadDocumentAsync<TeamInstallInfo>(documentUri);
+                return await this.documentClient.ReadDocumentAsync<TeamInstallInfo>(documentUri, new RequestOptions { PartitionKey = new PartitionKey(teamId) });
             }
             catch (Exception ex)
             {
@@ -135,7 +138,7 @@ namespace Icebreaker.Helpers
             try
             {
                 var documentUri = UriFactory.CreateDocumentUri(this.database.Id, this.usersCollection.Id, userId);
-                return await this.documentClient.ReadDocumentAsync<UserInfo>(documentUri);
+                return await this.documentClient.ReadDocumentAsync<UserInfo>(documentUri, new RequestOptions { PartitionKey = new PartitionKey(userId) });
             }
             catch (Exception ex)
             {
@@ -228,38 +231,44 @@ namespace Icebreaker.Helpers
 
             this.documentClient = new DocumentClient(new Uri(endpointUrl), primaryKey);
 
-            // Create the database if needed
-            this.database = await this.documentClient.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseName });
-            if (this.database != null)
-            {
-                telemetry.TrackTrace($"Reference to database {this.database.Id} obtained successfully");
-            }
-
             var requestOptions = new RequestOptions { OfferThroughput = DefaultRequestThroughput };
+            bool useSharedOffer = true;
+
+            // Create the database if needed
+            try
+            {
+                this.database = await this.documentClient.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseName }, requestOptions);
+            }
+            catch (DocumentClientException ex)
+            {
+                if (ex.Error?.Message?.Contains("SharedOffer is Disabled") ?? false)
+                {
+                    telemetry.TrackTrace("Database shared offer is disabled for the account, will provision throughput at container level", SeverityLevel.Information);
+                    useSharedOffer = false;
+
+                    this.database = await this.documentClient.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseName });
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
             // Get a reference to the Teams collection, creating it if needed
             var teamsCollectionDefinition = new DocumentCollection
             {
                 Id = teamsCollectionName,
             };
-
-            this.teamsCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, teamsCollectionDefinition, requestOptions);
-            if (this.teamsCollection != null)
-            {
-                telemetry.TrackTrace($"Reference to Teams collection database {this.teamsCollection.Id} obtained successfully");
-            }
+            teamsCollectionDefinition.PartitionKey.Paths.Add("/id");
+            this.teamsCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, teamsCollectionDefinition, useSharedOffer ? null : requestOptions);
 
             // Get a reference to the Users collection, creating it if needed
             var usersCollectionDefinition = new DocumentCollection
             {
                 Id = usersCollectionName
             };
-
-            this.usersCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, usersCollectionDefinition, requestOptions);
-            if (this.usersCollection != null)
-            {
-                telemetry.TrackTrace($"Reference to Users collection database {this.usersCollection.Id} obtained successfully");
-            }
+            usersCollectionDefinition.PartitionKey.Paths.Add("/id");
+            this.usersCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, usersCollectionDefinition, useSharedOffer ? null : requestOptions);
         }
 
         private Task EnsureInitializedAsync()
@@ -267,9 +276,9 @@ namespace Icebreaker.Helpers
             return this.initializeTask.Value;
         }
 
-        private async Task StoreUserInfoAsync(UserInfo obj)
+        private async Task StoreUserInfoAsync(UserInfo userInfo)
         {
-            await this.documentClient.UpsertDocumentAsync(this.usersCollection.SelfLink, obj);
+            await this.documentClient.UpsertDocumentAsync(this.usersCollection.SelfLink, userInfo);
         }
     }
 }
