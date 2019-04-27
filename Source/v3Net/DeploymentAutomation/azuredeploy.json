@@ -102,8 +102,8 @@
         }
     },
     "variables": {
-        "botName": "[concat('meetup-', uniqueString(resourceGroup().id))]",
-        "CosmosDbName":"[concat('meetuplydb-', uniqueString(resourceGroup().id))]",
+        "botName": "[concat('icebreaker-', uniqueString(resourceGroup().id))]",
+        "CosmosDbName":"[concat('icebreakdb-', uniqueString(resourceGroup().id))]",
         "defaultExperience":"Core (SQL)",
         "logicAppName":"icebreakerALA",
         "meetuplyAppInsightsName": "iceBreakerInsights"

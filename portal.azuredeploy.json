@@ -49,7 +49,7 @@
         "branch": {
             "type": "string",
             "metadata": {
-                "description": "If there are some custom code changes that were made to the Meetuply source code on a separate branch, include the branch name here"
+                "description": "If there are some custom code changes that were made to the Icebreaker source code on a separate branch, include the branch name here"
             },
             "defaultValue": "master"
         },
@@ -197,7 +197,7 @@
         "logicAppTimeZone": {
             "type":"string", 
             "metadata": {
-                "description": "If there are some custom code changes that were made to the Meetuply source code on a separate branch, include the branch name here"
+                "description": "If there are some custom code changes that were made to the Icebreaker source code on a separate branch, include the branch name here"
             },
             "defaultValue": "Pacific Standard Time"
         }
