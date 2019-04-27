@@ -33,11 +33,10 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <param name="secondPersonName">First name of the matched person</param>
         /// <param name="firstPersonFirstName">First name of the first person</param>
         /// <param name="secondPersonFirstName">First name of the second person</param>
-        /// <param name="receiverName">Name of the receiver</param>
         /// <param name="personUpn">UPN of the person</param>
         /// <param name="botDisplayName">This is the display name of the bot that is set from the deployment</param>
         /// <returns>Pairup notification card</returns>
-        public static string GetCard(string teamName, string firstPersonName, string secondPersonName, string firstPersonFirstName, string secondPersonFirstName, string receiverName, string personUpn, string botDisplayName)
+        public static string GetCard(string teamName, string firstPersonName, string secondPersonName, string firstPersonFirstName, string secondPersonFirstName, string personUpn, string botDisplayName)
         {
             var title = string.Format(Resources.MeetupTitle, firstPersonFirstName, secondPersonFirstName);
             var escapedTitle = Uri.EscapeDataString(title);
