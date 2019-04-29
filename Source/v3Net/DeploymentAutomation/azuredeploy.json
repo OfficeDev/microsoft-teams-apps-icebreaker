@@ -52,13 +52,7 @@
                 "description": "If there are some custom code changes that were made to the Icebreaker source code on a separate branch, include the branch name here"
             },
             "defaultValue": "master"
-        }, 
-        "feedbackEmail": {
-            "type":"string", 
-            "metadata": {
-                "description": "The contact email address to give feedback"
-            }
-        }, 
+        },
         "logicAppFrequency": {
             "type":"string", 
             "metadata": {
@@ -248,10 +242,6 @@
                         {
                             "name": "WEBSITE_NODE_DEFAULT_VERSION",
                             "value": "8.9.4"
-                        }, 
-                        {
-                            "name": "ContactEmail", 
-                            "value": "[parameters('feedbackEmail')]"
                         },
                         {
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",

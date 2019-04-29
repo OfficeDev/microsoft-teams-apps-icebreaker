@@ -36,12 +36,9 @@ $appLogoLocation = -Join($appLogoFolder, '\Assets\logo.jpg')
 $repoUrl = Read-Host -Prompt "Please provide the GitHub URL for your app"
 $branch = Read-Host -Prompt "Enter the branch name (i.e. master)"
 
-# Getting the feedback email address
-$contactEmail = Read-Host -Prompt "Provide an email address to use for providing feedback"
-
 # Getting the details for the logic app
-$logicAppFrequency = Read-Host -Prompt "Enter how frequently this app will pair up team members (i.e. Month, or Week)"
-$logicAppInterval = [int](Read-Host -Prompt "Enter the interval (i.e. an integer value. If you enter 1 with a frequency of Week then the pairing will happen weekly [recommended])")
+$logicAppFrequency = "Week"
+$logicAppInterval = 1
 $logicAppHour = [int](Read-Host -Prompt "Enter a value for the hour between 0 and 23")
 $logicAppMins = [int](Read-Host -Prompt "Enter a value for the minutes between 0 and 59")
 $logicAppDOW = Read-Host -Prompt "Enter a day of the week when the the bot will pair the team members"
@@ -85,9 +82,6 @@ $ParametersTemplate = @{
         }
         branch = @{
             "value" = $branch
-        }
-        feedbackEmail = @{
-            "value" = $contactEmail
         }
         logicAppFrequency = @{
             "value" = $logicAppFrequency
