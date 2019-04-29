@@ -147,7 +147,7 @@ namespace Icebreaker
 
                     // var replyActivity = activity.CreateReply(replyText);
                     // await connectorClient.Conversations.ReplyToActivityAsync(replyActivity);
-                    await this.HandleSystemActivity(connectorClient, activity);
+                    await this.RefireWelcomeTour(connectorClient, activity);
                 }
             }
             catch (Exception ex)
@@ -270,6 +270,14 @@ namespace Icebreaker
                 { "Platform", clientInfoEntity?.Properties["platform"]?.ToString() }
             };
             this.telemetryClient.TrackEvent("UserActivity", properties);
+        }
+
+        private async Task<Activity> RefireWelcomeTour(ConnectorClient connectorClient, Activity message)
+        {
+            var teamsChannelData = message.GetChannelData<TeamsChannelData>();
+            var installedPlace = await this.bot.GetInstalledTeam(teamsChannelData.Team.Id);
+            await this.bot.WelcomeTeam(connectorClient, message.Conversation.Id, installedPlace.InstallerName);
+            return null;
         }
     }
 }
