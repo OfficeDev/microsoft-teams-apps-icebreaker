@@ -109,7 +109,7 @@
         "CosmosDbName":"[concat('icebreakdb-', uniqueString(resourceGroup().id))]",
         "defaultExperience":"Core (SQL)",
         "logicAppName":"icebreakerALA",
-        "meetuplyAppInsightsName": "icebreakerInsights"
+        "appInsightsName": "icebreakerInsights"
     },
     "resources": [
         {
@@ -128,7 +128,7 @@
                 "endpoint": "[concat('https://', variables('botName'), '-svc.azurewebsites.net/api/messages')]",
                 "iconUrl": "[parameters('iconUrl')]",
                 "msaAppId":"[parameters('botAppID')]",
-                "developerAppInsightKey": "[reference(resourceId('Microsoft.Insights/components', variables('meetuplyAppInsightsName')), '2015-05-01').InstrumentationKey]"
+                "developerAppInsightKey": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2015-05-01').InstrumentationKey]"
             },
             "resources": [
                 {
@@ -193,7 +193,7 @@
                         "hostType": "Repository"
                     }
                 ],
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', 'meetuplyHostingPlan')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', 'icebreakerHostingPlan')]",
                 "reserved": false,
                 "siteConfig": {
                    "appSettings": [
@@ -255,7 +255,7 @@
                         },
                         {
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('meetuplyAppInsightsName')), '2015-05-01').InstrumentationKey]"
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2015-05-01').InstrumentationKey]"
                         }
                     ]
                 },
@@ -372,7 +372,7 @@
             "dependsOn": []
         },
         {
-            "name": "[variables('meetuplyAppInsightsName')]",
+            "name": "[variables('appInsightsName')]",
             "type": "Microsoft.Insights/components",
             "kind": "other",
             "apiVersion": "2015-05-01",

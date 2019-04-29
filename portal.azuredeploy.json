@@ -209,8 +209,8 @@
         }
     },
     "variables": {
-        "botName": "[concat('meetup-', uniqueString(resourceGroup().id))]",
-        "CosmosDbName":"[concat('meetuplydb-', uniqueString(resourceGroup().id))]",
+        "botName": "[concat('icebreaker-', uniqueString(resourceGroup().id))]",
+        "CosmosDbName":"[concat('icebreaker-', uniqueString(resourceGroup().id))]",
         "defaultExperience":"Core (SQL)",
         "logicAppName":"icebreakerALA",
         "appInsightsName": "icebreakerAppInsights"
@@ -297,7 +297,7 @@
                         "hostType": "Repository"
                     }
                 ],
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', 'meetuplyHostingPlan')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', 'icebreakerHostingPlan')]",
                 "reserved": false,
                 "siteConfig": {
                     "appSettings": [
