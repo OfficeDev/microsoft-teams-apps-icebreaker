@@ -96,12 +96,11 @@ namespace Icebreaker
         /// <summary>
         /// Method that will return the information of the installed team
         /// </summary>
-        /// <param name="tenantId">The tenant id</param>
         /// <param name="teamId">The team id</param>
         /// <returns>The team that the bot has been installed to</returns>
-        public Task<TeamInstallInfo> GetInstalledTeam(string tenantId, string teamId)
+        public Task<TeamInstallInfo> GetInstalledTeam(string teamId)
         {
-            return this.dataProvider.GetInstalledTeamAsync(tenantId, teamId);
+            return this.dataProvider.GetInstalledTeamAsync(teamId);
         }
 
         /// <summary>
@@ -354,7 +353,7 @@ namespace Icebreaker
 
             foreach (var member in members)
             {
-                var userInfo = await this.dataProvider.GetUserInfoAsync(teamInfo.TenantId, member.AsTeamsChannelAccount().ObjectId);
+                var userInfo = await this.dataProvider.GetUserInfoAsync(member.AsTeamsChannelAccount().ObjectId);
                 if (userInfo == null || userInfo.OptedIn)
                 {
                     telemetry.TrackTrace($"Adding {member.Name} to the list at");

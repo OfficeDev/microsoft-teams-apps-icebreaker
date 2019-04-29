@@ -191,7 +191,7 @@ namespace Icebreaker
                             {
                                 telemetryClient.TrackTrace($"Adding a new member: {member.Id}");
 
-                                var installedTeam = await this.bot.GetInstalledTeam(tenantId, teamsChannelData.Team.Id);
+                                var installedTeam = await this.bot.GetInstalledTeam(teamsChannelData.Team.Id);
                                 await this.bot.WelcomeUser(connectorClient, member.Id, tenantId, teamsChannelData.Team.Id, installedTeam.InstallerName);
                             }
                         }
