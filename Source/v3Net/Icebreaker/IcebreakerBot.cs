@@ -349,13 +349,13 @@ namespace Icebreaker
                         Id = teamId
                     },
                     Attachments = new List<Attachment>()
-                {
-                    new Attachment()
                     {
-                        ContentType = "application/vnd.microsoft.card.adaptive",
-                        Content = JsonConvert.DeserializeObject(cardToSend)
+                        new Attachment()
+                        {
+                            ContentType = "application/vnd.microsoft.card.adaptive",
+                            Content = JsonConvert.DeserializeObject(cardToSend)
+                        }
                     }
-                }
                 };
 
                 await connectorClient.Conversations.SendToConversationAsync(activity);
