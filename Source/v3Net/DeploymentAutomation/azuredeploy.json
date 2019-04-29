@@ -1,9 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "metadata": {
-        "author": "Pranav S. Krishnamurthy"
-    },
     "parameters": {
         "botAppID": {
             "type": "string",
@@ -99,6 +96,12 @@
             "metadata": {
                 "description": "The time zone in which the pair ups will happen"
             }
+        },
+        "manifestAppId": {
+            "type": "string", 
+            "metadata": {
+                "description": "This is the external ID of the application manifest"
+            }
         }
     },
     "variables": {
@@ -106,7 +109,7 @@
         "CosmosDbName":"[concat('icebreakdb-', uniqueString(resourceGroup().id))]",
         "defaultExperience":"Core (SQL)",
         "logicAppName":"icebreakerALA",
-        "meetuplyAppInsightsName": "iceBreakerInsights"
+        "meetuplyAppInsightsName": "icebreakerInsights"
     },
     "resources": [
         {
@@ -154,13 +157,13 @@
            "type":"Microsoft.Web/serverfarms",
            "apiVersion": "2018-02-01", 
            "location": "[resourceGroup().location]", 
-           "name": "meetuplyHostingPlan", 
+           "name": "icebreakerHostingPlan", 
            "sku": {
                "name": "S1", 
                "capacity": "0"
            }, 
            "properties": {
-               "name": "meetuplyHostingPlan"
+               "name": "icebreakerHostingPlan"
            }
         },
         {
@@ -201,6 +204,10 @@
                         {
                             "name": "microsoftAppPassword",
                             "value": "[parameters('botApplicationPassword')]"
+                        },
+                        {
+                            "name": "ManifestAppId",
+                            "value": "[parameters('manifestAppId')]"
                         },
                         {
                             "name": "CosmosDBKey", 
@@ -264,7 +271,7 @@
                 "httpsOnly": false
             },
             "dependsOn": [
-                "[concat('Microsoft.Web/serverfarms/', 'meetuplyHostingPlan')]"
+                "[concat('Microsoft.Web/serverfarms/', 'icebreakerHostingPlan')]"
             ],
             "resources":[
                 {
@@ -315,7 +322,6 @@
             }
         }, 
         {
-            "comments": "This is the Azure Logic App that replaces the scheduled job", 
             "name": "[variables('logicAppName')]", 
             "type": "Microsoft.Logic/workflows", 
             "apiVersion": "2016-06-01", 

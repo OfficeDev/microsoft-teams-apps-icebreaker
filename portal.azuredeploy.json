@@ -200,14 +200,20 @@
                 "description": "If there are some custom code changes that were made to the Icebreaker source code on a separate branch, include the branch name here"
             },
             "defaultValue": "Pacific Standard Time"
+        },
+        "manifestAppId": {
+            "type":"string", 
+            "metadata": {
+                "description": "The external ID of the application manifest"
+            }
         }
     },
     "variables": {
         "botName": "[concat('meetup-', uniqueString(resourceGroup().id))]",
         "CosmosDbName":"[concat('meetuplydb-', uniqueString(resourceGroup().id))]",
         "defaultExperience":"Core (SQL)",
-        "logicAppName":"meetuplyALA",
-        "meetuplyAppInsightsName": "appInsightsMeetuply"
+        "logicAppName":"icebreakerALA",
+        "appInsightsName": "icebreakerAppInsights"
     },
     "resources": [
         {
@@ -226,7 +232,7 @@
                 "endpoint": "[concat('https://', variables('botName'), '-svc.azurewebsites.net/api/messages')]",
                 "iconUrl": "[parameters('iconUrl')]",
                 "msaAppId":"[parameters('botAppID')]",
-                "developerAppInsightKey": "[reference(resourceId('Microsoft.Insights/components', variables('meetuplyAppInsightsName')), '2015-05-01').InstrumentationKey]"
+                "developerAppInsightKey": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2015-05-01').InstrumentationKey]"
             },
             "resources": [
                 {
@@ -255,13 +261,13 @@
             "type": "Microsoft.Web/serverfarms",
             "apiVersion": "2018-02-01",
             "location": "[resourceGroup().location]",
-            "name": "meetuplyHostingPlan",
+            "name": "icebreakerHostingPlan",
             "sku": {
                 "name": "S1",
                 "capacity": "0"
             },
             "properties": {
-                "name": "meetuplyHostingPlan"
+                "name": "icebreakerHostingPlan"
             }
         },
         {
@@ -302,6 +308,10 @@
                         {
                             "name": "microsoftAppPassword",
                             "value": "[parameters('botApplicationPassword')]"
+                        },
+                        {
+                            "name": "ManifestAppId", 
+                            "value": "[parameters('manifestAppId')]"
                         },
                         {
                             "name": "CosmosDBKey",
@@ -348,8 +358,8 @@
                             "value": "[parameters('feedbackEmail')]"
                         },
                         {
-                            "name": "AppInsightsInstrumentationKey", 
-                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('meetuplyAppInsightsName')), '2015-05-01').InstrumentationKey]"
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY", 
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2015-05-01').InstrumentationKey]"
                         }
                     ]
                 },
@@ -365,7 +375,7 @@
                 "httpsOnly": false
             },
             "dependsOn": [
-                "[concat('Microsoft.Web/serverfarms/', 'meetuplyHostingPlan')]"
+                "[concat('Microsoft.Web/serverfarms/', 'icebreakerHostingPlan')]"
             ],
             "resources": [
                 {
@@ -466,7 +476,7 @@
             "dependsOn": []
         },
         {
-            "name": "[variables('meetuplyAppInsightsName')]",
+            "name": "[variables('appInsightsName')]",
             "type": "Microsoft.Insights/components",
             "kind": "other",
             "apiVersion": "2015-05-01",
