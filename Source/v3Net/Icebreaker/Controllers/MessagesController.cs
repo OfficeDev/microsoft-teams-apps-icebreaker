@@ -207,7 +207,7 @@ namespace Icebreaker
                 }
                 else
                 {
-                    var installedPlace = await this.bot.GetInstalledTeam(tenantId, teamsChannelData.Team.Id);
+                    var installedPlace = await this.bot.GetInstalledTeam(teamsChannelData.Team.Id);
                     await this.bot.WelcomeTeam(connectorClient, tenantId, message.Conversation.Id, installedPlace.InstallerName);
                 }
 
