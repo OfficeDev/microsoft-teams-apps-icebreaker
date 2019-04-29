@@ -14,10 +14,8 @@ namespace Icebreaker
     using System.Threading.Tasks;
     using System.Web.Http;
     using Microsoft.ApplicationInsights;
-    using Microsoft.ApplicationInsights.Extensibility;
-    using Microsoft.Azure;
+    using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.Bot.Connector;
-    using Microsoft.Bot.Connector.Teams;
     using Microsoft.Bot.Connector.Teams.Models;
     using Properties;
 
@@ -27,16 +25,18 @@ namespace Icebreaker
     [BotAuthentication]
     public class MessagesController : ApiController
     {
-        private static TelemetryClient telemetryClient = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
         private readonly IcebreakerBot bot;
+        private readonly TelemetryClient telemetryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagesController"/> class.
         /// </summary>
         /// <param name="bot">The Icebreaker bot instance</param>
-        public MessagesController(IcebreakerBot bot)
+        /// <param name="telemetryClient">The telemetry client instance</param>
+        public MessagesController(IcebreakerBot bot, TelemetryClient telemetryClient)
         {
             this.bot = bot;
+            this.telemetryClient = telemetryClient;
         }
 
         /// <summary>
@@ -47,6 +47,8 @@ namespace Icebreaker
         /// <returns>Task that resolves to the HTTP response message</returns>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
+            this.LogActivityTelemetry(activity);
+
             using (var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl)))
             {
                 if (activity.Type == ActivityTypes.Message)
@@ -59,100 +61,104 @@ namespace Icebreaker
                 }
             }
 
-            var response = this.Request.CreateResponse(HttpStatusCode.OK);
-            return response;
+            return this.Request.CreateResponse(HttpStatusCode.OK);
         }
 
         private async Task HandleMessageActivity(ConnectorClient connectorClient, Activity activity)
         {
-            string replyText = null;
-            var optOutRequest = false;
-
-            if (activity.Value != null && ((dynamic)activity.Value).optout == true)
-            {
-                optOutRequest = true;
-            }
-
             try
             {
-                // Looking at the sender of the message
-                var senderAadId = activity.From.AsTeamsChannelAccount().Properties["aadObjectId"].ToString();
+                var senderAadId = activity.From.Properties["aadObjectId"].ToString();
+                var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
 
-                if (optOutRequest || string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
+                if ((((dynamic)activity?.Value)?.optout == true) ||
+                    string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    telemetryClient.TrackTrace($"Incoming user message: {activity.Text} from {senderAadId}");
-                    await this.bot.OptOutUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
+                    // User opted out
+                    this.telemetryClient.TrackTrace($"User {senderAadId} opted out");
 
-                    var optInReply = activity.CreateReply();
-                    optInReply.Attachments = new List<Attachment>();
-                    var optOutCard = new HeroCard()
+                    var properties = new Dictionary<string, string>
                     {
-                        Text = Resources.OptOutConfirmation,
-                        Buttons = new List<CardAction>()
-                        {
-                            new CardAction()
-                            {
-                                Title = Resources.ResumePairingsButtonText,
-                                Type = ActionTypes.MessageBack,
-                                Text = "optin"
-                            }
-                        }
+                        { "UserAadId", senderAadId },
+                        { "OptInStatus", "false" },
                     };
-                    optInReply.Attachments.Add(optOutCard.ToAttachment());
+                    this.telemetryClient.TrackEvent("UserOptInStausSet", properties);
 
-                    await connectorClient.Conversations.ReplyToActivityAsync(optInReply);
-                }
-                else if (string.Equals(activity.Text, "optin", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    Dictionary<string, string> optInEventProps = new Dictionary<string, string>()
-                        {
-                            { "message", activity.Text },
-                            { "messageSender", senderAadId },
-                            { "messageTimeStamp", DateTime.Now.ToString() }
-                        };
-
-                    telemetryClient.TrackEvent("UserOptIn", optInEventProps);
-                    await this.bot.OptInUser(activity.GetChannelData<TeamsChannelData>().Tenant.Id, senderAadId, activity.ServiceUrl);
+                    await this.bot.OptOutUser(tenantId, senderAadId, activity.ServiceUrl);
 
                     var optOutReply = activity.CreateReply();
-                    optOutReply.Attachments = new List<Attachment>();
-                    var optOutCard = new HeroCard()
+                    optOutReply.Attachments = new List<Attachment>
                     {
-                        Text = Resources.OptInConfirmation,
-                        Buttons = new List<CardAction>()
+                        new HeroCard()
                         {
-                            new CardAction()
+                            Text = Resources.OptOutConfirmation,
+                            Buttons = new List<CardAction>()
                             {
-                                Title = Resources.PausePairingsButtonText,
-                                Type = ActionTypes.MessageBack,
-                                Text = "optout"
+                                new CardAction()
+                                {
+                                    Title = Resources.ResumePairingsButtonText,
+                                    Type = ActionTypes.MessageBack,
+                                    Text = "optin"
+                                }
                             }
-                        }
+                        }.ToAttachment(),
                     };
-                    optOutReply.Attachments.Add(optOutCard.ToAttachment());
 
                     await connectorClient.Conversations.ReplyToActivityAsync(optOutReply);
                 }
+                else if (string.Equals(activity.Text, "optin", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    // User opted in
+                    this.telemetryClient.TrackTrace($"User {senderAadId} opted in");
+
+                    var properties = new Dictionary<string, string>
+                    {
+                        { "UserAadId", senderAadId },
+                        { "OptInStatus", "true" },
+                    };
+                    this.telemetryClient.TrackEvent("UserOptInStausSet", properties);
+
+                    await this.bot.OptInUser(tenantId, senderAadId, activity.ServiceUrl);
+
+                    var optInReply = activity.CreateReply();
+                    optInReply.Attachments = new List<Attachment>
+                    {
+                        new HeroCard()
+                        {
+                            Text = Resources.OptInConfirmation,
+                            Buttons = new List<CardAction>()
+                            {
+                                new CardAction()
+                                {
+                                    Title = Resources.PausePairingsButtonText,
+                                    Type = ActionTypes.MessageBack,
+                                    Text = "optout"
+                                }
+                            }
+                        }.ToAttachment(),
+                    };
+
+                    await connectorClient.Conversations.ReplyToActivityAsync(optInReply);
+                }
                 else
                 {
-                    var botName = CloudConfigurationManager.GetSetting("BotDisplayName");
-                    telemetryClient.TrackTrace($"Cannot process the following: {activity.Text}");
-                    replyText = Resources.IDontKnow;
+                    // Unknown input
+                    this.telemetryClient.TrackTrace($"Cannot process the following: {activity.Text}");
 
-                    var replyActivity = activity.CreateReply(replyText);
+                    var replyActivity = activity.CreateReply(Resources.IDontKnow);
                     await connectorClient.Conversations.ReplyToActivityAsync(replyActivity);
                 }
             }
             catch (Exception ex)
             {
-                telemetryClient.TrackException(ex);
-                replyText = Resources.ErrorOccured;
+                this.telemetryClient.TrackTrace($"Error while handling message activity: {ex.Message}", SeverityLevel.Warning);
+                this.telemetryClient.TrackException(ex);
             }
         }
 
         private async Task<Activity> HandleSystemActivity(ConnectorClient connectorClient, Activity message)
         {
-            telemetryClient.TrackTrace("Processing system message");
+            this.telemetryClient.TrackTrace("Processing system message");
 
             try
             {
@@ -170,6 +176,7 @@ namespace Icebreaker
                     }
 
                     string myBotId = message.Recipient.Id;
+                    string teamId = message.Conversation.Id;
 
                     if (message.MembersAdded?.Count() > 0)
                     {
@@ -177,19 +184,27 @@ namespace Icebreaker
                         {
                             if (member.Id == myBotId)
                             {
-                                telemetryClient.TrackTrace($"Bot installed to team {message.Conversation.Id}");
+                                this.telemetryClient.TrackTrace($"Bot installed to team {teamId}");
+
+                                var properties = new Dictionary<string, string>
+                                {
+                                    { "Scope", message.Conversation?.ConversationType },
+                                    { "TeamId", teamId },
+                                    { "InstallerId", message.From.Id },
+                                };
+                                this.telemetryClient.TrackEvent("AppInstalled", properties);
 
                                 // Try to determine the name of the person that installed the app, which is usually the sender of the message (From.Id)
                                 // Note that in some cases we cannot resolve it to a team member, because the app was installed to the team programmatically via Graph
-                                var teamMembers = await connectorClient.Conversations.GetConversationMembersAsync(message.Conversation.Id);
+                                var teamMembers = await connectorClient.Conversations.GetConversationMembersAsync(teamId);
                                 var personThatAddedBot = teamMembers.FirstOrDefault(x => x.Id == message.From.Id)?.Name;
 
-                                await this.bot.SaveAddedToTeam(message.ServiceUrl, message.Conversation.Id, tenantId, personThatAddedBot);
-                                await this.bot.WelcomeTeam(connectorClient, tenantId, message.Conversation.Id, personThatAddedBot);
+                                await this.bot.SaveAddedToTeam(message.ServiceUrl, teamId, tenantId, personThatAddedBot);
+                                await this.bot.WelcomeTeam(connectorClient, teamId, personThatAddedBot);
                             }
                             else
                             {
-                                telemetryClient.TrackTrace($"Adding a new member: {member.Id}");
+                                this.telemetryClient.TrackTrace($"New member {member.Id} added to team {teamsChannelData.Team.Id}");
 
                                 var installedTeam = await this.bot.GetInstalledTeam(teamsChannelData.Team.Id);
                                 await this.bot.WelcomeUser(connectorClient, member.Id, tenantId, teamsChannelData.Team.Id, installedTeam.InstallerName);
@@ -199,10 +214,18 @@ namespace Icebreaker
 
                     if (message.MembersRemoved?.Any(x => x.Id == myBotId) == true)
                     {
-                        telemetryClient.TrackTrace($"Bot removed from team {message.Conversation.Id}");
+                        this.telemetryClient.TrackTrace($"Bot removed from team {teamId}");
+
+                        var properties = new Dictionary<string, string>
+                        {
+                            { "Scope", message.Conversation?.ConversationType },
+                            { "TeamId", teamId },
+                            { "UninstallerId", message.From.Id },
+                        };
+                        this.telemetryClient.TrackEvent("AppUninstalled", properties);
 
                         // we were just removed from a team
-                        await this.bot.SaveRemoveFromTeam(message.ServiceUrl, message.Conversation.Id, tenantId);
+                        await this.bot.SaveRemoveFromTeam(message.ServiceUrl, teamId, tenantId);
                     }
                 }
 
@@ -210,9 +233,37 @@ namespace Icebreaker
             }
             catch (Exception ex)
             {
-                telemetryClient.TrackException(ex);
+                this.telemetryClient.TrackTrace($"Error while handling system activity: {ex.Message}", SeverityLevel.Warning);
+                this.telemetryClient.TrackException(ex);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Log telemetry about the incoming activity.
+        /// </summary>
+        /// <param name="activity">The activity</param>
+        private void LogActivityTelemetry(Activity activity)
+        {
+            var fromObjectId = activity.From?.Properties["aadObjectId"]?.ToString();
+            var clientInfoEntity = activity.Entities?.Where(e => e.Type == "clientInfo")?.FirstOrDefault();
+            var channelData = activity.GetChannelData<TeamsChannelData>();
+
+            var properties = new Dictionary<string, string>
+            {
+                { "ActivityId", activity.Id },
+                { "ActivityType", activity.Type },
+                { "UserAadObjectId", fromObjectId },
+                {
+                    "ConversationType",
+                    string.IsNullOrWhiteSpace(activity.Conversation?.ConversationType) ? "personal" : activity.Conversation.ConversationType
+                },
+                { "ConversationId", activity.Conversation?.Id },
+                { "TeamId", channelData?.Team?.Id },
+                { "Locale", clientInfoEntity?.Properties["locale"]?.ToString() },
+                { "Platform", clientInfoEntity?.Properties["platform"]?.ToString() }
+            };
+            this.telemetryClient.TrackEvent("UserActivity", properties);
         }
     }
 }

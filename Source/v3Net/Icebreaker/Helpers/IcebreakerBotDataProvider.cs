@@ -11,7 +11,6 @@ namespace Icebreaker.Helpers
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;
-    using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.Azure;
     using Microsoft.Azure.Documents;
     using Microsoft.Azure.Documents.Client;
@@ -25,8 +24,7 @@ namespace Icebreaker.Helpers
         // Request the minimum throughput by default
         private const int DefaultRequestThroughput = 400;
 
-        private static TelemetryClient telemetry = new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
-
+        private readonly TelemetryClient telemetryClient;
         private readonly Lazy<Task> initializeTask;
         private DocumentClient documentClient;
         private Database database;
@@ -36,9 +34,11 @@ namespace Icebreaker.Helpers
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBotDataProvider"/> class.
         /// </summary>
-        public IcebreakerBotDataProvider()
+        /// <param name="telemetryClient">The telemetry client to use</param>
+        public IcebreakerBotDataProvider(TelemetryClient telemetryClient)
         {
-            this.initializeTask = new Lazy<Task>(this.InitializeAsync);
+            this.telemetryClient = telemetryClient;
+            this.initializeTask = new Lazy<Task>(() => this.InitializeAsync());
         }
 
         /// <summary>
@@ -49,8 +49,6 @@ namespace Icebreaker.Helpers
         /// <returns>Tracking task</returns>
         public async Task UpdateTeamInstallStatusAsync(TeamInstallInfo team, bool installed)
         {
-            telemetry.TrackTrace("Hit the method SaveTeamInstallStatus");
-
             await this.EnsureInitializedAsync();
 
             if (installed)
@@ -68,10 +66,8 @@ namespace Icebreaker.Helpers
         /// Get the list of teams to which the app was installed.
         /// </summary>
         /// <returns>List of installed teams</returns>
-        public async Task<List<TeamInstallInfo>> GetInstalledTeamsAsync()
+        public async Task<IList<TeamInstallInfo>> GetInstalledTeamsAsync()
         {
-            telemetry.TrackTrace("Hit the method GetInstalledTeams");
-
             await this.EnsureInitializedAsync();
 
             var installedTeams = new List<TeamInstallInfo>();
@@ -91,7 +87,7 @@ namespace Icebreaker.Helpers
             }
             catch (Exception ex)
             {
-                telemetry.TrackException(ex.InnerException);
+                this.telemetryClient.TrackException(ex.InnerException);
             }
 
             return installedTeams;
@@ -104,8 +100,6 @@ namespace Icebreaker.Helpers
         /// <returns>Team that the bot is installed to</returns>
         public async Task<TeamInstallInfo> GetInstalledTeamAsync(string teamId)
         {
-            telemetry.TrackTrace("Hit the GetInstalledTeam method");
-
             await this.EnsureInitializedAsync();
 
             // Get team install info
@@ -116,7 +110,7 @@ namespace Icebreaker.Helpers
             }
             catch (Exception ex)
             {
-                telemetry.TrackException(ex.InnerException);
+                this.telemetryClient.TrackException(ex.InnerException);
                 return null;
             }
         }
@@ -128,11 +122,8 @@ namespace Icebreaker.Helpers
         /// <returns>User information</returns>
         public async Task<UserInfo> GetUserInfoAsync(string userId)
         {
-            telemetry.TrackTrace("Hit the GetUserInfo method");
-
             await this.EnsureInitializedAsync();
 
-            // Find matching activities
             try
             {
                 var documentUri = UriFactory.CreateDocumentUri(this.database.Id, this.usersCollection.Id, userId);
@@ -140,7 +131,7 @@ namespace Icebreaker.Helpers
             }
             catch (Exception ex)
             {
-                telemetry.TrackException(ex.InnerException);
+                this.telemetryClient.TrackException(ex.InnerException);
                 return null;
             }
         }
@@ -155,64 +146,16 @@ namespace Icebreaker.Helpers
         /// <returns>Tracking task</returns>
         public async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl)
         {
-            telemetry.TrackTrace("Hit the method - SetUserInfoAsync");
-
             await this.EnsureInitializedAsync();
 
-            var obj = new UserInfo()
+            var userInfo = new UserInfo
             {
                 TenantId = tenantId,
                 UserId = userId,
                 OptedIn = optedIn,
                 ServiceUrl = serviceUrl
             };
-
-            await this.StoreUserInfoAsync(obj);
-
-            Dictionary<string, string> setUserOptInProps = new Dictionary<string, string>()
-            {
-                { "tenantId", tenantId },
-                { "userId", userId },
-                { "optedIn", optedIn.ToString() },
-                { "serviceUrl", serviceUrl }
-            };
-
-            telemetry.TrackEvent("SetUserInfoAsync", setUserOptInProps);
-        }
-
-        /// <summary>
-        /// Stores the given pairup
-        /// </summary>
-        /// <param name="tenantId">Tenant id</param>
-        /// <param name="user1Id">First user</param>
-        /// <param name="user2Id">Second user</param>
-        /// <returns>Tracking task</returns>
-        public async Task StorePairupAsync(string tenantId, string user1Id, string user2Id)
-        {
-            await this.EnsureInitializedAsync();
-
-            var maxPairUpHistory = Convert.ToInt64(CloudConfigurationManager.GetSetting("MaxPairUpHistory"));
-
-            var user1Info = await this.GetUserInfoAsync(user1Id);
-            var user2Info = await this.GetUserInfoAsync(user2Id);
-
-            user1Info.RecentPairUps.Add(user2Info);
-            if (user1Info.RecentPairUps.Count >= maxPairUpHistory)
-            {
-                user1Info.RecentPairUps.RemoveAt(0);
-            }
-
-            telemetry.TrackTrace($"Having the PairUp stored for - {user1Id} inside of {tenantId}");
-            await this.StoreUserInfoAsync(user1Info);
-
-            user2Info.RecentPairUps.Add(user1Info);
-            if (user2Info.RecentPairUps.Count >= maxPairUpHistory)
-            {
-                user2Info.RecentPairUps.RemoveAt(0);
-            }
-
-            telemetry.TrackTrace($"Having the PairUp stored for - {user2Id} inside of {tenantId}");
-            await this.StoreUserInfoAsync(user2Info);
+            await this.documentClient.UpsertDocumentAsync(this.usersCollection.SelfLink, userInfo);
         }
 
         /// <summary>
@@ -221,6 +164,8 @@ namespace Icebreaker.Helpers
         /// <returns>Tracking task</returns>
         private async Task InitializeAsync()
         {
+            this.telemetryClient.TrackTrace("Initializing data store");
+
             var endpointUrl = CloudConfigurationManager.GetSetting("CosmosDBEndpointUrl");
             var primaryKey = CloudConfigurationManager.GetSetting("CosmosDBKey");
             var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
@@ -241,7 +186,7 @@ namespace Icebreaker.Helpers
             {
                 if (ex.Error?.Message?.Contains("SharedOffer is Disabled") ?? false)
                 {
-                    telemetry.TrackTrace("Database shared offer is disabled for the account, will provision throughput at container level", SeverityLevel.Information);
+                    this.telemetryClient.TrackTrace("Database shared offer is disabled for the account, will provision throughput at container level", SeverityLevel.Information);
                     useSharedOffer = false;
 
                     this.database = await this.documentClient.CreateDatabaseIfNotExistsAsync(new Database { Id = databaseName });
@@ -267,16 +212,13 @@ namespace Icebreaker.Helpers
             };
             usersCollectionDefinition.PartitionKey.Paths.Add("/id");
             this.usersCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, usersCollectionDefinition, useSharedOffer ? null : requestOptions);
+
+            this.telemetryClient.TrackTrace("Data store initialized");
         }
 
-        private Task EnsureInitializedAsync()
+        private async Task EnsureInitializedAsync()
         {
-            return this.initializeTask.Value;
-        }
-
-        private async Task StoreUserInfoAsync(UserInfo userInfo)
-        {
-            await this.documentClient.UpsertDocumentAsync(this.usersCollection.SelfLink, userInfo);
+            await this.initializeTask.Value;
         }
     }
 }

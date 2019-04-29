@@ -9,6 +9,7 @@ namespace Icebreaker.Controllers
     using System.Threading.Tasks;
     using System.Web.Hosting;
     using System.Web.Http;
+    using Microsoft.ApplicationInsights;
     using Microsoft.Azure;
 
     /// <summary>
@@ -17,14 +18,17 @@ namespace Icebreaker.Controllers
     public class ProcessNowController : ApiController
     {
         private readonly IcebreakerBot bot;
+        private readonly TelemetryClient telemetryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProcessNowController"/> class.
         /// </summary>
         /// <param name="bot">The Icebreaker bot instance</param>
-        public ProcessNowController(IcebreakerBot bot)
+        /// <param name="telemetryClient">The telemetry client to use</param>
+        public ProcessNowController(IcebreakerBot bot, TelemetryClient telemetryClient)
         {
             this.bot = bot;
+            this.telemetryClient = telemetryClient;
         }
 
         /// <summary>
@@ -33,16 +37,17 @@ namespace Icebreaker.Controllers
         /// <param name="key">API key</param>
         /// <returns>Success (1) or failure (-1) code</returns>
         [Route("api/processnow/{key}")]
-        public int Get([FromUri]string key)
+        public IHttpActionResult Get([FromUri]string key)
         {
-            if (object.Equals(key, CloudConfigurationManager.GetSetting("Key")))
+            var isKeyMatch = object.Equals(key, CloudConfigurationManager.GetSetting("Key"));
+            if (isKeyMatch)
             {
                 HostingEnvironment.QueueBackgroundWorkItem(ct => this.MakePairs());
-                return 1;
+                return this.StatusCode(System.Net.HttpStatusCode.OK);
             }
             else
             {
-                return -1;
+                return this.Unauthorized();
             }
         }
 
