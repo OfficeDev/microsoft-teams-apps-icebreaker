@@ -119,12 +119,11 @@ namespace Icebreaker
         /// <summary>
         /// Method that will return the information of the installed team
         /// </summary>
-        /// <param name="tenantId">The tenant id</param>
         /// <param name="teamId">The team id</param>
         /// <returns>The team that the bot has been installed to</returns>
-        public Task<TeamInstallInfo> GetInstalledTeam(string tenantId, string teamId)
+        public Task<TeamInstallInfo> GetInstalledTeam(string teamId)
         {
-            return this.dataProvider.GetTeamInstallInfoAsync(tenantId, teamId);
+            return this.dataProvider.GetInstalledTeamAsync(teamId);
         }
 
         /// <summary>
@@ -374,7 +373,7 @@ namespace Icebreaker
             var members = await connectorClient.Conversations.GetConversationMembersAsync(teamInfo.TeamId);
             this.telemetryClient.TrackTrace($"Found {members.Count} in team {teamInfo.TeamId}");
 
-            var tasks = members.Select(m => this.dataProvider.GetUserInfoAsync(teamInfo.TenantId, m.AsTeamsChannelAccount().ObjectId));
+            var tasks = members.Select(m => this.dataProvider.GetUserInfoAsync(m.AsTeamsChannelAccount().ObjectId));
             var results = await Task.WhenAll(tasks);
 
             return members
