@@ -62,25 +62,16 @@
         outline-offset: -0.25rem
     }
 
-.theme-default .surface {
-    color: #252424;
-    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
-    font-size: 0.875rem;
-    font-weight: 400;
-}
-
-.theme-highContrast .surface {
-    color: #FFFFFF;
-    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
-    font-size: 0.875rem;
-    font-weight: 400;
-}
-
 .theme-dark .surface {
     color: #FFFFFF;
     font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
     font-size: 0.875rem;
     font-weight: 400;
+}
+
+.theme-dark .footer {
+    display: flex;
+    flex-direction: row-reverse;
 }
 
 /*Default Theme rules*/
@@ -133,6 +124,18 @@
         outline-offset: -0.25rem
     }
 
+.theme-default .surface {
+    color: #252424;
+    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
+    font-size: 0.875rem;
+    font-weight: 400;
+}
+
+.theme-default .footer {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
 /*High Contrast Theme rules*/
 .theme-highContrast .bold-header {
     text-align: left;
@@ -181,3 +184,15 @@
         outline: 0.125rem solid transparent;
         outline-offset: -0.25rem
     }
+
+.theme-highContrast .surface {
+    color: #FFFFFF;
+    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
+    font-size: 0.875rem;
+    font-weight: 400;
+}
+
+.theme-highContrast .footer {
+    display: flex;
+    flex-direction: row-reverse;
+}
