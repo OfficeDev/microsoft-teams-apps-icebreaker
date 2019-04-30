@@ -12,12 +12,12 @@
     <script type="text/javascript">
         $(document).ready(function () {
             var setTheme = function (theme) {
-                if (theme === "default")
-                    document.getElementById("themeCSS").className = "theme-default";
-                else if (theme === "dark")
+                if (theme === "dark")
                     document.getElementById("themeCSS").className = "theme-dark";
                 else if (theme === "contrast")
                     document.getElementById("themeCSS").className = "theme-highContrast";
+                else
+                    document.getElementById("themeCSS").className = "theme-default";
             };
 
             microsoftTeams.initialize();
