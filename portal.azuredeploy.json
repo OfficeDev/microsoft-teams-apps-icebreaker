@@ -19,7 +19,7 @@
             "metadata": {
                 "description": "This is the name of the bot that would show when the bot gives a reply"
             },
-            "defaultValue": "Meetuply"
+            "defaultValue": "Icebreaker"
         },
         "botDescription": {
             "type": "string",
@@ -32,7 +32,7 @@
             "metadata": {
                 "description": "This is the link to the icon for the bot and it must resolve to a PNG file"
             }, 
-            "defaultValue": "https://raw.githubusercontent.com/coderkrishna/TeamsMeetuplyBot/master/Source/v3Net/MeetupBot/manifest/color.png"
+            "defaultValue": "https://raw.githubusercontent.com/OfficeDev/microsoft-teams-icebreaker-app/master/Source/v3Net/Icebreaker/Manifest/color.png"
         },
         "key": {
             "type": "string",
@@ -49,15 +49,9 @@
         "branch": {
             "type": "string",
             "metadata": {
-                "description": "If there are some custom code changes that were made to the Meetuply source code on a separate branch, include the branch name here"
+                "description": "If there are some custom code changes that were made to the Icebreaker source code on a separate branch, include the branch name here"
             },
             "defaultValue": "master"
-        },
-        "feedbackEmail": {
-            "type": "string",
-            "metadata": {
-                "description": "The contact email address to give feedback"
-            }
         },
         "logicAppFrequency": {
             "type": "string",
@@ -67,13 +61,15 @@
             ],
             "metadata": {
                 "description": "The frequency by which the bot will automatically pair up members of a team"
-            }
+            },
+            "defaultValue": "Week"
         },
         "logicAppInterval": {
             "type": "int",
             "metadata": {
                 "description": "How many times per the frequency the bot will randomly pair up members of a team (i.e. 1 Month, or 1 Week)"
-            }
+            }, 
+            "defaultValue": "1"
         },
         "logicAppHour": {
             "type": "int",
@@ -105,7 +101,8 @@
             ],
             "metadata": {
                 "description": "Select the hour at which the bot will automatically pair members of a team"
-            }
+            },
+            "defaultValue": "10"
         },
         "logicAppMins": {
             "type": "int",
@@ -171,8 +168,9 @@
                 59
             ],
             "metadata": {
-                "description": "Select the hour at which the bot will automatically pair members of a team"
-            }
+                "description": "Select the minute at which the bot will automatically pair members of a team"
+            },
+            "defaultValue": "0"
         },
         "logicAppDOW": {
             "type":"string", 
@@ -187,22 +185,29 @@
             ], 
             "metadata":{
                 "description": "The day of the week that your bot can automatically pair up team members"
-            }
+            },
+            "defaultValue": "Monday"
         }, 
         "logicAppTimeZone": {
             "type":"string", 
             "metadata": {
-                "description": "If there are some custom code changes that were made to the Meetuply source code on a separate branch, include the branch name here"
+                "description": "If there are some custom code changes that were made to the Icebreaker source code on a separate branch, include the branch name here"
             },
-            "defaultValue": "master"
+            "defaultValue": "Pacific Standard Time"
+        },
+        "manifestAppId": {
+            "type":"string", 
+            "metadata": {
+                "description": "The external ID of the application manifest"
+            }
         }
     },
     "variables": {
-        "botName": "[concat('meetup-', uniqueString(resourceGroup().id))]",
-        "CosmosDbName":"[concat('meetuplydb-', uniqueString(resourceGroup().id))]",
+        "botName": "[concat('icebreaker-', uniqueString(resourceGroup().id))]",
+        "CosmosDbName":"[concat('icebreakerdb-', uniqueString(resourceGroup().id))]",
         "defaultExperience":"Core (SQL)",
-        "logicAppName":"meetuplyALA",
-        "meetuplyAppInsightsName": "appInsightsMeetuply"
+        "logicAppName":"icebreakerALA",
+        "appInsightsName": "icebreakerAppInsights"
     },
     "resources": [
         {
@@ -221,7 +226,7 @@
                 "endpoint": "[concat('https://', variables('botName'), '-svc.azurewebsites.net/api/messages')]",
                 "iconUrl": "[parameters('iconUrl')]",
                 "msaAppId":"[parameters('botAppID')]",
-                "developerAppInsightKey": "[reference(resourceId('Microsoft.Insights/components', variables('meetuplyAppInsightsName')), '2015-05-01').InstrumentationKey]"
+                "developerAppInsightKey": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2015-05-01').InstrumentationKey]"
             },
             "resources": [
                 {
@@ -250,13 +255,13 @@
             "type": "Microsoft.Web/serverfarms",
             "apiVersion": "2018-02-01",
             "location": "[resourceGroup().location]",
-            "name": "meetuplyHostingPlan",
+            "name": "icebreakerHostingPlan",
             "sku": {
                 "name": "S1",
                 "capacity": "0"
             },
             "properties": {
-                "name": "meetuplyHostingPlan"
+                "name": "icebreakerHostingPlan"
             }
         },
         {
@@ -286,7 +291,7 @@
                         "hostType": "Repository"
                     }
                 ],
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', 'meetuplyHostingPlan')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', 'icebreakerHostingPlan')]",
                 "reserved": false,
                 "siteConfig": {
                     "appSettings": [
@@ -297,6 +302,10 @@
                         {
                             "name": "microsoftAppPassword",
                             "value": "[parameters('botApplicationPassword')]"
+                        },
+                        {
+                            "name": "ManifestAppId", 
+                            "value": "[parameters('manifestAppId')]"
                         },
                         {
                             "name": "CosmosDBKey",
@@ -337,14 +346,14 @@
                         {
                             "name": "WEBSITE_NODE_DEFAULT_VERSION",
                             "value": "8.9.4"
-                        }, 
-                        {
-                            "name": "ContactEmail", 
-                            "value": "[parameters('feedbackEmail')]"
                         },
                         {
-                            "name": "AppInsightsInstrumentationKey", 
-                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('meetuplyAppInsightsName')), '2015-05-01').InstrumentationKey]"
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY", 
+                            "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2015-05-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "AppBaseDomain",
+                            "value": "[concat(variables('botName'),'-svc.azurewebsites.net')]"
                         }
                     ]
                 },
@@ -360,7 +369,7 @@
                 "httpsOnly": false
             },
             "dependsOn": [
-                "[concat('Microsoft.Web/serverfarms/', 'meetuplyHostingPlan')]"
+                "[concat('Microsoft.Web/serverfarms/', 'icebreakerHostingPlan')]"
             ],
             "resources": [
                 {
@@ -461,7 +470,7 @@
             "dependsOn": []
         },
         {
-            "name": "[variables('meetuplyAppInsightsName')]",
+            "name": "[variables('appInsightsName')]",
             "type": "Microsoft.Insights/components",
             "kind": "other",
             "apiVersion": "2015-05-01",

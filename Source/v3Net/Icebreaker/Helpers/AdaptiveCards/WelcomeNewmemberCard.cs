@@ -6,10 +6,12 @@
 
 namespace Icebreaker.Helpers.AdaptiveCards
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Web.Hosting;
     using Icebreaker.Properties;
+    using Microsoft.Azure;
 
     /// <summary>
     /// Builder class for the welcome new member card
@@ -44,12 +46,20 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 introductoryMessage = string.Format(Resources.InstallMessageKnownInstaller, botInstaller, teamName);
             }
 
+            var baseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain");
+            var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html");
+            var tourTitle = Resources.WelcomeTourTitle;
+            var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
+
+            var tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}";
+
             var variablesToValues = new Dictionary<string, string>()
             {
                 { "team", teamName },
                 { "personFirstName", personFirstName },
                 { "botDisplayName", botDisplayName },
-                { "introMessage", introductoryMessage }
+                { "introMessage", introductoryMessage },
+                { "tourUrl", tourUrl }
             };
 
             var cardBody = CardTemplate;

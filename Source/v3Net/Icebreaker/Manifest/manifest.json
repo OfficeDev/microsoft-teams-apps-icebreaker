@@ -2,7 +2,7 @@
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.3/MicrosoftTeams.schema.json",
   "manifestVersion": "1.3",
   "version": "1.0.0",
-  "id": "71b3f071-0fc7-4ea7-8d61-d8c80f7141d2",
+  "id": "d55d08d9-bacb-4567-942f-afd85d632dcc",
   "packageName": "com.microsoft.teams.meetup",
   "developer": {
     "name": "",

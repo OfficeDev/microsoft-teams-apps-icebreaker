@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; width:100%; height:100%; margin:0; flex-direction:column;">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>Tour</title>
+
+    <script src="../Scripts/MicrosoftTeams-1.4.1.min.js"></script>
+    <script src="../Scripts/jquery-3.3.1.min.js"></script>
+    <link href="styles.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var setTheme = function (theme) {
+                if (theme === "default")
+                    document.getElementById("themeCSS").className = "theme-default";
+                else if (theme === "dark")
+                    document.getElementById("themeCSS").className = "theme-dark";
+                else if (theme === "contrast")
+                    document.getElementById("themeCSS").className = "theme-highContrast";
+            };
+
+            microsoftTeams.initialize();
+            microsoftTeams.getContext(function (context) {
+                setTheme(context.theme);
+            });
+            microsoftTeams.registerOnThemeChangeHandler(setTheme);
+        });
+    
+        function SwapDivsWithClick(div1, div2) {
+            d1 = document.getElementById(div1);
+            d2 = document.getElementById(div2);
+            if (d2.style.display == "none") {
+                d1.style.display = "none";
+                d2.style.display = "flex";
+            }
+            else {
+                d1.style.display = "flex";
+                d2.style.display = "none";
+            }
+        }
+
+        function CloseWindow() {
+            microsoftTeams.tasks.submitTask(null); 
+        }
+    </script>
+</head>
+<body id="themeCSS" class="theme-default" style="margin: 0; height:100%; width:100%;">
+    <div id="introDiv" style="display:flex; flex-direction: column; flex-wrap: nowrap; padding: 0px 32px 32px 32px" class="surface">
+        <!--Image placeholder-->
+        <div style="text-align:center;">
+            <img src="SfbFreWelcomeDialog.png" alt="Welcome image" style="padding-top:21px;" />
+        </div>
+
+        <div style="width:536px; display:flex; flex-direction:column; flex: 1 auto;">
+            <p class="bold-header">Make new friends and build community with them</p>
+
+            <p class="regular-content">
+                Every week, I'll pair you with someone new. If you have the inclination that week, you can meet up--grab a lunch, or a call if you're in different locations. Look out for another message in which I'll pair you with your first match.
+            </p>
+        </div>
+
+        <div style="display:flex; flex-direction: row-reverse">
+            <button class="primary-button" href="#" onclick="SwapDivsWithClick('introDiv', 'matchesDiv')">
+                    Next
+            </button>
+        </div>
+    </div>
+    <div id="matchesDiv" style="display:none; flex-direction: column; flex-wrap: nowrap; padding: 0px 32px 32px 32px" class="surface">
+        <!--Image placeholder-->
+        <div style="text-align:center;">
+            <img src="SfbFreWelcomeDialog.png" alt="Welcome image" style="padding-top:21px;" />
+        </div>
+
+        <div style="width:536px; display:flex; flex-direction:column; flex: 1 auto;">
+            <p class="bold-header">Easily pause matches as needed</p>
+
+            <p class="regular-content">
+                Pause matches whenever you need. Too busy that week? Out of the office? No problem. Just click the button when your weekly match arrives.
+            </p>
+        </div>
+
+        <div style="display:flex; flex-direction: row-reverse">
+            <button class="primary-button" href="#" onclick="CloseWindow()">
+                    Done
+            </button>
+        </div>
+    </div>
+</body>
+</html>
