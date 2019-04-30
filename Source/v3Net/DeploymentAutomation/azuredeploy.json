@@ -100,7 +100,7 @@
     },
     "variables": {
         "botName": "[concat('icebreaker-', uniqueString(resourceGroup().id))]",
-        "CosmosDbName":"[concat('icebreakdb-', uniqueString(resourceGroup().id))]",
+        "CosmosDbName":"[concat('icebreakerdb-', uniqueString(resourceGroup().id))]",
         "defaultExperience":"Core (SQL)",
         "logicAppName":"icebreakerALA",
         "appInsightsName": "icebreakerInsights"
