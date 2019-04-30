@@ -156,7 +156,7 @@ namespace Icebreaker
             }
         }
 
-        private async Task<Activity> HandleSystemActivity(ConnectorClient connectorClient, Activity message)
+        private async Task HandleSystemActivity(ConnectorClient connectorClient, Activity message)
         {
             this.telemetryClient.TrackTrace("Processing system message");
 
@@ -172,7 +172,6 @@ namespace Icebreaker
                     if (string.IsNullOrEmpty(teamsChannelData?.Team?.Id))
                     {
                         // conversation-update is for 1:1 chat. Just ignore.
-                        return null;
                     }
 
                     string myBotId = message.Recipient.Id;
@@ -228,8 +227,6 @@ namespace Icebreaker
                         await this.bot.SaveRemoveFromTeam(message.ServiceUrl, teamId, tenantId);
                     }
                 }
-
-                return null;
             }
             catch (Exception ex)
             {
