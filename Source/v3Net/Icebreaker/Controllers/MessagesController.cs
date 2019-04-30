@@ -172,6 +172,7 @@ namespace Icebreaker
                     if (string.IsNullOrEmpty(teamsChannelData?.Team?.Id))
                     {
                         // conversation-update is for 1:1 chat. Just ignore.
+                        return;
                     }
 
                     string myBotId = message.Recipient.Id;
