@@ -228,11 +228,6 @@ namespace Icebreaker
                         await this.bot.SaveRemoveFromTeam(message.ServiceUrl, teamId, tenantId);
                     }
                 }
-                else
-                {
-                    var installedPlace = await this.bot.GetInstalledTeam(teamsChannelData.Team.Id);
-                    await this.bot.WelcomeTeam(connectorClient, message.Conversation.Id, installedPlace.InstallerName);
-                }
 
                 return null;
             }
