@@ -1,16 +1,43 @@
 ﻿/*General rules*/
 #introDiv {
-    display: block;
-    padding-top: 24px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    padding: 0px 32px 32px 32px
 }
 
 #matchesDiv {
     display: none;
-    padding-top: 24px
+    flex-direction: column;
+    flex-wrap: nowrap;
+    padding: 0px 32px 32px 32px;
+}
+
+.textDiv {
+    width: 536px;
+    display: flex;
+    flex-direction: column;
+    flex: 1 auto;
+}
+
+.imageDiv {
+    text-align: center;
+}
+
+.imageDiv img {
+    padding-top: 21px;
 }
 
 .bold-header {
     font-family: 'Segoe UI';
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    flex-direction: column;
 }
 
 /*Dark Theme rules*/
@@ -62,25 +89,16 @@
         outline-offset: -0.25rem
     }
 
-.theme-default .surface {
-    color: #252424;
-    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
-    font-size: 0.875rem;
-    font-weight: 400;
-}
-
-.theme-highContrast .surface {
-    color: #FFFFFF;
-    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
-    font-size: 0.875rem;
-    font-weight: 400;
-}
-
 .theme-dark .surface {
     color: #FFFFFF;
     font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
     font-size: 0.875rem;
     font-weight: 400;
+}
+
+.theme-dark .footer {
+    display: flex;
+    flex-direction: row-reverse;
 }
 
 /*Default Theme rules*/
@@ -133,6 +151,18 @@
         outline-offset: -0.25rem
     }
 
+.theme-default .surface {
+    color: #252424;
+    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
+    font-size: 0.875rem;
+    font-weight: 400;
+}
+
+.theme-default .footer {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
 /*High Contrast Theme rules*/
 .theme-highContrast .bold-header {
     text-align: left;
@@ -181,3 +211,15 @@
         outline: 0.125rem solid transparent;
         outline-offset: -0.25rem
     }
+
+.theme-highContrast .surface {
+    color: #FFFFFF;
+    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
+    font-size: 0.875rem;
+    font-weight: 400;
+}
+
+.theme-highContrast .footer {
+    display: flex;
+    flex-direction: row-reverse;
+}
