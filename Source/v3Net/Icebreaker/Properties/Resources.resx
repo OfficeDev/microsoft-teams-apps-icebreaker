@@ -120,9 +120,6 @@
   <data name="ErrorOccured" xml:space="preserve">
     <value>😓 there was an error while processing request. Retry?</value>
   </data>
-  <data name="IDontKnow" xml:space="preserve">
-    <value>😕 no idea what you just said. My tiny 🤖 🧠 doesn't understand how to handle that yet!</value>
-  </data>
   <data name="InstallMessageKnownInstaller" xml:space="preserve">
     <value>If you're reading this, it's most likely because {0} added me to the {1} Team. I get to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It's a win-win-*win* situation.</value>
     <comment>Install message and also the welcome message when the app installer is known - {0} is the placeholder for the name of the user that has installed the app to the team, and {1} is the placeholder for the name of the team that the app has been installed to</comment>
@@ -152,6 +149,9 @@
   <data name="ResumePairingsButtonText" xml:space="preserve">
     <value>Resume matches</value>
     <comment>Button text to resume pairings</comment>
+  </data>
+  <data name="UnrecognizedInput" xml:space="preserve">
+    <value>I am sorry that I cannot process the incoming message.</value>
   </data>
   <data name="WelcomeTourTitle" xml:space="preserve">
     <value>Tour</value>
