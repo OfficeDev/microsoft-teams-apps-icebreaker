@@ -15,7 +15,7 @@
   "actions": [
     {
       "type": "Action.Submit",
-      "title": "Pause matches",
+      "title": "%pauseMatchesText%",
       "data": {
         "optout": true
       }

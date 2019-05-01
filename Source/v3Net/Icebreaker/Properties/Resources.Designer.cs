@@ -124,7 +124,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pause matches.
+        ///   Looks up a localized string similar to Pause all matches.
         /// </summary>
         internal static string PausePairingsButtonText {
             get {
