@@ -6,10 +6,6 @@
 
 namespace Icebreaker
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Helpers;
     using Helpers.AdaptiveCards;
     using Microsoft.ApplicationInsights;
@@ -18,6 +14,10 @@ namespace Icebreaker
     using Microsoft.Bot.Connector;
     using Microsoft.Bot.Connector.Teams;
     using Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Implements the core logic for Icebreaker bot
@@ -184,14 +184,21 @@ namespace Icebreaker
         /// Sends a message whenever there is unrecognized input into the bot
         /// </summary>
         /// <param name="connectorClient">The connector client</param>
-        /// <param name="teamId">The team id</param>
+        /// <param name="activity">The incoming activity</param>
         /// <returns>Tracking task</returns>
-        public async Task SendUnrecognizedInputMessage(ConnectorClient connectorClient, string teamId)
+        public async Task SendUnrecognizedInputMessage(ConnectorClient connectorClient, Activity activity)
         {
-            this.telemetryClient.TrackTrace($"Unrecognized input detected for team {teamId}");
-
+            this.telemetryClient.TrackTrace($"Unrecognized input detected {activity.Text}");
             var unrecognizedInputAdaptiveCard = UnrecognizedInputAdaptiveCard.GetCard();
-            await this.NotifyTeam(connectorClient, unrecognizedInputAdaptiveCard, teamId);
+            activity.Attachments = new List<Attachment>()
+            {
+                new Attachment()
+                {
+                    ContentType = "application/vnd.microsoft.card.adaptive",
+                    Content = JsonConvert.DeserializeObject(unrecognizedInputAdaptiveCard)
+                }
+            };
+            await connectorClient.Conversations.ReplyToActivityAsync(activity);
         }
 
         /// <summary>

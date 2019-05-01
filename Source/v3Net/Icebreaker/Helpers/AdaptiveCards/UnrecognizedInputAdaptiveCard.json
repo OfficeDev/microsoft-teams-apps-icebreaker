@@ -1,4 +1,6 @@
 {
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0",
   "type": "AdaptiveCard",
   "body": [
     {
@@ -18,7 +20,5 @@
       "title": "Take a tour",
       "url": "%tourUrl%"
     }
-  ],
-  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-  "version": "1.0"
+  ]
 }

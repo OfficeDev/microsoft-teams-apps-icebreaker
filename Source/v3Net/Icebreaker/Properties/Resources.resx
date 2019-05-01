@@ -151,7 +151,7 @@
     <comment>Button text to resume pairings</comment>
   </data>
   <data name="UnrecognizedInput" xml:space="preserve">
-    <value>I am sorry that I cannot process the incoming message. If you are interested to look at the tour again, click the button that reads **Take a tour**</value>
+    <value>I'm sorry, but I can't process the incoming message. You can take a tour, though, to learn more about my functionality.</value>
     <comment>The text for the unrecognized input scenario</comment>
   </data>
   <data name="WelcomeTourTitle" xml:space="preserve">

@@ -144,8 +144,8 @@ namespace Icebreaker
                 {
                     // Unknown input
                     this.telemetryClient.TrackTrace($"Cannot process the following: {activity.Text}");
-                    var teamsChannelData = activity.GetChannelData<TeamsChannelData>();
-                    await this.bot.SendUnrecognizedInputMessage(connectorClient, teamsChannelData?.Team?.Id);
+                    var replyActivity = activity.CreateReply();
+                    await this.bot.SendUnrecognizedInputMessage(connectorClient, replyActivity);
                 }
             }
             catch (Exception ex)
