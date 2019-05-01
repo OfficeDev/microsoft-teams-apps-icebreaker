@@ -142,7 +142,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to I am sorry that I cannot process the incoming message..
+        ///   Looks up a localized string similar to I am sorry that I cannot process the incoming message. If you are interested to look at the tour again, click the button that reads &quot;Take a tour&quot;.
         /// </summary>
         internal static string UnrecognizedInput {
             get {

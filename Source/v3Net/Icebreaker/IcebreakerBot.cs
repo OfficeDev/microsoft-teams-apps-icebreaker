@@ -181,6 +181,20 @@ namespace Icebreaker
         }
 
         /// <summary>
+        /// Sends a message whenever there is unrecognized input into the bot
+        /// </summary>
+        /// <param name="connectorClient">The connector client</param>
+        /// <param name="teamId">The team id</param>
+        /// <returns>Tracking task</returns>
+        public async Task SendUnrecognizedInputMessage(ConnectorClient connectorClient, string teamId)
+        {
+            this.telemetryClient.TrackTrace($"Unrecognized input detected for team {teamId}");
+
+            var unrecognizedInputAdaptiveCard = UnrecognizedInputAdaptiveCard.GetCard();
+            await this.NotifyTeam(connectorClient, unrecognizedInputAdaptiveCard, teamId);
+        }
+
+        /// <summary>
         /// Save information about the team to which the bot was added.
         /// </summary>
         /// <param name="serviceUrl">The service url</param>

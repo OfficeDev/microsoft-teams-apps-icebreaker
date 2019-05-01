@@ -116,7 +116,7 @@ namespace Icebreaker
                         { "UserAadId", senderAadId },
                         { "OptInStatus", "true" },
                     };
-                    this.telemetryClient.TrackEvent("UserOptInStausSet", properties);
+                    this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
 
                     await this.bot.OptInUser(tenantId, senderAadId, activity.ServiceUrl);
 
@@ -144,9 +144,8 @@ namespace Icebreaker
                 {
                     // Unknown input
                     this.telemetryClient.TrackTrace($"Cannot process the following: {activity.Text}");
-
-                    var replyActivity = activity.CreateReply(Resources.IDontKnow);
-                    await connectorClient.Conversations.ReplyToActivityAsync(replyActivity);
+                    var teamsChannelData = activity.GetChannelData<TeamsChannelData>();
+                    await this.bot.SendUnrecognizedInputMessage(connectorClient, teamsChannelData?.Team?.Id); ;
                 }
             }
             catch (Exception ex)
