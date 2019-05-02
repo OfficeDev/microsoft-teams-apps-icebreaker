@@ -1,4 +1,4 @@
-﻿/*General rules*/
+/*General rules*/
 #introDiv {
     display: flex;
     flex-direction: column;
@@ -24,9 +24,9 @@
     text-align: center;
 }
 
-.imageDiv img {
-    padding-top: 21px;
-}
+    .imageDiv img {
+        padding-top: 21px;
+    }
 
 .bold-header {
     font-family: 'Segoe UI';

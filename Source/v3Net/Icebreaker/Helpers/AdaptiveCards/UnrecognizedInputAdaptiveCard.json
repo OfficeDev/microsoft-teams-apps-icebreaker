@@ -1,4 +1,6 @@
-﻿{
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0",
   "type": "AdaptiveCard",
   "body": [
     {
@@ -6,7 +8,7 @@
       "items": [
         {
           "type": "TextBlock",
-          "text": "%introMessage%",
+          "text": "%messageContent%",
           "wrap": true
         }
       ]
@@ -14,18 +16,9 @@
   ],
   "actions": [
     {
-      "type": "Action.Submit",
-      "title": "%pauseMatchesText%",
-      "data": {
-        "optout": true
-      }
-    },
-    {
       "type": "Action.OpenUrl",
       "title": "Take a tour",
       "url": "%tourUrl%"
     }
-  ],
-  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-  "version": "1.0"
+  ]
 }
