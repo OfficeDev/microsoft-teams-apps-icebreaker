@@ -71,8 +71,7 @@ namespace Icebreaker
                 var senderAadId = activity.From.Properties["aadObjectId"].ToString();
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
 
-                if ((((dynamic)activity?.Value)?.optout == true) ||
-                    string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
+                if (string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
                 {
                     // User opted out
                     this.telemetryClient.TrackTrace($"User {senderAadId} opted out");
