@@ -146,7 +146,7 @@
     <value>All set. I've paused your matches. You can turn them back on whenever you like.</value>
   </data>
   <data name="PausePairingsButtonText" xml:space="preserve">
-    <value>Pause matches</value>
+    <value>Pause all matches</value>
     <comment>Button text to pause pairings</comment>
   </data>
   <data name="ResumePairingsButtonText" xml:space="preserve">

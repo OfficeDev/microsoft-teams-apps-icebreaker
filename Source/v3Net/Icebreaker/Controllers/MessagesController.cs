@@ -97,6 +97,7 @@ namespace Icebreaker
                                 new CardAction()
                                 {
                                     Title = Resources.ResumePairingsButtonText,
+                                    DisplayText = Resources.ResumePairingsButtonText,
                                     Type = ActionTypes.MessageBack,
                                     Text = "optin"
                                 }
@@ -131,6 +132,7 @@ namespace Icebreaker
                                 new CardAction()
                                 {
                                     Title = Resources.PausePairingsButtonText,
+                                    DisplayText = Resources.PausePairingsButtonText,
                                     Type = ActionTypes.MessageBack,
                                     Text = "optout"
                                 }

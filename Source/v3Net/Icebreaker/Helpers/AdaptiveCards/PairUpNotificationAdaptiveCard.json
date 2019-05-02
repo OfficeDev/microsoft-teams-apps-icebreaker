@@ -57,7 +57,8 @@
       "url": "%meetingLink%"
     },
     {
-      "type": "Action.Submit",
+      "type": "Action.MessageBack",
+      "displayText": "%pauseMatches%",
       "title": "%pauseMatches%",
       "data": {
         "optout": true
