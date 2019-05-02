@@ -59,6 +59,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 { "personFirstName", personFirstName },
                 { "botDisplayName", botDisplayName },
                 { "introMessage", introductoryMessage },
+                { "pauseMatches", Resources.PausePairingsButtonText },
                 { "tourUrl", tourUrl }
             };
 
