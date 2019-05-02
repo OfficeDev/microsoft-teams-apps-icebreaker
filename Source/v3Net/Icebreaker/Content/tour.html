@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -24,7 +24,7 @@
             });
             microsoftTeams.registerOnThemeChangeHandler(setTheme);
         });
-    
+
         function SwapDivsWithClick(div1, div2) {
             d1 = document.getElementById(div1);
             d2 = document.getElementById(div2);
@@ -39,7 +39,7 @@
         }
 
         function CloseWindow() {
-            microsoftTeams.tasks.submitTask(null); 
+            microsoftTeams.tasks.submitTask(null);
         }
     </script>
 </head>
@@ -55,7 +55,7 @@
             </p>
         </div>
         <div class="footer">
-            <button class="primary-button" href="#" onclick="SwapDivsWithClick('introDiv', 'matchesDiv')">
+            <button class="primary-button" onclick="SwapDivsWithClick('introDiv', 'matchesDiv')">
                     Next
             </button>
         </div>
@@ -71,7 +71,10 @@
             </p>
         </div>
         <div class="footer">
-            <button class="primary-button" href="#" onclick="CloseWindow()">
+            <button class="primary-button-back" onclick="SwapDivsWithClick('matchesDiv', 'introDiv')">
+                Back
+            </button>
+            <button class="primary-button-done" onclick="CloseWindow()">
                     Done
             </button>
         </div>

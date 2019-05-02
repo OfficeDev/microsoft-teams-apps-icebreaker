@@ -71,8 +71,7 @@ namespace Icebreaker
                 var senderAadId = activity.From.Properties["aadObjectId"].ToString();
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
 
-                if ((((dynamic)activity?.Value)?.optout == true) ||
-                    string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
+                if (string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
                 {
                     // User opted out
                     this.telemetryClient.TrackTrace($"User {senderAadId} opted out");
@@ -97,6 +96,7 @@ namespace Icebreaker
                                 new CardAction()
                                 {
                                     Title = Resources.ResumePairingsButtonText,
+                                    DisplayText = Resources.ResumePairingsButtonText,
                                     Type = ActionTypes.MessageBack,
                                     Text = "optin"
                                 }
@@ -116,7 +116,7 @@ namespace Icebreaker
                         { "UserAadId", senderAadId },
                         { "OptInStatus", "true" },
                     };
-                    this.telemetryClient.TrackEvent("UserOptInStausSet", properties);
+                    this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
 
                     await this.bot.OptInUser(tenantId, senderAadId, activity.ServiceUrl);
 
@@ -131,6 +131,7 @@ namespace Icebreaker
                                 new CardAction()
                                 {
                                     Title = Resources.PausePairingsButtonText,
+                                    DisplayText = Resources.PausePairingsButtonText,
                                     Type = ActionTypes.MessageBack,
                                     Text = "optout"
                                 }
@@ -144,9 +145,8 @@ namespace Icebreaker
                 {
                     // Unknown input
                     this.telemetryClient.TrackTrace($"Cannot process the following: {activity.Text}");
-
-                    var replyActivity = activity.CreateReply(Resources.IDontKnow);
-                    await connectorClient.Conversations.ReplyToActivityAsync(replyActivity);
+                    var replyActivity = activity.CreateReply();
+                    await this.bot.SendUnrecognizedInputMessage(connectorClient, replyActivity);
                 }
             }
             catch (Exception ex)

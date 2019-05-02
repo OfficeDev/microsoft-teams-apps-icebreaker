@@ -169,7 +169,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pause matches.
+        ///   Looks up a localized string similar to Pause all matches.
         /// </summary>
         internal static string PausePairingsButtonText {
             get {
@@ -183,6 +183,15 @@ namespace Icebreaker.Properties {
         internal static string ResumePairingsButtonText {
             get {
                 return ResourceManager.GetString("ResumePairingsButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to I&apos;m sorry, but I can&apos;t process the incoming message. You can take a tour, though, to learn more about my functionality..
+        /// </summary>
+        internal static string UnrecognizedInput {
+            get {
+                return ResourceManager.GetString("UnrecognizedInput", resourceCulture);
             }
         }
         

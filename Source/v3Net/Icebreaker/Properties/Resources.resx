@@ -160,12 +160,16 @@
     <value>All set. I've paused your matches. You can turn them back on whenever you like.</value>
   </data>
   <data name="PausePairingsButtonText" xml:space="preserve">
-    <value>Pause matches</value>
+    <value>Pause all matches</value>
     <comment>Button text to pause pairings</comment>
   </data>
   <data name="ResumePairingsButtonText" xml:space="preserve">
     <value>Resume matches</value>
     <comment>Button text to resume pairings</comment>
+  </data>
+  <data name="UnrecognizedInput" xml:space="preserve">
+    <value>I'm sorry, but I can't process the incoming message. You can take a tour, though, to learn more about my functionality.</value>
+    <comment>The text for the unrecognized input scenario</comment>
   </data>
   <data name="WelcomeTourTitle" xml:space="preserve">
     <value>Tour</value>

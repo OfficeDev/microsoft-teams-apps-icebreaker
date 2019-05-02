@@ -44,6 +44,17 @@
   ],
   "actions": [
     {
+      "type": "Action.Submit",
+      "title": "%pauseMatchesText%",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "%pauseMatchesText%",
+          "text": "optout"
+        }
+      }
+    },
+    {
       "type": "Action.OpenUrl",
       "title": "Take a tour",
       "url": "%tourUrl%"
