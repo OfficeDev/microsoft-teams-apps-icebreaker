@@ -184,13 +184,12 @@ namespace Icebreaker
         /// Sends a message whenever there is unrecognized input into the bot
         /// </summary>
         /// <param name="connectorClient">The connector client</param>
-        /// <param name="activity">The incoming activity</param>
+        /// <param name="replyActivity">The activity for replying to a message</param>
         /// <returns>Tracking task</returns>
-        public async Task SendUnrecognizedInputMessage(ConnectorClient connectorClient, Activity activity)
+        public async Task SendUnrecognizedInputMessage(ConnectorClient connectorClient, Activity replyActivity)
         {
-            this.telemetryClient.TrackTrace($"Unrecognized input detected {activity.Text}");
             var unrecognizedInputAdaptiveCard = UnrecognizedInputAdaptiveCard.GetCard();
-            activity.Attachments = new List<Attachment>()
+            replyActivity.Attachments = new List<Attachment>()
             {
                 new Attachment()
                 {
@@ -198,7 +197,7 @@ namespace Icebreaker
                     Content = JsonConvert.DeserializeObject(unrecognizedInputAdaptiveCard)
                 }
             };
-            await connectorClient.Conversations.ReplyToActivityAsync(activity);
+            await connectorClient.Conversations.ReplyToActivityAsync(replyActivity);
         }
 
         /// <summary>
