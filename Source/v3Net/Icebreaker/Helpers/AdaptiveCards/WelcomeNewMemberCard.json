@@ -32,6 +32,12 @@
           "text": "%introMessagePart2%",
           "wrap": true,
           "spacing": "Medium"
+        },
+        {
+          "type": "TextBlock",
+          "text": "%introMessagePart3%",
+          "wrap": true, 
+          "spacing": "Medium"
         }
       ]
     }

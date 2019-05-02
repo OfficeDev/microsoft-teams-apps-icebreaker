@@ -97,6 +97,15 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to **To meet new people, just hang tight. I&apos;ll send you an invite soon.**.
+        /// </summary>
+        internal static string InstallMessageKnownInstallerPart3 {
+            get {
+                return ResourceManager.GetString("InstallMessageKnownInstallerPart3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to If you&apos;re reading this, it&apos;s because I was installed to **{0} Team.** .
         /// </summary>
         internal static string InstallMessageUnknownInstallerPart1 {
@@ -111,6 +120,15 @@ namespace Icebreaker.Properties {
         internal static string InstallMessageUnknownInstallerPart2 {
             get {
                 return ResourceManager.GetString("InstallMessageUnknownInstallerPart2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to **To meet new people, just hang tight. I&apos;ll send you an invite soon.**.
+        /// </summary>
+        internal static string InstallMessageUnknownInstallerPart3 {
+            get {
+                return ResourceManager.GetString("InstallMessageUnknownInstallerPart3", resourceCulture);
             }
         }
         

@@ -30,7 +30,13 @@
         {
           "type": "TextBlock",
           "text": "%teamIntroPart2%",
-          "wrap": true, 
+          "wrap": true,
+          "spacing": "Medium"
+        },
+        {
+          "type": "TextBlock",
+          "text": "%teamIntroPart3%",
+          "wrap": true,
           "spacing": "Medium"
         }
       ]

@@ -36,16 +36,19 @@ namespace Icebreaker.Helpers.AdaptiveCards
         {
             string teamIntroPart1 = string.Empty;
             string teamIntroPart2 = string.Empty;
+            string teamIntroPart3 = string.Empty;
 
             if (string.IsNullOrEmpty(botInstaller))
             {
                 teamIntroPart1 = string.Format(Resources.InstallMessageUnknownInstallerPart1, teamName);
                 teamIntroPart2 = Resources.InstallMessageUnknownInstallerPart2;
+                teamIntroPart3 = Resources.InstallMessageUnknownInstallerPart3;
             }
             else
             {
                 teamIntroPart1 = string.Format(Resources.InstallMessageKnownInstallerPart1, botInstaller, teamName);
                 teamIntroPart2 = Resources.InstallMessageKnownInstallerPart2;
+                teamIntroPart3 = Resources.InstallMessageKnownInstallerPart3;
             }
 
             var baseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain");
@@ -59,6 +62,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
             {
                 { "teamIntroPart1", teamIntroPart1 },
                 { "teamIntroPart2", teamIntroPart2 },
+                { "teamIntroPart3", teamIntroPart3 },
                 { "welcomeCardImageUrl", welcomeCardImageUrl },
                 { "tourUrl", tourUrl }
             };
