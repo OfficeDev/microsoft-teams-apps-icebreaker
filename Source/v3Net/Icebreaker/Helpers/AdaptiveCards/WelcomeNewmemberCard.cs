@@ -50,6 +50,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
             var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html");
             var tourTitle = Resources.WelcomeTourTitle;
             var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
+            var pauseMatchesText = Resources.PausePairingsButtonText;
 
             var tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}";
 
@@ -59,8 +60,8 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 { "personFirstName", personFirstName },
                 { "botDisplayName", botDisplayName },
                 { "introMessage", introductoryMessage },
-                { "pauseMatches", Resources.PausePairingsButtonText },
-                { "tourUrl", tourUrl }
+                { "tourUrl", tourUrl },
+                { "pauseMatchesText", pauseMatchesText }
             };
 
             var cardBody = CardTemplate;

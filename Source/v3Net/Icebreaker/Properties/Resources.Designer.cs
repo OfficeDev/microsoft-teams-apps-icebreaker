@@ -70,15 +70,6 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 😕 no idea what you just said. My tiny 🤖 🧠 doesn&apos;t understand how to handle that yet!.
-        /// </summary>
-        internal static string IDontKnow {
-            get {
-                return ResourceManager.GetString("IDontKnow", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to If you&apos;re reading this, it&apos;s most likely because {0} added me to the {1} Team. I get to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It&apos;s a win-win-*win* situation..
         /// </summary>
         internal static string InstallMessageKnownInstaller {
@@ -147,6 +138,15 @@ namespace Icebreaker.Properties {
         internal static string ResumePairingsButtonText {
             get {
                 return ResourceManager.GetString("ResumePairingsButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to I&apos;m sorry, but I can&apos;t process the incoming message. You can take a tour, though, to learn more about my functionality..
+        /// </summary>
+        internal static string UnrecognizedInput {
+            get {
+                return ResourceManager.GetString("UnrecognizedInput", resourceCulture);
             }
         }
         

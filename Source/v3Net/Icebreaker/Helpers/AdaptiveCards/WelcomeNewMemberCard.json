@@ -15,11 +15,11 @@
   "actions": [
     {
       "type": "Action.Submit",
-      "title": "%pauseMatches%",
+      "title": "%pauseMatchesText%",
       "data": {
         "msteams": {
           "type": "messageBack",
-          "displayText": "%pauseMatches%",
+          "displayText": "%pauseMatchesText%",
           "text": "optout"
         }
       }
