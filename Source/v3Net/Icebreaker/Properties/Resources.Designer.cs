@@ -61,7 +61,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 😓 there was an error while processing request. Retry?.
+        ///   Looks up a localized string similar to There was an error while processing request. Retry?.
         /// </summary>
         internal static string ErrorOccured {
             get {
