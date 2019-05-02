@@ -60,7 +60,11 @@
       "type": "Action.Submit",
       "title": "%pauseMatches%",
       "data": {
-        "optout": true
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "%pauseMatches%",
+          "text": "optout"
+        }
       }
     }
   ],
