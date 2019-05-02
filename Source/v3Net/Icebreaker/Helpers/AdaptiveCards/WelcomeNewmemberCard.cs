@@ -36,21 +36,25 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <returns>The welcome new member card</returns>
         public static string GetCard(string teamName, string personFirstName, string botDisplayName, string botInstaller)
         {
-            string introductoryMessage = string.Empty;
+            string introMessagePart1 = string.Empty;
+            string introMessagePart2 = string.Empty;
+
             if (string.IsNullOrEmpty(botInstaller))
             {
-                introductoryMessage = string.Format(Resources.InstallMessageUnknownInstaller, teamName);
+                introMessagePart1 = string.Format(Resources.InstallMessageUnknownInstallerPart1, teamName);
+                introMessagePart2 = Resources.InstallMessageUnknownInstallerPart2;
             }
             else
             {
-                introductoryMessage = string.Format(Resources.InstallMessageKnownInstaller, botInstaller, teamName);
+                introMessagePart1 = string.Format(Resources.InstallMessageKnownInstallerPart1, botInstaller, teamName);
+                introMessagePart2 = Resources.InstallMessageKnownInstallerPart2;
             }
 
             var baseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain");
             var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html");
             var tourTitle = Resources.WelcomeTourTitle;
             var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
-
+            var welcomeCardImageUrl = $"https://{baseDomain}/Content/welcome-card-image.png";
             var tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}";
 
             var variablesToValues = new Dictionary<string, string>()
@@ -58,7 +62,9 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 { "team", teamName },
                 { "personFirstName", personFirstName },
                 { "botDisplayName", botDisplayName },
-                { "introMessage", introductoryMessage },
+                { "introMessagePart1", introMessagePart1 },
+                { "introMessagePart2", introMessagePart2 },
+                { "welcomeCardImageUrl", welcomeCardImageUrl },
                 { "tourUrl", tourUrl }
             };
 

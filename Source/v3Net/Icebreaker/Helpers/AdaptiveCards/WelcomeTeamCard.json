@@ -6,6 +6,8 @@
       "items": [
         {
           "type": "TextBlock",
+          "size": "Medium",
+          "weight": "Bolder",
           "text": "Hi there!"
         }
       ]
@@ -14,9 +16,22 @@
       "type": "Container",
       "items": [
         {
+          "type": "Image",
+          "horizontalAlignment": "Center",
+          "url": "%welcomeCardImageUrl%",
+          "width": "424px",
+          "height": "248px"
+        },
+        {
           "type": "TextBlock",
-          "text": "%intro%",
+          "text": "%teamIntroPart1%",
           "wrap": true
+        },
+        {
+          "type": "TextBlock",
+          "text": "%teamIntroPart2%",
+          "wrap": true, 
+          "spacing": "Medium"
         }
       ]
     }

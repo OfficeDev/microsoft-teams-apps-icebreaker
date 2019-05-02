@@ -170,6 +170,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\welcome-card-image.png" />
     <Content Include="default.htm" />
     <Content Include="Global.asax" />
     <Content Include="Manifest\color.png" />

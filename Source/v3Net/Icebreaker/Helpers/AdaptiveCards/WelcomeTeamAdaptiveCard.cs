@@ -34,26 +34,32 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <returns>The welcome team adaptive card</returns>
         public static string GetCard(string teamName, string botDisplayName, string botInstaller)
         {
-            string teamIntroMessage = string.Empty;
+            string teamIntroPart1 = string.Empty;
+            string teamIntroPart2 = string.Empty;
+
             if (string.IsNullOrEmpty(botInstaller))
             {
-                teamIntroMessage = string.Format(Resources.InstallMessageUnknownInstaller, teamName);
+                teamIntroPart1 = string.Format(Resources.InstallMessageUnknownInstallerPart1, teamName);
+                teamIntroPart2 = Resources.InstallMessageUnknownInstallerPart2;
             }
             else
             {
-                teamIntroMessage = string.Format(Resources.InstallMessageKnownInstaller, botInstaller, teamName);
+                teamIntroPart1 = string.Format(Resources.InstallMessageKnownInstallerPart1, botInstaller, teamName);
+                teamIntroPart2 = Resources.InstallMessageKnownInstallerPart2;
             }
 
             var baseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain");
             var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html");
             var tourTitle = Resources.WelcomeTourTitle;
             var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
-
+            var welcomeCardImageUrl = $"https://{baseDomain}/Content/welcome-card-image.png";
             var tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}";
 
             var variablesToValues = new Dictionary<string, string>()
             {
-                { "intro", teamIntroMessage },
+                { "teamIntroPart1", teamIntroPart1 },
+                { "teamIntroPart2", teamIntroPart2 },
+                { "welcomeCardImageUrl", welcomeCardImageUrl },
                 { "tourUrl", tourUrl }
             };
 
