@@ -74,14 +74,68 @@ body {
     min-width: 96px;
     font-size: 14px;
 }
-
     .theme-dark .primary-button:hover {
         background-color: #BDBDE6;
         color: #201F1F;
         border-color: transparent;
     }
-
     .theme-dark .primary-button:active:focus {
+        background: #6264A7;
+        border-color: transparent;
+        color: #201F1F;
+        outline: 0.125rem solid #201F1F;
+        outline-offset: -0.25rem
+    }
+
+.theme-dark .primary-button-back {
+    background: #6264A7;
+    border: 0.125rem solid;
+    border-color: transparent;
+    border-radius: 0.1875rem;
+    box-sizing: border-box;
+    color: #201F1F;
+    cursor: pointer;
+    font: inherit;
+    margin: 90px 0px 0px 478px;
+    height: 32px;
+    min-width: 96px;
+    font-size: 14px;
+}
+
+    .theme-dark .primary-button-back:hover {
+        background-color: #BDBDE6;
+        color: #201F1F;
+        border-color: transparent;
+    }
+
+    .theme-dark .primary-button-back:active:focus {
+        background: #6264A7;
+        border-color: transparent;
+        color: #201F1F;
+        outline: 0.125rem solid #201F1F;
+        outline-offset: -0.25rem
+    }
+
+.theme-dark .primary-button-done {
+    background: #6264A7;
+    border: 0.125rem solid;
+    border-color: transparent;
+    border-radius: 0.1875rem;
+    box-sizing: border-box;
+    color: #201F1F;
+    cursor: pointer;
+    font: inherit;
+    margin: 90px 0px 0px 378px;
+    height: 32px;
+    min-width: 96px;
+    font-size: 14px;
+}
+    .theme-dark .primary-button-done:hover {
+        background-color: #BDBDE6;
+        color: #201F1F;
+        border-color: transparent;
+    }
+    .theme-dark .primary-button-done:active:focus {
         background: #6264A7;
         border-color: transparent;
         color: #201F1F;
@@ -99,6 +153,11 @@ body {
 .theme-dark .footer {
     display: flex;
     flex-direction: row-reverse;
+}
+
+.theme-dark #matchesDiv .footer {
+    display: flex;
+    flex-direction: row;
 }
 
 /*Default Theme rules*/
@@ -136,14 +195,68 @@ body {
     font: inherit;
     font-size: 14px;
 }
-
     .theme-default .primary-button:hover {
         background: #464775;
         border-color: transparent;
         color: #FFFFFF
     }
-
     .theme-default .primary-button:active:focus {
+        background: #464775;
+        border-color: transparent;
+        color: #FFFFFF;
+        outline: 0.125rem solid #FFFFFF;
+        outline-offset: -0.25rem
+    }
+
+.theme-default .primary-button-back {
+    background: #6264A7;
+    border: 0.125rem solid;
+    border-color: transparent;
+    border-radius: 0.1875rem;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    cursor: pointer;
+    height: 32px;
+    min-width: 96px;
+    margin: 90px 0px 0px 0px;
+    color: #FFFFFF;
+    font: inherit;
+    font-size: 14px;
+}
+    .theme-default .primary-button-back:hover {
+        background: #464775;
+        border-color: transparent;
+        color: #FFFFFF
+    }
+    .theme-default .primary-button-back:active:focus {
+        background: #464775;
+        border-color: transparent;
+        color: #FFFFFF;
+        outline: 0.125rem solid #FFFFFF;
+        outline-offset: -0.25rem
+    }
+
+.theme-default .primary-button-done {
+    background: #6264A7;
+    border: 0.125rem solid;
+    border-color: transparent;
+    border-radius: 0.1875rem;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    cursor: pointer;
+    height: 32px;
+    min-width: 96px;
+    margin: 90px 0px 0px 378px;
+    color: #FFFFFF;
+    font: inherit;
+    font-size: 14px;
+}
+    .theme-default .primary-button-done:hover {
+        background: #464775;
+        border-color: transparent;
+        color: #FFFFFF
+    }
+    .theme-default .primary-button-done:active:focus {
         background: #464775;
         border-color: transparent;
         color: #FFFFFF;
@@ -161,6 +274,11 @@ body {
 .theme-default .footer {
     display: flex;
     flex-direction: row-reverse;
+}
+
+.theme-default #matchesDiv .footer {
+    display: flex;
+    flex-direction: row;
 }
 
 /*High Contrast Theme rules*/
@@ -197,14 +315,68 @@ body {
     margin: 90px 0px 0px 478px;
     font-size: 14px;
 }
-
     .theme-highContrast .primary-button:hover {
         background: #FFFF00;
         border-color: transparent;
         color: #000000
     }
-
     .theme-highContrast .primary-button:active:focus {
+        background: #FFFF00;
+        border-color: transparent;
+        color: #000000;
+        outline: 0.125rem solid transparent;
+        outline-offset: -0.25rem
+    }
+
+.theme-highContrast .primary-button-back {
+    background: #FFFFFF;
+    border: 0.125rem solid;
+    border-color: transparent;
+    border-radius: 0.1875rem;
+    box-sizing: border-box;
+    color: #000000;
+    cursor: pointer;
+    font: inherit;
+    height: 32px;
+    min-width: 90px;
+    margin: 90px 0px 0px 0px;
+    font-size: 14px;
+}
+    .theme-highContrast .primary-button-back:hover {
+        background: #FFFF00;
+        border-color: transparent;
+        color: #000000
+    }
+    .theme-highContrast .primary-button-back:active:focus {
+        background: #FFFF00;
+        border-color: transparent;
+        color: #000000;
+        outline: 0.125rem solid transparent;
+        outline-offset: -0.25rem
+    }
+
+.theme-highContrast .primary-button-done {
+    background: #FFFFFF;
+    border: 0.125rem solid;
+    border-color: transparent;
+    border-radius: 0.1875rem;
+    box-sizing: border-box;
+    color: #000000;
+    cursor: pointer;
+    font: inherit;
+    height: 32px;
+    min-width: 90px;
+    margin: 90px 0px 0px 346px;
+    font-size: 14px;
+}
+
+    .theme-highContrast .primary-button-done:hover {
+        background: #FFFF00;
+        border-color: transparent;
+        color: #000000
+    }
+
+    .theme-highContrast .primary-button-done:active:focus {
         background: #FFFF00;
         border-color: transparent;
         color: #000000;
@@ -222,4 +394,9 @@ body {
 .theme-highContrast .footer {
     display: flex;
     flex-direction: row-reverse;
+}
+
+.theme-highContrast #matchesDiv .footer {
+    display: flex;
+    flex-direction: row;
 }
