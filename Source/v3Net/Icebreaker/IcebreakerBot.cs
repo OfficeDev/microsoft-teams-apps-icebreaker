@@ -155,7 +155,7 @@ namespace Icebreaker
 
             if (userThatJustJoined != null)
             {
-                var welcomeMessageCard = WelcomeNewMemberCard.GetCard(teamName, userThatJustJoined.Name, this.botDisplayName, botInstaller);
+                var welcomeMessageCard = WelcomeNewMemberAdaptiveCard.GetCard(teamName, userThatJustJoined.Name, this.botDisplayName, botInstaller);
                 await this.NotifyUser(connectorClient, welcomeMessageCard, userThatJustJoined, tenantId);
             }
             else

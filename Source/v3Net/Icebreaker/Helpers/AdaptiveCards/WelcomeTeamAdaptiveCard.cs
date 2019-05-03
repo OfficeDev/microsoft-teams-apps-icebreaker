@@ -21,7 +21,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
 
         static WelcomeTeamAdaptiveCard()
         {
-            var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/WelcomeTeamCard.json");
+            var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/WelcomeTeamAdaptiveCard.json");
             CardTemplate = File.ReadAllText(cardJsonFilePath);
         }
 

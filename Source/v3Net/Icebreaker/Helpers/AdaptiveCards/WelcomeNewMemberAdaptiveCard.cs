@@ -1,5 +1,5 @@
 ﻿//----------------------------------------------------------------------------------------------
-// <copyright file="WelcomeNewMemberCard.cs" company="Microsoft">
+// <copyright file="WelcomeNewMemberAdaptiveCard.cs" company="Microsoft">
 // Copyright (c) Microsoft. All rights reserved.
 // </copyright>
 //----------------------------------------------------------------------------------------------
@@ -16,13 +16,13 @@ namespace Icebreaker.Helpers.AdaptiveCards
     /// <summary>
     /// Builder class for the welcome new member card
     /// </summary>
-    public static class WelcomeNewMemberCard
+    public static class WelcomeNewMemberAdaptiveCard
     {
         private static readonly string CardTemplate;
 
-        static WelcomeNewMemberCard()
+        static WelcomeNewMemberAdaptiveCard()
         {
-            var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/WelcomeNewMemberCard.json");
+            var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/WelcomeNewMemberAdaptiveCard.json");
             CardTemplate = File.ReadAllText(cardJsonFilePath);
         }
 
