@@ -57,6 +57,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
             var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
             var welcomeCardImageUrl = $"https://{baseDomain}/Content/welcome-card-image.png";
             var tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}";
+            var salutationText = Resources.SalutationTitleText;
 
             var variablesToValues = new Dictionary<string, string>()
             {
@@ -64,7 +65,8 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 { "teamIntroPart2", teamIntroPart2 },
                 { "teamIntroPart3", teamIntroPart3 },
                 { "welcomeCardImageUrl", welcomeCardImageUrl },
-                { "tourUrl", tourUrl }
+                { "tourUrl", tourUrl },
+                { "salutationText", salutationText }
             };
 
             var cardBody = CardTemplate;

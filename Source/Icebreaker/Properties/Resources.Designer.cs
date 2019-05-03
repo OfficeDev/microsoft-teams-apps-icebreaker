@@ -178,6 +178,15 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hi there!.
+        /// </summary>
+        internal static string SalutationTitleText {
+            get {
+                return ResourceManager.GetString("SalutationTitleText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to I&apos;m sorry, but I can&apos;t process the incoming message. You can take a tour, though, to learn more about my functionality..
         /// </summary>
         internal static string UnrecognizedInput {
