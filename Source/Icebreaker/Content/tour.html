@@ -9,6 +9,9 @@
     <link href="styles.css" rel="stylesheet" />
     <script type="text/javascript">
         $(document).ready(function () {
+            var urlParams = new URLSearchParams(window.location.search); 
+            var currentTheme = urlParams.get('theme');  
+
             var setTheme = function (theme) {
                 if (theme === "dark")
                     document.getElementById("themeCSS").className = "theme-dark";
@@ -19,9 +22,7 @@
             };
 
             microsoftTeams.initialize();
-            microsoftTeams.getContext(function (context) {
-                setTheme(context.theme);
-            });
+            setTheme(currentTheme);
             microsoftTeams.registerOnThemeChangeHandler(setTheme);
         });
 
