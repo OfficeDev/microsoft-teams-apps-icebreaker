@@ -173,8 +173,6 @@
     <Content Include="Content\welcome-card-image.png" />
     <Content Include="default.htm" />
     <Content Include="Global.asax" />
-    <Content Include="Manifest\color.png" />
-    <Content Include="Manifest\outline.png" />
     <Content Include="Helpers\AdaptiveCards\UnrecognizedInputAdaptiveCard.json" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
@@ -218,7 +216,6 @@
     </Content>
     <Content Include="Helpers\AdaptiveCards\PairUpNotificationAdaptiveCard.json" />
     <Content Include="Helpers\AdaptiveCards\WelcomeNewMemberAdaptiveCard.json" />
-    <Content Include="Manifest\manifest.json" />
     <Content Include="Connected Services\Application Insights\ConnectedService.json" />
     <Content Include="ApplicationInsights.config">
       <SubType>Designer</SubType>
