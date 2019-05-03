@@ -180,7 +180,7 @@
     <Content Include="Scripts\jquery-3.3.1.slim.js" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
     <Content Include="Scripts\MicrosoftTeams-1.4.1.min.js" />
-    <Content Include="Content\SfbFreWelcomeDialog.png" />
+    <Content Include="Content\welcome-dialog.png" />
     <Content Include="Content\styles.css" />
     <Content Include="Content\tour.html" />
     <Content Include="Web.config">
