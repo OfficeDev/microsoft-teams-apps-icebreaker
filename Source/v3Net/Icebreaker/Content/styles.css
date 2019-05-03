@@ -96,7 +96,7 @@ body {
     color: #201F1F;
     cursor: pointer;
     font: inherit;
-    margin: 90px 0px 0px 478px;
+    margin: 90px 0px 0px 0px;
     height: 32px;
     min-width: 96px;
     font-size: 14px;
@@ -125,7 +125,7 @@ body {
     color: #201F1F;
     cursor: pointer;
     font: inherit;
-    margin: 90px 0px 0px 378px;
+    margin: 90px 0px 0px 346px;
     height: 32px;
     min-width: 96px;
     font-size: 14px;
@@ -246,7 +246,7 @@ body {
     cursor: pointer;
     height: 32px;
     min-width: 96px;
-    margin: 90px 0px 0px 378px;
+    margin: 90px 0px 0px 346px;
     color: #FFFFFF;
     font: inherit;
     font-size: 14px;

@@ -6,6 +6,10 @@
 
 namespace Icebreaker
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Helpers;
     using Helpers.AdaptiveCards;
     using Microsoft.ApplicationInsights;
@@ -14,10 +18,6 @@ namespace Icebreaker
     using Microsoft.Bot.Connector;
     using Microsoft.Bot.Connector.Teams;
     using Newtonsoft.Json;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Implements the core logic for Icebreaker bot
@@ -155,7 +155,7 @@ namespace Icebreaker
 
             if (userThatJustJoined != null)
             {
-                var welcomeMessageCard = WelcomeNewMemberCard.GetCard(teamName, userThatJustJoined.Name, this.botDisplayName, botInstaller);
+                var welcomeMessageCard = WelcomeNewMemberAdaptiveCard.GetCard(teamName, userThatJustJoined.Name, this.botDisplayName, botInstaller);
                 await this.NotifyUser(connectorClient, welcomeMessageCard, userThatJustJoined, tenantId);
             }
             else
