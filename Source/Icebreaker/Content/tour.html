@@ -12,10 +12,10 @@
             var urlParams = new URLSearchParams(window.location.search); 
             var currentTheme = urlParams.get('theme');  
 
-            var setTheme = function (currentTheme) {
-                if (currentTheme === "dark")
+            var setTheme = function (theme) {
+                if (theme === "dark")
                     document.getElementById("themeCSS").className = "theme-dark";
-                else if (currentTheme === "contrast")
+                else if (theme === "contrast")
                     document.getElementById("themeCSS").className = "theme-highContrast";
                 else
                     document.getElementById("themeCSS").className = "theme-default";

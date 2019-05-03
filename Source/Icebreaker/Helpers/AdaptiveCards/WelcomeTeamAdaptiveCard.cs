@@ -52,7 +52,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
             }
 
             var baseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain");
-            var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html" + "?theme={theme}");
+            var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html?theme={{theme}}");
             var tourTitle = Resources.WelcomeTourTitle;
             var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
             var welcomeCardImageUrl = $"https://{baseDomain}/Content/welcome-card-image.png";
