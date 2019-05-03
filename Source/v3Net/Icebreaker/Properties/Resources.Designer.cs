@@ -70,15 +70,6 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 😕 no idea what you just said. My tiny 🤖 🧠 doesn&apos;t understand how to handle that yet!.
-        /// </summary>
-        internal static string IDontKnow {
-            get {
-                return ResourceManager.GetString("IDontKnow", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to If you&apos;re reading this, it&apos;s most likely because {0} added me to the **{1} Team.**.
         /// </summary>
         internal static string InstallMessageKnownInstallerPart1 {
