@@ -36,14 +36,21 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <returns>The welcome new member card</returns>
         public static string GetCard(string teamName, string personFirstName, string botDisplayName, string botInstaller)
         {
-            string introductoryMessage = string.Empty;
+            string introMessagePart1 = string.Empty;
+            string introMessagePart2 = string.Empty;
+            string introMessagePart3 = string.Empty;
+
             if (string.IsNullOrEmpty(botInstaller))
             {
-                introductoryMessage = string.Format(Resources.InstallMessageUnknownInstaller, teamName);
+                introMessagePart1 = string.Format(Resources.InstallMessageUnknownInstallerPart1, teamName);
+                introMessagePart2 = Resources.InstallMessageUnknownInstallerPart2;
+                introMessagePart3 = Resources.InstallMessageUnknownInstallerPart3;
             }
             else
             {
-                introductoryMessage = string.Format(Resources.InstallMessageKnownInstaller, botInstaller, teamName);
+                introMessagePart1 = string.Format(Resources.InstallMessageKnownInstallerPart1, botInstaller, teamName);
+                introMessagePart2 = Resources.InstallMessageKnownInstallerPart2;
+                introMessagePart3 = Resources.InstallMessageKnownInstallerPart3;
             }
 
             var baseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain");
@@ -51,7 +58,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
             var tourTitle = Resources.WelcomeTourTitle;
             var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
             var pauseMatchesText = Resources.PausePairingsButtonText;
-
+            var welcomeCardImageUrl = $"https://{baseDomain}/Content/welcome-card-image.png";
             var tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}";
 
             var variablesToValues = new Dictionary<string, string>()
@@ -59,9 +66,12 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 { "team", teamName },
                 { "personFirstName", personFirstName },
                 { "botDisplayName", botDisplayName },
-                { "introMessage", introductoryMessage },
-                { "tourUrl", tourUrl },
+                { "introMessagePart1", introMessagePart1 },
+                { "introMessagePart2", introMessagePart2 },
+                { "introMessagePart3", introMessagePart3 },
+                { "welcomeCardImageUrl", welcomeCardImageUrl },
                 { "pauseMatchesText", pauseMatchesText }
+                { "tourUrl", tourUrl }
             };
 
             var cardBody = CardTemplate;
