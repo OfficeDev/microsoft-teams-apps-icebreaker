@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -9,19 +9,20 @@
     <link href="styles.css" rel="stylesheet" />
     <script type="text/javascript">
         $(document).ready(function () {
-            var setTheme = function (theme) {
-                if (theme === "dark")
+            var urlParams = new URLSearchParams(window.location.search); 
+            var currentTheme = urlParams.get('theme');  
+
+            var setTheme = function (currentTheme) {
+                if (currentTheme === "dark")
                     document.getElementById("themeCSS").className = "theme-dark";
-                else if (theme === "contrast")
+                else if (currentTheme === "contrast")
                     document.getElementById("themeCSS").className = "theme-highContrast";
                 else
                     document.getElementById("themeCSS").className = "theme-default";
             };
 
             microsoftTeams.initialize();
-            microsoftTeams.getContext(function (context) {
-                setTheme(context.theme);
-            });
+            setTheme(currentTheme);
             microsoftTeams.registerOnThemeChangeHandler(setTheme);
         });
 
