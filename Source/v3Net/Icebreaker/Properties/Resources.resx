@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ErrorOccured" xml:space="preserve">
-    <value>😓 there was an error while processing request. Retry?</value>
+    <value>There was an error while processing request. Retry?</value>
   </data>
   <data name="InstallMessageKnownInstallerPart1" xml:space="preserve">
     <value>If you're reading this, it's most likely because {0} added me to the **{1} Team.**</value>
