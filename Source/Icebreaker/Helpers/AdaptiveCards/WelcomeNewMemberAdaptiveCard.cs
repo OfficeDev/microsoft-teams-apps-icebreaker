@@ -60,6 +60,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
             var pauseMatchesText = Resources.PausePairingsButtonText;
             var welcomeCardImageUrl = $"https://{baseDomain}/Content/welcome-card-image.png";
             var tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}";
+            var salutationText = Resources.SalutationTitleText;
 
             var variablesToValues = new Dictionary<string, string>()
             {
@@ -71,7 +72,8 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 { "introMessagePart3", introMessagePart3 },
                 { "welcomeCardImageUrl", welcomeCardImageUrl },
                 { "pauseMatchesText", pauseMatchesText },
-                { "tourUrl", tourUrl }
+                { "tourUrl", tourUrl },
+                { "salutationText", salutationText }
             };
 
             var cardBody = CardTemplate;

@@ -117,8 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ChatWithMatchButtonText" xml:space="preserve">
+    <value>Chat with {0}</value>
+    <comment>Button text to initiate a chat with the person the user has been matched up with</comment>
+  </data>
   <data name="ErrorOccured" xml:space="preserve">
     <value>There was an error while processing request. Retry?</value>
+    <comment>A generic message that is sent when there is an error occurring</comment>
   </data>
   <data name="InstallMessageKnownInstallerPart1" xml:space="preserve">
     <value>If you're reading this, it's most likely because {0} added me to the **{1} Team.**</value>
@@ -144,6 +149,22 @@
     <value>**To meet new people, just hang tight. I'll send you an invite soon.**</value>
     <comment>Part 3 of the install message when the name of the installer is not known</comment>
   </data>
+  <data name="MatchUpCardContentPart1" xml:space="preserve">
+    <value>Hi there again, I'm {0} in {1}. A bot that pairs you with a new coworker to meet each week. This week your match is {2}.</value>
+    <comment>First part of the match up card main content</comment>
+  </data>
+  <data name="MatchUpCardContentPart2" xml:space="preserve">
+    <value>If you've got the inclination, set something up. See, meeting people *is* easy!</value>
+    <comment>Second part of the match up card main content</comment>
+  </data>
+  <data name="MatchUpCardMatchedText" xml:space="preserve">
+    <value>You've been matched with {0}.</value>
+    <comment>The text saying who the user has been matched up with</comment>
+  </data>
+  <data name="MatchUpCardTitleContent" xml:space="preserve">
+    <value>It's time for a match!</value>
+    <comment>The title text for the pairup notification adaptive card</comment>
+  </data>
   <data name="MeetupContent" xml:space="preserve">
     <value>Hey there, looks like we've been matched by {0} this week. It'd be great to meet up for a coffee or a lunch or a call if you've got time.</value>
     <comment>Content of the Meetup for the propose meeting</comment>
@@ -154,17 +175,27 @@
   </data>
   <data name="OptInConfirmation" xml:space="preserve">
     <value>Welcome back! You've been missed. I've restarted your matches. Have fun!</value>
+    <comment>The confirmation reply that is sent when the user resumes the matches</comment>
   </data>
   <data name="OptOutConfirmation" xml:space="preserve">
     <value>All set. I've paused your matches. You can turn them back on whenever you like.</value>
+    <comment>The confirmation reply that is sent when the user pauses all matches</comment>
   </data>
   <data name="PausePairingsButtonText" xml:space="preserve">
     <value>Pause all matches</value>
     <comment>Button text to pause pairings</comment>
   </data>
+  <data name="ProposeMeetupButtonText" xml:space="preserve">
+    <value>Propose meetup</value>
+    <comment>Button text to propose the meetup with the match of the user</comment>
+  </data>
   <data name="ResumePairingsButtonText" xml:space="preserve">
     <value>Resume matches</value>
     <comment>Button text to resume pairings</comment>
+  </data>
+  <data name="SalutationTitleText" xml:space="preserve">
+    <value>Hi there!</value>
+    <comment>This is the text for the salutation in the adaptive cards when the bot is installed to a team and also when new users are added to the team</comment>
   </data>
   <data name="UnrecognizedInput" xml:space="preserve">
     <value>I'm sorry, but I can't process the incoming message. You can take a tour, though, to learn more about my functionality.</value>
@@ -172,5 +203,6 @@
   </data>
   <data name="WelcomeTourTitle" xml:space="preserve">
     <value>Tour</value>
+    <comment>This is the title of the tour for the Icebreaker Bot</comment>
   </data>
 </root>
