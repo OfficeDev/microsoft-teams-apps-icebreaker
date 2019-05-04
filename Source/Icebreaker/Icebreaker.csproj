@@ -179,6 +179,8 @@
     <Content Include="lib\jquery\jquery.min.map" />
     <Content Include="lib\jquery\jquery.js" />
     <Content Include="lib\jquery\jquery.min.js" />
+    <Content Include="lib\microsoft-teams\dist\MicrosoftTeams.js" />
+    <Content Include="lib\microsoft-teams\dist\MicrosoftTeams.min.js" />
     <Content Include="Scripts\MicrosoftTeams-1.4.1.min.js" />
     <Content Include="Content\welcome-dialog.png" />
     <Content Include="Content\styles.css" />
@@ -221,6 +223,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Helpers\AdaptiveCards\WelcomeTeamAdaptiveCard.json" />
+    <Content Include="lib\microsoft-teams\dist\MicrosoftTeams.js.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
