@@ -26,17 +26,12 @@
             microsoftTeams.registerOnThemeChangeHandler(setTheme);
         });
 
-        function SwapDivsWithClick(div1, div2) {
+        function ShowDivOnClick(div1, div2) {
             d1 = document.getElementById(div1);
             d2 = document.getElementById(div2);
-            if (d2.style.display == "none") {
-                d1.style.display = "none";
-                d2.style.display = "flex";
-            }
-            else {
-                d1.style.display = "flex";
-                d2.style.display = "none";
-            }
+
+            d1.style.display = "flex";
+            d2.style.display = "none";
         }
 
         function CloseWindow() {
@@ -56,7 +51,7 @@
             </p>
         </div>
         <div class="footer">
-            <button class="primary-button" onclick="SwapDivsWithClick('introDiv', 'matchesDiv')">
+            <button class="primary-button" onclick="ShowDivOnClick('matchesDiv', 'introDiv')">
                     Next
             </button>
         </div>
@@ -72,7 +67,7 @@
             </p>
         </div>
         <div class="footer">
-            <button class="primary-button-back" onclick="SwapDivsWithClick('matchesDiv', 'introDiv')">
+            <button class="primary-button-back" onclick="ShowDivOnClick('introDiv', 'matchesDiv')">
                 Back
             </button>
             <button class="primary-button-done" onclick="CloseWindow()">
