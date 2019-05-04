@@ -45,7 +45,7 @@
   "actions": [
     {
       "type": "Action.OpenUrl",
-      "title": "Take a tour",
+      "title": "%tourButtonText%",
       "url": "%tourUrl%"
     }
   ],
