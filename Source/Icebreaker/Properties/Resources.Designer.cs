@@ -61,6 +61,15 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Chat with {0}.
+        /// </summary>
+        internal static string ChatWithMatchButtonText {
+            get {
+                return ResourceManager.GetString("ChatWithMatchButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error while processing request. Retry?.
         /// </summary>
         internal static string ErrorOccured {
@@ -124,6 +133,42 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hi there again, I&apos;m {0} in {1}. A bot that pairs you with a new coworker to meet each week. This week your match is {2}..
+        /// </summary>
+        internal static string MatchUpCardContentPart1 {
+            get {
+                return ResourceManager.GetString("MatchUpCardContentPart1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you&apos;ve got the inclination, set something up. See, meeting people *is* easy!.
+        /// </summary>
+        internal static string MatchUpCardContentPart2 {
+            get {
+                return ResourceManager.GetString("MatchUpCardContentPart2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;ve been matched with {0}..
+        /// </summary>
+        internal static string MatchUpCardMatchedText {
+            get {
+                return ResourceManager.GetString("MatchUpCardMatchedText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to It&apos;s time for a match!.
+        /// </summary>
+        internal static string MatchUpCardTitleContent {
+            get {
+                return ResourceManager.GetString("MatchUpCardTitleContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hey there, looks like we&apos;ve been matched by {0} this week. It&apos;d be great to meet up for a coffee or a lunch or a call if you&apos;ve got time..
         /// </summary>
         internal static string MeetupContent {
@@ -165,6 +210,15 @@ namespace Icebreaker.Properties {
         internal static string PausePairingsButtonText {
             get {
                 return ResourceManager.GetString("PausePairingsButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Propose meetup.
+        /// </summary>
+        internal static string ProposeMeetupButtonText {
+            get {
+                return ResourceManager.GetString("ProposeMeetupButtonText", resourceCulture);
             }
         }
         

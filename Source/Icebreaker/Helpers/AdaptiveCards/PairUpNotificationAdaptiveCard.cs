@@ -47,16 +47,25 @@ namespace Icebreaker.Helpers.AdaptiveCards
 
             var meetingLink = "https://teams.microsoft.com/l/meeting/new?subject=" + escapedTitle + "&attendees=" + personUpn + "&content=" + escapedContent;
 
+            var matchUpCardTitleContent = Resources.MatchUpCardTitleContent;
+            var matchUpCardMatchedText = string.Format(Resources.MatchUpCardMatchedText, firstPersonName);
+            var matchUpCardContentPart1 = string.Format(Resources.MatchUpCardContentPart1, botDisplayName, teamName, firstPersonName);
+            var matchUpCardContentPart2 = Resources.MatchUpCardContentPart2;
+            var chatWithMatchButtonText = string.Format(Resources.ChatWithMatchButtonText, firstPersonName);
+            var pauseMatchesButtonText = Resources.PausePairingsButtonText;
+            var proposeMeetupButtonText = Resources.ProposeMeetupButtonText;
+
             var variablesToValues = new Dictionary<string, string>()
             {
-                { "team", teamName },
-                { "matchedPerson", firstPersonName },
-                { "matchedPersonFirstName", secondPersonName },
-                { "receiverName", firstPersonFirstName },
-                { "personUpn", personUpn },
-                { "botDisplayName", botDisplayName },
+                { "matchUpCardTitleContent", matchUpCardTitleContent },
+                { "matchUpCardMatchedText", matchUpCardMatchedText },
+                { "matchUpCardContentPart1", matchUpCardContentPart1 },
+                { "matchUpCardContentPart2", matchUpCardContentPart2 },
+                { "chatWithMatchButtonText", chatWithMatchButtonText },
+                { "pauseMatchesButtonText", pauseMatchesButtonText },
+                { "proposeMeetupButtonText", proposeMeetupButtonText },
                 { "meetingLink", meetingLink },
-                { "pauseMatches", Resources.PausePairingsButtonText }
+                { "personUpn", personUpn }
             };
 
             var cardBody = CardTemplate;

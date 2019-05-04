@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ChatWithMatchButtonText" xml:space="preserve">
+    <value>Chat with {0}</value>
+    <comment>Button text to initiate a chat with the person the user has been matched up with</comment>
+  </data>
   <data name="ErrorOccured" xml:space="preserve">
     <value>There was an error while processing request. Retry?</value>
     <comment>A generic message that is sent when there is an error occurring</comment>
@@ -145,6 +149,22 @@
     <value>**To meet new people, just hang tight. I'll send you an invite soon.**</value>
     <comment>Part 3 of the install message when the name of the installer is not known</comment>
   </data>
+  <data name="MatchUpCardContentPart1" xml:space="preserve">
+    <value>Hi there again, I'm {0} in {1}. A bot that pairs you with a new coworker to meet each week. This week your match is {2}.</value>
+    <comment>First part of the match up card main content</comment>
+  </data>
+  <data name="MatchUpCardContentPart2" xml:space="preserve">
+    <value>If you've got the inclination, set something up. See, meeting people *is* easy!</value>
+    <comment>Second part of the match up card main content</comment>
+  </data>
+  <data name="MatchUpCardMatchedText" xml:space="preserve">
+    <value>You've been matched with {0}.</value>
+    <comment>The text saying who the user has been matched up with</comment>
+  </data>
+  <data name="MatchUpCardTitleContent" xml:space="preserve">
+    <value>It's time for a match!</value>
+    <comment>The title text for the pairup notification adaptive card</comment>
+  </data>
   <data name="MeetupContent" xml:space="preserve">
     <value>Hey there, looks like we've been matched by {0} this week. It'd be great to meet up for a coffee or a lunch or a call if you've got time.</value>
     <comment>Content of the Meetup for the propose meeting</comment>
@@ -164,6 +184,10 @@
   <data name="PausePairingsButtonText" xml:space="preserve">
     <value>Pause all matches</value>
     <comment>Button text to pause pairings</comment>
+  </data>
+  <data name="ProposeMeetupButtonText" xml:space="preserve">
+    <value>Propose meetup</value>
+    <comment>Button text to propose the meetup with the match of the user</comment>
   </data>
   <data name="ResumePairingsButtonText" xml:space="preserve">
     <value>Resume matches</value>
