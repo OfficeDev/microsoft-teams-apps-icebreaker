@@ -181,7 +181,6 @@
     <Content Include="lib\jquery\jquery.min.js" />
     <Content Include="lib\microsoft-teams\dist\MicrosoftTeams.js" />
     <Content Include="lib\microsoft-teams\dist\MicrosoftTeams.min.js" />
-    <Content Include="Scripts\MicrosoftTeams-1.4.1.min.js" />
     <Content Include="Content\welcome-dialog.png" />
     <Content Include="Content\styles.css" />
     <Content Include="Content\tour.html" />
