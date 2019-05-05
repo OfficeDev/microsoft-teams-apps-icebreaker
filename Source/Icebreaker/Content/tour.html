@@ -9,8 +9,8 @@
     <link href="styles.css" rel="stylesheet" />
     <script type="text/javascript">
         $(document).ready(function () {
-            var urlParams = new URLSearchParams(window.location.search); 
-            var currentTheme = urlParams.get('theme');  
+            let queryParameters = GetQueryParameters();
+            let currentTheme = queryParameters["theme"];
 
             var setTheme = function (theme) {
                 if (theme === "dark")
@@ -32,6 +32,17 @@
 
             d1.style.display = "flex";
             d2.style.display = "none";
+        }
+
+        function GetQueryParameters() {
+            let queryParams = {}; 
+            location.search.substr(1).split("?").forEach(function (item) {
+                let s = item.split("="),
+                    k = s[0],
+                    v = s[1] && decodeURIComponent(s[1]);
+                queryParams[k] = v;
+            });
+            return queryParams;
         }
 
         function CloseWindow() {
