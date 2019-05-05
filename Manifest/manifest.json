@@ -3,29 +3,28 @@
   "manifestVersion": "1.3",
   "version": "1.0.0",
   "id": "d55d08d9-bacb-4567-942f-afd85d632dcc",
-  "packageName": "com.microsoft.teams.meetup",
+  "packageName": "com.microsoft.teams.icebreaker",
   "developer": {
-    "name": "",
-    "websiteUrl": "",
-    "privacyUrl": "",
-    "termsOfUseUrl": ""
+    "name": "<company name>",
+    "websiteUrl": "<website url>",
+    "privacyUrl": "<privacy url>",
+    "termsOfUseUrl": "<terms of use url>"
   },
   "icons": {
     "color": "color.png",
     "outline": "outline.png"
   },
   "name": {
-    "short": "",
-    "full": ""
+    "short": "Icebreaker"
   },
   "description": {
-    "short": "",
-    "full": ""
+    "short": "Icbreaker is a bot that randomly pairs team members up to build team unity.",
+    "full": "Icbreaker is a cute little bot that randomly pairs team members up every week to help the team build trust and personal connections."
   },
-  "accentColor": "#FFFFFF",
+  "accentColor": "#64A2CC",
   "bots": [
     {
-      "botId": "",
+      "botId": "<bot id>",
       "scopes": [
         "personal",
         "team"
@@ -38,5 +37,7 @@
     "identity",
     "messageTeamMembers"
   ],
-  "validDomains": []
+  "validDomains": [
+    "<app domain>"
+  ]
 }
