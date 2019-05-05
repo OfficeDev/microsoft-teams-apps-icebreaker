@@ -118,16 +118,16 @@ namespace Icebreaker.Helpers
         /// <summary>
         /// Get the stored information about the given user
         /// </summary>
-        /// <param name="userId">User id</param>
+        /// <param name="userAadObjectId">User AAD object id</param>
         /// <returns>User information</returns>
-        public async Task<UserInfo> GetUserInfoAsync(string userId)
+        public async Task<UserInfo> GetUserInfoAsync(string userAadObjectId)
         {
             await this.EnsureInitializedAsync();
 
             try
             {
-                var documentUri = UriFactory.CreateDocumentUri(this.database.Id, this.usersCollection.Id, userId);
-                return await this.documentClient.ReadDocumentAsync<UserInfo>(documentUri, new RequestOptions { PartitionKey = new PartitionKey(userId) });
+                var documentUri = UriFactory.CreateDocumentUri(this.database.Id, this.usersCollection.Id, userAadObjectId);
+                return await this.documentClient.ReadDocumentAsync<UserInfo>(documentUri, new RequestOptions { PartitionKey = new PartitionKey(userAadObjectId) });
             }
             catch (Exception ex)
             {
@@ -140,18 +140,18 @@ namespace Icebreaker.Helpers
         /// Set the user info for the given user
         /// </summary>
         /// <param name="tenantId">Tenant id</param>
-        /// <param name="userId">User id</param>
+        /// <param name="userAadObjectId">User AAD object id</param>
         /// <param name="optedIn">User opt-in status</param>
         /// <param name="serviceUrl">User service URL</param>
         /// <returns>Tracking task</returns>
-        public async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl)
+        public async Task SetUserInfoAsync(string tenantId, string userAadObjectId, bool optedIn, string serviceUrl)
         {
             await this.EnsureInitializedAsync();
 
             var userInfo = new UserInfo
             {
                 TenantId = tenantId,
-                UserId = userId,
+                UserAadObjectId = userAadObjectId,
                 OptedIn = optedIn,
                 ServiceUrl = serviceUrl
             };
