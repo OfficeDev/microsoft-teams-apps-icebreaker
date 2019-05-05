@@ -18,8 +18,8 @@
     "short": "Icebreaker"
   },
   "description": {
-    "short": "Icbreaker is a bot that randomly pairs team members up to build team unity.",
-    "full": "Icbreaker is a cute little bot that randomly pairs team members up every week to help the team build trust and personal connections."
+    "short": "Icebreaker is a bot that randomly pairs team members up to build team unity.",
+    "full": "Icebreaker is a cute little bot that randomly pairs team members up every week to help the team build trust and personal connections."
   },
   "accentColor": "#64A2CC",
   "bots": [
