@@ -44,6 +44,11 @@
   ],
   "actions": [
     {
+      "type": "Action.OpenUrl",
+      "title": "%tourButtonText%",
+      "url": "%tourUrl%"
+    },
+    {
       "type": "Action.Submit",
       "title": "%pauseMatchesText%",
       "data": {
@@ -53,11 +58,6 @@
           "text": "optout"
         }
       }
-    },
-    {
-      "type": "Action.OpenUrl",
-      "title": "%tourButtonText%",
-      "url": "%tourUrl%"
     }
   ],
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
