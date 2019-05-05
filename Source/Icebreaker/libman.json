@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "provider": "cdnjs",
+      "library": "jquery@3.3.1",
+      "destination": "lib/jquery/",
+      "files": [
+        "jquery.min.js",
+        "jquery.js",
+        "jquery.min.map"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "@microsoft/teams-js@1.4.1",
+      "destination": "lib/microsoft-teams/",
+      "files": [
+        "dist/MicrosoftTeams.min.js",
+        "dist/MicrosoftTeams.js",
+        "dist/MicrosoftTeams.js.map"
+      ]
+    }
+  ]
+}
