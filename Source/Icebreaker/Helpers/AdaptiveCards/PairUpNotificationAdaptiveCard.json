@@ -1,0 +1,72 @@
+﻿{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "size": "Medium",
+          "weight": "Bolder",
+          "text": "%matchUpCardTitleContent%",
+          "wrap": true,
+          "maxLines": 2
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "Container",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "%matchUpCardMatchedText%",
+              "wrap": true
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "%matchUpCardContentPart1%",
+              "wrap": true
+            }
+          ]
+        },
+        {
+          "type": "TextBlock",
+          "text": "%matchUpCardContentPart2%",
+          "wrap": true
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.OpenUrl",
+      "title": "%chatWithMatchButtonText%",
+      "url": "https://teams.microsoft.com/l/chat/0/0?users=%personUpn%&message=Hi%20there%20"
+    },
+    {
+      "type": "Action.OpenUrl",
+      "title": "%proposeMeetupButtonText%",
+      "url": "%meetingLink%"
+    },
+    {
+      "type": "Action.Submit",
+      "title": "%pauseMatchesButtonText%",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "%pauseMatchesButtonText%",
+          "text": "optout"
+        }
+      }
+    }
+  ],
+  "version": "1.0"
+}

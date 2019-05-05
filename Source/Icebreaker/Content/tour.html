@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>Tour</title>
+    <script src="../Scripts/MicrosoftTeams-1.4.1.min.js"></script>
+    <script src="../Scripts/jquery-3.3.1.min.js"></script>
+    <link href="styles.css" rel="stylesheet" />
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var urlParams = new URLSearchParams(window.location.search); 
+            var currentTheme = urlParams.get('theme');  
+
+            var setTheme = function (theme) {
+                if (theme === "dark")
+                    document.getElementById("themeCSS").className = "theme-dark";
+                else if (theme === "contrast")
+                    document.getElementById("themeCSS").className = "theme-highContrast";
+                else
+                    document.getElementById("themeCSS").className = "theme-default";
+            };
+
+            microsoftTeams.initialize();
+            setTheme(currentTheme);
+            microsoftTeams.registerOnThemeChangeHandler(setTheme);
+        });
+
+        function ShowDivOnClick(div1, div2) {
+            d1 = document.getElementById(div1);
+            d2 = document.getElementById(div2);
+
+            d1.style.display = "flex";
+            d2.style.display = "none";
+        }
+
+        function CloseWindow() {
+            microsoftTeams.tasks.submitTask(null);
+        }
+    </script>
+</head>
+<body id="themeCSS" class="theme-default">
+    <div id="introDiv" class="surface">
+        <div class="imageDiv">
+            <img src="welcome-dialog.png" alt="Welcome image"/>
+        </div>
+        <div class="textDiv">
+            <p class="bold-header">Make new friends and build community with them</p>
+            <p class="regular-content">
+                Every week, I'll pair you with someone new. If you have the inclination that week, you can meet up--grab a lunch, or a call if you're in different locations. Look out for another message in which I'll pair you with your first match.
+            </p>
+        </div>
+        <div class="footer">
+            <button class="primary-button" onclick="ShowDivOnClick('matchesDiv', 'introDiv')">
+                    Next
+            </button>
+        </div>
+    </div>
+    <div id="matchesDiv" class="surface">
+        <div class="imageDiv">
+            <img src="welcome-dialog.png" alt="Welcome image"/>
+        </div>
+        <div class="textDiv">
+            <p class="bold-header">Easily pause matches as needed</p>
+            <p class="regular-content">
+                Pause matches whenever you need. Too busy that week? Out of the office? No problem. Just click the button at anytime.
+            </p>
+        </div>
+        <div class="footer">
+            <button class="primary-button-back" onclick="ShowDivOnClick('introDiv', 'matchesDiv')">
+                Back
+            </button>
+            <button class="primary-button-done" onclick="CloseWindow()">
+                    Done
+            </button>
+        </div>
+    </div>
+</body>
+</html>
