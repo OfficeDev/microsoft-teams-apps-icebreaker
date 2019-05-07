@@ -106,7 +106,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If you&apos;re reading this, it&apos;s because I was installed to **{0} Team.** .
+        ///   Looks up a localized string similar to 🎉 If you&apos;re reading this, it&apos;s because I was installed to the **{0} Team.** 🎉.
         /// </summary>
         internal static string InstallMessageUnknownInstallerPart1 {
             get {
@@ -115,7 +115,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to I get to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It&apos;s a win-win-*win* situation..
+        ///   Looks up a localized string similar to I&apos;m was made by a super cool developer 🐱‍🐉 as a chat bot 🤖 here to help you meet 💁‍♂️ more people around your organization by randomly pairing you with someone new every week 🕙. You get to make more friends 🤗 and learn about the people you work with. It&apos;s a win-win-*win* situation 👍..
         /// </summary>
         internal static string InstallMessageUnknownInstallerPart2 {
             get {
@@ -124,7 +124,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to **To meet new people, just hang tight. I&apos;ll send you an invite soon.**.
+        ///   Looks up a localized string similar to **To meet new people 👫 👬, just hang tight. I&apos;ll magically 🧙‍♂️ send you an invite soon.**.
         /// </summary>
         internal static string InstallMessageUnknownInstallerPart3 {
             get {
@@ -232,7 +232,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hi there!.
+        ///   Looks up a localized string similar to 👋 Hi there!.
         /// </summary>
         internal static string SalutationTitleText {
             get {
