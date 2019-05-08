@@ -65,15 +65,16 @@ body {
     color: #201F1F;
     cursor: pointer;
     font: inherit;
+    height: 2rem;
+    min-width: 6rem;
+    padding: 0.25rem;
+    white-space: nowrap;
     margin: 90px 0px 0px 346px;
-    height: 32px;
-    min-width: 96px;
-    font-size: 14px;
 }
     .theme-dark .primary-button:hover {
-        background-color: #BDBDE6;
-        color: #201F1F;
+        background: #BDBDE6;
         border-color: transparent;
+        color: #201F1F
     }
     .theme-dark .primary-button:active:focus {
         background: #6264A7;
@@ -84,31 +85,32 @@ body {
     }
 
 .theme-dark .primary-button-back {
-    background: #6264A7;
+    background: #2d2c2c;
     border: 0.125rem solid;
-    border-color: transparent;
+    border-color: #636262;
     border-radius: 0.1875rem;
     box-sizing: border-box;
-    color: #201F1F;
+    color: #c7c6c6;
     cursor: pointer;
     font: inherit;
+    height: 2rem;
+    min-width: 6rem;
+    padding: 0.25rem;
+    white-space: nowrap;
     margin: 90px 0px 0px 336px;
-    height: 32px;
-    min-width: 96px;
-    font-size: 14px;
 }
 
     .theme-dark .primary-button-back:hover {
-        background-color: #BDBDE6;
-        color: #201F1F;
+        background: #636262;
         border-color: transparent;
+        color: #FFFFFF
     }
 
     .theme-dark .primary-button-back:active:focus {
-        background: #6264A7;
+        background: #636262;
         border-color: transparent;
-        color: #201F1F;
-        outline: 0.125rem solid #201F1F;
+        color: #FFFFFF;
+        outline: 0.125rem solid #FFFFFF;
         outline-offset: -0.25rem
     }
 
@@ -121,10 +123,11 @@ body {
     color: #201F1F;
     cursor: pointer;
     font: inherit;
+    height: 2rem;
+    min-width: 6rem;
+    padding: 0.25rem;
+    white-space: nowrap;
     margin: 90px 0px 0px 8px;
-    height: 32px;
-    min-width: 96px;
-    font-size: 14px;
 }
     .theme-dark .primary-button-done:hover {
         background-color: #BDBDE6;
