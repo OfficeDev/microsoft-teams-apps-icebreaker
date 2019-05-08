@@ -28,10 +28,6 @@
         padding-top: 21px;
     }
 
-.bold-header {
-    font-family: 'Segoe UI';
-}
-
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     width: 100%;
@@ -189,8 +185,8 @@ body {
     color: #FFFFFF;
     cursor: pointer;
     height: 32px;
-    min-width: 96px;
-    margin: 90px 0px 0px 478px;
+    width: 96px;
+    margin: 90px 0px 0px 346px;
     color: #FFFFFF;
     font: inherit;
     font-size: 14px;
@@ -245,7 +241,7 @@ body {
     color: #FFFFFF;
     cursor: pointer;
     height: 32px;
-    min-width: 96px;
+    width: 96px;
     margin: 90px 0px 0px 346px;
     color: #FFFFFF;
     font: inherit;
