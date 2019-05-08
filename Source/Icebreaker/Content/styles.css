@@ -28,12 +28,8 @@
         padding-top: 21px;
     }
 
-.bold-header {
-    font-family: 'Segoe UI';
-}
-
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Segoe UI","Helvetica Neue","Apple Color Emoji","Segoe UI Emoji",Helvetica,Arial,sans-serif;
     width: 100%;
     height: 100%;
     margin: 0;
@@ -69,7 +65,7 @@ body {
     color: #201F1F;
     cursor: pointer;
     font: inherit;
-    margin: 90px 0px 0px 478px;
+    margin: 90px 0px 0px 346px;
     height: 32px;
     min-width: 96px;
     font-size: 14px;
@@ -96,7 +92,7 @@ body {
     color: #201F1F;
     cursor: pointer;
     font: inherit;
-    margin: 90px 0px 0px 0px;
+    margin: 90px 0px 0px 336px;
     height: 32px;
     min-width: 96px;
     font-size: 14px;
@@ -125,7 +121,7 @@ body {
     color: #201F1F;
     cursor: pointer;
     font: inherit;
-    margin: 90px 0px 0px 346px;
+    margin: 90px 0px 0px 8px;
     height: 32px;
     min-width: 96px;
     font-size: 14px;
@@ -189,8 +185,8 @@ body {
     color: #FFFFFF;
     cursor: pointer;
     height: 32px;
-    min-width: 96px;
-    margin: 90px 0px 0px 478px;
+    width: 96px;
+    margin: 90px 0px 0px 346px;
     color: #FFFFFF;
     font: inherit;
     font-size: 14px;
@@ -209,30 +205,27 @@ body {
     }
 
 .theme-default .primary-button-back {
-    background: #6264A7;
+    background: #FFFFFF;
     border: 0.125rem solid;
-    border-color: transparent;
+    border-color: #bdbdbd;
     border-radius: 0.1875rem;
     box-sizing: border-box;
-    color: #FFFFFF;
+    color: #5c5b5b;
     cursor: pointer;
     height: 32px;
     min-width: 96px;
-    margin: 90px 0px 0px 0px;
-    color: #FFFFFF;
-    font: inherit;
-    font-size: 14px;
+    margin: 90px 0px 0px 336px;
 }
     .theme-default .primary-button-back:hover {
-        background: #464775;
+        background: #bdbdbd;
         border-color: transparent;
-        color: #FFFFFF
+        color: #252424
     }
     .theme-default .primary-button-back:active:focus {
-        background: #464775;
+        background: #bdbdbd;
         border-color: transparent;
-        color: #FFFFFF;
-        outline: 0.125rem solid #FFFFFF;
+        color: #252424;
+        outline: 0.125rem solid #252424;
         outline-offset: -0.25rem
     }
 
@@ -246,7 +239,7 @@ body {
     cursor: pointer;
     height: 32px;
     min-width: 96px;
-    margin: 90px 0px 0px 346px;
+    margin: 90px 0px 0px 8px;
     color: #FFFFFF;
     font: inherit;
     font-size: 14px;
@@ -311,8 +304,8 @@ body {
     cursor: pointer;
     font: inherit;
     height: 32px;
-    min-width: 90px;
-    margin: 90px 0px 0px 478px;
+    min-width: 96px;
+    margin: 90px 0px 0px 346px;
     font-size: 14px;
 }
     .theme-highContrast .primary-button:hover {
@@ -338,8 +331,8 @@ body {
     cursor: pointer;
     font: inherit;
     height: 32px;
-    min-width: 90px;
-    margin: 90px 0px 0px 0px;
+    min-width: 96px;
+    margin: 90px 0px 0px 336px;
     font-size: 14px;
 }
     .theme-highContrast .primary-button-back:hover {
@@ -365,8 +358,8 @@ body {
     cursor: pointer;
     font: inherit;
     height: 32px;
-    min-width: 90px;
-    margin: 90px 0px 0px 346px;
+    min-width: 96px;
+    margin: 90px 0px 0px 8px;
     font-size: 14px;
 }
 
