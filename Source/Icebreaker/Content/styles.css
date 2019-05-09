@@ -306,10 +306,11 @@ body {
     color: #000000;
     cursor: pointer;
     font: inherit;
-    height: 32px;
-    min-width: 96px;
+    height: 2rem;
+    min-width: 6rem;
+    padding: 0.25rem;
+    white-space: nowrap;
     margin: 90px 0px 0px 346px;
-    font-size: 14px;
 }
     .theme-highContrast .primary-button:hover {
         background: #FFFF00;
@@ -325,18 +326,19 @@ body {
     }
 
 .theme-highContrast .primary-button-back {
-    background: #FFFFFF;
+    background: #000000;
     border: 0.125rem solid;
-    border-color: transparent;
+    border-color: #FFFFFF;
     border-radius: 0.1875rem;
     box-sizing: border-box;
-    color: #000000;
+    color: #FFFFFF;
     cursor: pointer;
     font: inherit;
-    height: 32px;
-    min-width: 96px;
+    height: 2rem;
+    min-width: 6rem;
+    padding: 0.25rem;
+    white-space: nowrap;
     margin: 90px 0px 0px 336px;
-    font-size: 14px;
 }
     .theme-highContrast .primary-button-back:hover {
         background: #FFFF00;
