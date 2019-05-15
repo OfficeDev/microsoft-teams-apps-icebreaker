@@ -144,7 +144,7 @@ body {
 
 .theme-dark .surface {
     color: #FFFFFF;
-    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
+    font-family: "Segoe UI","Helvetica Neue","Apple Color Emoji","Segoe UI Emoji",Helvetica,Arial,sans-serif;
     font-size: 0.875rem;
     font-weight: 400;
 }
@@ -262,7 +262,7 @@ body {
 
 .theme-default .surface {
     color: #252424;
-    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
+    font-family: "Segoe UI","Helvetica Neue","Apple Color Emoji","Segoe UI Emoji",Helvetica,Arial,sans-serif;
     font-size: 0.875rem;
     font-weight: 400;
 }
@@ -384,7 +384,7 @@ body {
 
 .theme-highContrast .surface {
     color: #FFFFFF;
-    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
+    font-family: "Segoe UI","Helvetica Neue","Apple Color Emoji","Segoe UI Emoji",Helvetica,Arial,sans-serif;
     font-size: 0.875rem;
     font-weight: 400;
 }
