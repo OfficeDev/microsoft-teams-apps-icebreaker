@@ -84,7 +84,7 @@ body {
         outline-offset: -0.25rem
     }
 
-.theme-dark .primary-button-back {
+.theme-dark .secondary-button {
     background: #2d2c2c;
     border: 0.125rem solid;
     border-color: #636262;
@@ -100,13 +100,13 @@ body {
     margin: 90px 0px 0px 336px;
 }
 
-    .theme-dark .primary-button-back:hover {
+    .theme-dark .secondary-button:hover {
         background: #636262;
         border-color: transparent;
         color: #FFFFFF
     }
 
-    .theme-dark .primary-button-back:active:focus {
+    .theme-dark .secondary-button:active:focus {
         background: #636262;
         border-color: transparent;
         color: #FFFFFF;
@@ -207,7 +207,7 @@ body {
         outline-offset: -0.25rem
     }
 
-.theme-default .primary-button-back {
+.theme-default .secondary-button {
     background: #FFFFFF;
     border: 0.125rem solid;
     border-color: #bdbdbd;
@@ -219,12 +219,12 @@ body {
     min-width: 96px;
     margin: 90px 0px 0px 336px;
 }
-    .theme-default .primary-button-back:hover {
+    .theme-default .secondary-button:hover {
         background: #bdbdbd;
         border-color: transparent;
         color: #252424
     }
-    .theme-default .primary-button-back:active:focus {
+    .theme-default .secondary-button:active:focus {
         background: #bdbdbd;
         border-color: transparent;
         color: #252424;
@@ -325,7 +325,7 @@ body {
         outline-offset: -0.25rem
     }
 
-.theme-highContrast .primary-button-back {
+.theme-highContrast .secondary-button {
     background: #000000;
     border: 0.125rem solid;
     border-color: #FFFFFF;
@@ -340,12 +340,12 @@ body {
     white-space: nowrap;
     margin: 90px 0px 0px 336px;
 }
-    .theme-highContrast .primary-button-back:hover {
+    .theme-highContrast .secondary-button:hover {
         background: #FFFF00;
         border-color: transparent;
         color: #000000
     }
-    .theme-highContrast .primary-button-back:active:focus {
+    .theme-highContrast .secondary-button:active:focus {
         background: #FFFF00;
         border-color: transparent;
         color: #000000;
