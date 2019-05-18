@@ -1,9 +1,15 @@
 /*General rules*/
+html {
+    height: 100%;
+}
+
 #introDiv {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
-    padding: 0px 32px 32px 32px
+    padding: 0px 32px 32px 32px; 
+    height: 100%;
+    box-sizing: border-box;
 }
 
 #matchesDiv {
@@ -11,6 +17,8 @@
     flex-direction: column;
     flex-wrap: nowrap;
     padding: 0px 32px 32px 32px;
+    height: 100%;
+    box-sizing: border-box;
 }
 
 .textDiv {
@@ -18,6 +26,11 @@
     display: flex;
     flex-direction: column;
     flex: 1 auto;
+}
+
+.footer {
+    display: flex;
+    flex-direction: row-reverse;
 }
 
 .imageDiv {
@@ -32,44 +45,73 @@ body {
     font-family: "Segoe UI","Helvetica Neue","Apple Color Emoji","Segoe UI Emoji",Helvetica,Arial,sans-serif;
     width: 100%;
     height: 100%;
-    margin: 0;
+    margin: 0rem;
     flex-direction: column;
 }
 
-/*Dark Theme rules*/
-.theme-dark .bold-header {
+.bold-header {
     text-align: left;
     font-weight: bold;
     font-size: 18px;
-    color: #FFFFFF;
     letter-spacing: normal;
     line-height: 24px;
-    margin: 0;
+    margin: 0px;
     padding-top: 32px;
 }
 
-.theme-dark .regular-content {
-    font-size: 12px;
-    color: #FFFFFF;
-    margin: 0;
-    padding-top: 6px;
-    height: 36px;
+.surface {
+    font-family: "Segoe UI","Helvetica Neue","Apple Color Emoji","Segoe UI Emoji",Helvetica,Arial,sans-serif;
+    font-size: 0.875rem;
+    font-weight: 400;
 }
 
-.theme-dark .primary-button {
-    background: #6264A7;
+.regular-content {
+    font-size: 12px;
+    margin: 0px;
+    padding-top: 6px;
+    height: 36px;
+    white-space: normal;
+}
+
+.primary-button {
     border: 0.125rem solid;
     border-color: transparent;
     border-radius: 0.1875rem;
     box-sizing: border-box;
-    color: #201F1F;
     cursor: pointer;
     font: inherit;
     height: 2rem;
     min-width: 6rem;
     padding: 0.25rem;
     white-space: nowrap;
-    margin: 90px 0px 0px 346px;
+}
+
+.secondary-button {
+    border: 0.125rem solid;
+    border-color: #636262;
+    border-radius: 0.1875rem;
+    box-sizing: border-box;
+    cursor: pointer;
+    font: inherit;
+    height: 2rem;
+    min-width: 6rem;
+    padding: 0.25rem;
+    white-space: nowrap;
+    margin-right: 0.8rem;
+}
+
+/*Dark Theme rules*/
+.theme-dark .bold-header {
+    color: #FFFFFF;
+}
+
+.theme-dark .regular-content {
+    color: #FFFFFF;
+}
+
+.theme-dark .primary-button {
+    background: #6264A7;
+    color: #201F1F;
 }
     .theme-dark .primary-button:hover {
         background: #BDBDE6;
@@ -86,18 +128,7 @@ body {
 
 .theme-dark .secondary-button {
     background: #2d2c2c;
-    border: 0.125rem solid;
-    border-color: #636262;
-    border-radius: 0.1875rem;
-    box-sizing: border-box;
     color: #c7c6c6;
-    cursor: pointer;
-    font: inherit;
-    height: 2rem;
-    min-width: 6rem;
-    padding: 0.25rem;
-    white-space: nowrap;
-    margin: 90px 0px 0px 336px;
 }
 
     .theme-dark .secondary-button:hover {
@@ -114,85 +145,22 @@ body {
         outline-offset: -0.25rem
     }
 
-.theme-dark .primary-button-done {
-    background: #6264A7;
-    border: 0.125rem solid;
-    border-color: transparent;
-    border-radius: 0.1875rem;
-    box-sizing: border-box;
-    color: #201F1F;
-    cursor: pointer;
-    font: inherit;
-    height: 2rem;
-    min-width: 6rem;
-    padding: 0.25rem;
-    white-space: nowrap;
-    margin: 90px 0px 0px 8px;
-}
-    .theme-dark .primary-button-done:hover {
-        background-color: #BDBDE6;
-        color: #201F1F;
-        border-color: transparent;
-    }
-    .theme-dark .primary-button-done:active:focus {
-        background: #6264A7;
-        border-color: transparent;
-        color: #201F1F;
-        outline: 0.125rem solid #201F1F;
-        outline-offset: -0.25rem
-    }
-
 .theme-dark .surface {
     color: #FFFFFF;
-    font-family: "Segoe UI","Helvetica Neue","Apple Color Emoji","Segoe UI Emoji",Helvetica,Arial,sans-serif;
-    font-size: 0.875rem;
-    font-weight: 400;
-}
-
-.theme-dark .footer {
-    display: flex;
-    flex-direction: row-reverse;
-}
-
-.theme-dark #matchesDiv .footer {
-    display: flex;
-    flex-direction: row;
 }
 
 /*Default Theme rules*/
 .theme-default .bold-header {
-    text-align: left;
-    font-weight: bold;
-    font-size: 18px;
     color: #252424;
-    letter-spacing: normal;
-    line-height: 24px;
-    margin: 0;
-    padding-top: 32px;
 }
 
 .theme-default .regular-content {
-    font-size: 12px;
     color: #000000;
-    margin: 0;
-    padding-top: 6px;
-    height: 36px;
 }
 
 .theme-default .primary-button {
     background: #6264A7;
-    border: 0.125rem solid;
-    border-color: transparent;
-    border-radius: 0.1875rem;
-    box-sizing: border-box;
     color: #FFFFFF;
-    cursor: pointer;
-    height: 32px;
-    width: 96px;
-    margin: 90px 0px 0px 346px;
-    color: #FFFFFF;
-    font: inherit;
-    font-size: 14px;
 }
     .theme-default .primary-button:hover {
         background: #464775;
@@ -209,15 +177,7 @@ body {
 
 .theme-default .secondary-button {
     background: #FFFFFF;
-    border: 0.125rem solid;
-    border-color: #bdbdbd;
-    border-radius: 0.1875rem;
-    box-sizing: border-box;
     color: #5c5b5b;
-    cursor: pointer;
-    height: 32px;
-    min-width: 96px;
-    margin: 90px 0px 0px 336px;
 }
     .theme-default .secondary-button:hover {
         background: #bdbdbd;
@@ -232,85 +192,22 @@ body {
         outline-offset: -0.25rem
     }
 
-.theme-default .primary-button-done {
-    background: #6264A7;
-    border: 0.125rem solid;
-    border-color: transparent;
-    border-radius: 0.1875rem;
-    box-sizing: border-box;
-    color: #FFFFFF;
-    cursor: pointer;
-    height: 32px;
-    min-width: 96px;
-    margin: 90px 0px 0px 8px;
-    color: #FFFFFF;
-    font: inherit;
-    font-size: 14px;
-}
-    .theme-default .primary-button-done:hover {
-        background: #464775;
-        border-color: transparent;
-        color: #FFFFFF
-    }
-    .theme-default .primary-button-done:active:focus {
-        background: #464775;
-        border-color: transparent;
-        color: #FFFFFF;
-        outline: 0.125rem solid #FFFFFF;
-        outline-offset: -0.25rem
-    }
-
 .theme-default .surface {
     color: #252424;
-    font-family: "Segoe UI","Helvetica Neue","Apple Color Emoji","Segoe UI Emoji",Helvetica,Arial,sans-serif;
-    font-size: 0.875rem;
-    font-weight: 400;
-}
-
-.theme-default .footer {
-    display: flex;
-    flex-direction: row-reverse;
-}
-
-.theme-default #matchesDiv .footer {
-    display: flex;
-    flex-direction: row;
 }
 
 /*High Contrast Theme rules*/
 .theme-highContrast .bold-header {
-    text-align: left;
-    font-weight: bold;
-    font-size: 18px;
     color: #FFFFFF;
-    letter-spacing: normal;
-    line-height: 24px;
-    margin: 0;
-    padding-top: 32px;
 }
 
 .theme-highContrast .regular-content {
-    font-size: 12px;
     color: #FFFFFF;
-    margin: 0;
-    padding-top: 6px;
-    height: 36px;
 }
 
 .theme-highContrast .primary-button {
     background: #FFFFFF;
-    border: 0.125rem solid;
-    border-color: transparent;
-    border-radius: 0.1875rem;
-    box-sizing: border-box;
     color: #000000;
-    cursor: pointer;
-    font: inherit;
-    height: 2rem;
-    min-width: 6rem;
-    padding: 0.25rem;
-    white-space: nowrap;
-    margin: 90px 0px 0px 346px;
 }
     .theme-highContrast .primary-button:hover {
         background: #FFFF00;
@@ -327,18 +224,7 @@ body {
 
 .theme-highContrast .secondary-button {
     background: #000000;
-    border: 0.125rem solid;
-    border-color: #FFFFFF;
-    border-radius: 0.1875rem;
-    box-sizing: border-box;
     color: #FFFFFF;
-    cursor: pointer;
-    font: inherit;
-    height: 2rem;
-    min-width: 6rem;
-    padding: 0.25rem;
-    white-space: nowrap;
-    margin: 90px 0px 0px 336px;
 }
     .theme-highContrast .secondary-button:hover {
         background: #FFFF00;
@@ -353,48 +239,6 @@ body {
         outline-offset: -0.25rem
     }
 
-.theme-highContrast .primary-button-done {
-    background: #FFFFFF;
-    border: 0.125rem solid;
-    border-color: transparent;
-    border-radius: 0.1875rem;
-    box-sizing: border-box;
-    color: #000000;
-    cursor: pointer;
-    font: inherit;
-    height: 32px;
-    min-width: 96px;
-    margin: 90px 0px 0px 8px;
-    font-size: 14px;
-}
-
-    .theme-highContrast .primary-button-done:hover {
-        background: #FFFF00;
-        border-color: transparent;
-        color: #000000
-    }
-
-    .theme-highContrast .primary-button-done:active:focus {
-        background: #FFFF00;
-        border-color: transparent;
-        color: #000000;
-        outline: 0.125rem solid transparent;
-        outline-offset: -0.25rem
-    }
-
 .theme-highContrast .surface {
     color: #FFFFFF;
-    font-family: "Segoe UI","Helvetica Neue","Apple Color Emoji","Segoe UI Emoji",Helvetica,Arial,sans-serif;
-    font-size: 0.875rem;
-    font-weight: 400;
-}
-
-.theme-highContrast .footer {
-    display: flex;
-    flex-direction: row-reverse;
-}
-
-.theme-highContrast #matchesDiv .footer {
-    display: flex;
-    flex-direction: row;
 }
