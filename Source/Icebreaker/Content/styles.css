@@ -42,7 +42,6 @@ html {
     }
 
 body {
-    font-family: "Segoe UI","Helvetica Neue","Apple Color Emoji","Segoe UI Emoji",Helvetica,Arial,sans-serif;
     width: 100%;
     height: 100%;
     margin: 0rem;
@@ -60,7 +59,7 @@ body {
 }
 
 .surface {
-    font-family: "Segoe UI","Helvetica Neue","Apple Color Emoji","Segoe UI Emoji",Helvetica,Arial,sans-serif;
+    font-family: "Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
     font-size: 0.875rem;
     font-weight: 400;
 }
