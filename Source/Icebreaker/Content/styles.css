@@ -1,6 +1,7 @@
 /*General rules*/
 html {
     height: 100%;
+    width: 100%;
 }
 
 #introDiv {
@@ -9,6 +10,7 @@ html {
     flex-wrap: nowrap;
     padding: 0px 32px 32px 32px; 
     height: 100%;
+    width: 100%;
     box-sizing: border-box;
 }
 
@@ -18,11 +20,11 @@ html {
     flex-wrap: nowrap;
     padding: 0px 32px 32px 32px;
     height: 100%;
+    width: 100%;
     box-sizing: border-box;
 }
 
 .textDiv {
-    width: 536px;
     display: flex;
     flex-direction: column;
     flex: 1 auto;
