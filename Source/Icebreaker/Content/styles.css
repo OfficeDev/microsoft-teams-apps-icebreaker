@@ -1,23 +1,35 @@
 /*General rules*/
+html {
+    height: 100%;
+}
+
 #introDiv {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
-    padding: 0px 32px 32px 32px
+    padding: 0 2rem 2rem 2rem; 
+    height: 100%;
+    box-sizing: border-box;
 }
 
 #matchesDiv {
     display: none;
     flex-direction: column;
     flex-wrap: nowrap;
-    padding: 0px 32px 32px 32px;
+    padding: 0 2rem 2rem 2rem;
+    height: 100%;
+    box-sizing: border-box;
 }
 
 .textDiv {
-    width: 536px;
     display: flex;
     flex-direction: column;
     flex: 1 auto;
+}
+
+.footer {
+    display: flex;
+    flex-direction: row-reverse;
 }
 
 .imageDiv {
@@ -25,378 +37,205 @@
 }
 
     .imageDiv img {
-        padding-top: 21px;
+        padding-top: 1.25rem;
     }
 
-.bold-header {
-    font-family: 'Segoe UI';
-}
-
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     width: 100%;
     height: 100%;
-    margin: 0;
+    margin: 0rem;
     flex-direction: column;
 }
 
-/*Dark Theme rules*/
-.theme-dark .bold-header {
+.bold-header {
     text-align: left;
     font-weight: bold;
-    font-size: 18px;
-    color: #FFFFFF;
+    font-size: 1.125rem;
     letter-spacing: normal;
-    line-height: 24px;
+    line-height: 1.5rem;
     margin: 0;
-    padding-top: 32px;
+    padding-top: 2rem;
 }
 
-.theme-dark .regular-content {
-    font-size: 12px;
-    color: #FFFFFF;
-    margin: 0;
-    padding-top: 6px;
-    height: 36px;
+.surface {
+    font-family: "Segoe UI",Tahoma,Helvetica,Sans-Serif;
+    font-size: 0.875rem;
+    font-weight: 400;
 }
 
-.theme-dark .primary-button {
-    background: #6264A7;
+.regular-content {
+    font-size: 0.875rem;
+    margin: 0px;
+    padding-top: 0.375rem;
+    height: 2.25rem;
+}
+
+.primary-button {
     border: 0.125rem solid;
     border-color: transparent;
     border-radius: 0.1875rem;
     box-sizing: border-box;
-    color: #201F1F;
     cursor: pointer;
     font: inherit;
-    margin: 90px 0px 0px 478px;
-    height: 32px;
-    min-width: 96px;
-    font-size: 14px;
+    height: 2rem;
+    min-width: 6rem;
+    padding: 0.25rem;
+    white-space: nowrap;
+}
+
+.secondary-button {
+    border: 0.125rem solid;
+    border-color: #636262;
+    border-radius: 0.1875rem;
+    box-sizing: border-box;
+    cursor: pointer;
+    font: inherit;
+    height: 2rem;
+    min-width: 6rem;
+    padding: 0.25rem;
+    white-space: nowrap;
+    margin-right: 0.8rem;
+}
+
+/*Dark Theme rules*/
+.theme-dark .bold-header {
+    color: #FFFFFF;
+}
+
+.theme-dark .regular-content {
+    color: #FFFFFF;
+}
+
+.theme-dark .primary-button {
+    background: #6264A7;
+    color: #201F1F;
 }
     .theme-dark .primary-button:hover {
-        background-color: #BDBDE6;
-        color: #201F1F;
+        background: #BDBDE6;
         border-color: transparent;
+        color: #201F1F;
     }
     .theme-dark .primary-button:active:focus {
         background: #6264A7;
         border-color: transparent;
         color: #201F1F;
         outline: 0.125rem solid #201F1F;
-        outline-offset: -0.25rem
+        outline-offset: -0.25rem;
     }
 
-.theme-dark .primary-button-back {
-    background: #6264A7;
-    border: 0.125rem solid;
-    border-color: transparent;
-    border-radius: 0.1875rem;
-    box-sizing: border-box;
-    color: #201F1F;
-    cursor: pointer;
-    font: inherit;
-    margin: 90px 0px 0px 0px;
-    height: 32px;
-    min-width: 96px;
-    font-size: 14px;
+.theme-dark .secondary-button {
+    background: #2d2c2c;
+    color: #c7c6c6;
 }
 
-    .theme-dark .primary-button-back:hover {
-        background-color: #BDBDE6;
-        color: #201F1F;
+    .theme-dark .secondary-button:hover {
+        background: #636262;
         border-color: transparent;
+        color: #FFFFFF
     }
 
-    .theme-dark .primary-button-back:active:focus {
-        background: #6264A7;
+    .theme-dark .secondary-button:active:focus {
+        background: #636262;
         border-color: transparent;
-        color: #201F1F;
-        outline: 0.125rem solid #201F1F;
-        outline-offset: -0.25rem
-    }
-
-.theme-dark .primary-button-done {
-    background: #6264A7;
-    border: 0.125rem solid;
-    border-color: transparent;
-    border-radius: 0.1875rem;
-    box-sizing: border-box;
-    color: #201F1F;
-    cursor: pointer;
-    font: inherit;
-    margin: 90px 0px 0px 346px;
-    height: 32px;
-    min-width: 96px;
-    font-size: 14px;
-}
-    .theme-dark .primary-button-done:hover {
-        background-color: #BDBDE6;
-        color: #201F1F;
-        border-color: transparent;
-    }
-    .theme-dark .primary-button-done:active:focus {
-        background: #6264A7;
-        border-color: transparent;
-        color: #201F1F;
-        outline: 0.125rem solid #201F1F;
-        outline-offset: -0.25rem
+        color: #FFFFFF;
+        outline: 0.125rem solid #FFFFFF;
+        outline-offset: -0.25rem;
     }
 
 .theme-dark .surface {
     color: #FFFFFF;
-    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
-    font-size: 0.875rem;
-    font-weight: 400;
-}
-
-.theme-dark .footer {
-    display: flex;
-    flex-direction: row-reverse;
-}
-
-.theme-dark #matchesDiv .footer {
-    display: flex;
-    flex-direction: row;
 }
 
 /*Default Theme rules*/
 .theme-default .bold-header {
-    text-align: left;
-    font-weight: bold;
-    font-size: 18px;
     color: #252424;
-    letter-spacing: normal;
-    line-height: 24px;
-    margin: 0;
-    padding-top: 32px;
 }
 
 .theme-default .regular-content {
-    font-size: 12px;
     color: #000000;
-    margin: 0;
-    padding-top: 6px;
-    height: 36px;
 }
 
 .theme-default .primary-button {
     background: #6264A7;
-    border: 0.125rem solid;
-    border-color: transparent;
-    border-radius: 0.1875rem;
-    box-sizing: border-box;
     color: #FFFFFF;
-    cursor: pointer;
-    height: 32px;
-    min-width: 96px;
-    margin: 90px 0px 0px 478px;
-    color: #FFFFFF;
-    font: inherit;
-    font-size: 14px;
 }
     .theme-default .primary-button:hover {
         background: #464775;
         border-color: transparent;
-        color: #FFFFFF
+        color: #FFFFFF;
     }
     .theme-default .primary-button:active:focus {
         background: #464775;
         border-color: transparent;
         color: #FFFFFF;
         outline: 0.125rem solid #FFFFFF;
-        outline-offset: -0.25rem
+        outline-offset: -0.25rem;
     }
 
-.theme-default .primary-button-back {
-    background: #6264A7;
-    border: 0.125rem solid;
-    border-color: transparent;
-    border-radius: 0.1875rem;
-    box-sizing: border-box;
-    color: #FFFFFF;
-    cursor: pointer;
-    height: 32px;
-    min-width: 96px;
-    margin: 90px 0px 0px 0px;
-    color: #FFFFFF;
-    font: inherit;
-    font-size: 14px;
+.theme-default .secondary-button {
+    background: #FFFFFF;
+    color: #5c5b5b;
 }
-    .theme-default .primary-button-back:hover {
-        background: #464775;
+    .theme-default .secondary-button:hover {
+        background: #bdbdbd;
         border-color: transparent;
-        color: #FFFFFF
+        color: #252424;
     }
-    .theme-default .primary-button-back:active:focus {
-        background: #464775;
+    .theme-default .secondary-button:active:focus {
+        background: #bdbdbd;
         border-color: transparent;
-        color: #FFFFFF;
-        outline: 0.125rem solid #FFFFFF;
-        outline-offset: -0.25rem
-    }
-
-.theme-default .primary-button-done {
-    background: #6264A7;
-    border: 0.125rem solid;
-    border-color: transparent;
-    border-radius: 0.1875rem;
-    box-sizing: border-box;
-    color: #FFFFFF;
-    cursor: pointer;
-    height: 32px;
-    min-width: 96px;
-    margin: 90px 0px 0px 346px;
-    color: #FFFFFF;
-    font: inherit;
-    font-size: 14px;
-}
-    .theme-default .primary-button-done:hover {
-        background: #464775;
-        border-color: transparent;
-        color: #FFFFFF
-    }
-    .theme-default .primary-button-done:active:focus {
-        background: #464775;
-        border-color: transparent;
-        color: #FFFFFF;
-        outline: 0.125rem solid #FFFFFF;
-        outline-offset: -0.25rem
+        color: #252424;
+        outline: 0.125rem solid #252424;
+        outline-offset: -0.25rem;
     }
 
 .theme-default .surface {
     color: #252424;
-    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
-    font-size: 0.875rem;
-    font-weight: 400;
-}
-
-.theme-default .footer {
-    display: flex;
-    flex-direction: row-reverse;
-}
-
-.theme-default #matchesDiv .footer {
-    display: flex;
-    flex-direction: row;
 }
 
 /*High Contrast Theme rules*/
 .theme-highContrast .bold-header {
-    text-align: left;
-    font-weight: bold;
-    font-size: 18px;
     color: #FFFFFF;
-    letter-spacing: normal;
-    line-height: 24px;
-    margin: 0;
-    padding-top: 32px;
 }
 
 .theme-highContrast .regular-content {
-    font-size: 12px;
     color: #FFFFFF;
-    margin: 0;
-    padding-top: 6px;
-    height: 36px;
 }
 
 .theme-highContrast .primary-button {
     background: #FFFFFF;
-    border: 0.125rem solid;
-    border-color: transparent;
-    border-radius: 0.1875rem;
-    box-sizing: border-box;
     color: #000000;
-    cursor: pointer;
-    font: inherit;
-    height: 32px;
-    min-width: 90px;
-    margin: 90px 0px 0px 478px;
-    font-size: 14px;
 }
     .theme-highContrast .primary-button:hover {
         background: #FFFF00;
         border-color: transparent;
-        color: #000000
+        color: #000000;
     }
     .theme-highContrast .primary-button:active:focus {
         background: #FFFF00;
         border-color: transparent;
         color: #000000;
         outline: 0.125rem solid transparent;
-        outline-offset: -0.25rem
+        outline-offset: -0.25rem;
     }
 
-.theme-highContrast .primary-button-back {
-    background: #FFFFFF;
-    border: 0.125rem solid;
-    border-color: transparent;
-    border-radius: 0.1875rem;
-    box-sizing: border-box;
-    color: #000000;
-    cursor: pointer;
-    font: inherit;
-    height: 32px;
-    min-width: 90px;
-    margin: 90px 0px 0px 0px;
-    font-size: 14px;
+.theme-highContrast .secondary-button {
+    background: #000000;
+    color: #FFFFFF;
 }
-    .theme-highContrast .primary-button-back:hover {
+    .theme-highContrast .secondary-button:hover {
         background: #FFFF00;
         border-color: transparent;
-        color: #000000
+        color: #000000;
     }
-    .theme-highContrast .primary-button-back:active:focus {
+    .theme-highContrast .secondary-button:active:focus {
         background: #FFFF00;
         border-color: transparent;
         color: #000000;
         outline: 0.125rem solid transparent;
-        outline-offset: -0.25rem
-    }
-
-.theme-highContrast .primary-button-done {
-    background: #FFFFFF;
-    border: 0.125rem solid;
-    border-color: transparent;
-    border-radius: 0.1875rem;
-    box-sizing: border-box;
-    color: #000000;
-    cursor: pointer;
-    font: inherit;
-    height: 32px;
-    min-width: 90px;
-    margin: 90px 0px 0px 346px;
-    font-size: 14px;
-}
-
-    .theme-highContrast .primary-button-done:hover {
-        background: #FFFF00;
-        border-color: transparent;
-        color: #000000
-    }
-
-    .theme-highContrast .primary-button-done:active:focus {
-        background: #FFFF00;
-        border-color: transparent;
-        color: #000000;
-        outline: 0.125rem solid transparent;
-        outline-offset: -0.25rem
+        outline-offset: -0.25rem;
     }
 
 .theme-highContrast .surface {
     color: #FFFFFF;
-    font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
-    font-size: 0.875rem;
-    font-weight: 400;
-}
-
-.theme-highContrast .footer {
-    display: flex;
-    flex-direction: row-reverse;
-}
-
-.theme-highContrast #matchesDiv .footer {
-    display: flex;
-    flex-direction: row;
 }
