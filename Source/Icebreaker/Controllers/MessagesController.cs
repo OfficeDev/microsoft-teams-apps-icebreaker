@@ -167,14 +167,18 @@ namespace Icebreaker
 
                 if (message.Type == ActivityTypes.ConversationUpdate)
                 {
+                    this.telemetryClient.TrackTrace($"Processing conversationUpdate activity");
+
                     // conversation-update fires whenever a new 1:1 gets created between us and someone else as well
                     // only process the Teams ones.
-                    if (string.IsNullOrEmpty(teamsChannelData?.Team?.Id))
+                    if (message.Conversation.ConversationType != "team")
                     {
                         // conversation-update is for 1:1 chat. Just ignore.
+                        this.telemetryClient.TrackTrace($"Received conversationUpdate for personal scope, skipping activity");
                         return;
                     }
 
+                    this.telemetryClient.TrackTrace($"Activity for {message.Recipient?.Id} in team {message.Conversation?.Id}");
                     string myBotId = message.Recipient.Id;
                     string teamId = message.Conversation.Id;
 
