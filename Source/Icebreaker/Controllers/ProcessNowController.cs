@@ -51,9 +51,36 @@ namespace Icebreaker.Controllers
             }
         }
 
+        /// Calling Feedback card code changes
+        /// <summary>
+        /// Action to process matches
+        /// </summary>
+        /// <param name="key">API key</param>
+        /// <returns>Success (1) or failure (-1) code</returns>
+        [Route("api/Feedbackprocessnow/{key}")]
+
+        public IHttpActionResult GetFeedback([FromUri]string key)
+        {
+            var isKeyMatch = object.Equals(key, CloudConfigurationManager.GetSetting("Key"));
+            if (isKeyMatch)
+            {
+                HostingEnvironment.QueueBackgroundWorkItem(ct => this.FeedbackNotify());
+                return this.StatusCode(System.Net.HttpStatusCode.OK);
+            }
+            else
+            {
+                return this.Unauthorized();
+            }
+        }
+
         private async Task<int> MakePairs()
         {
             return await this.bot.MakePairsAndNotify();
+        }
+
+        private async Task<int> FeedbackNotify()
+        {
+            return await this.bot.MakeFeedbackNotify();
         }
     }
 }

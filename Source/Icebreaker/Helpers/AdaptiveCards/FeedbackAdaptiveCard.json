@@ -1,0 +1,181 @@
+﻿{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "actions": [
+    {
+      "type": "Action.Submit",
+      "title": "Submit",
+      "data": {
+        "id": "%feedbackId%",
+        "action": "feedbackselection",
+        "text": "%feedbackGivenTo%",
+        "msteams": {
+          "type": "messageBack",
+          "text": "submit_%feedbackGivenTo%"
+        }
+      }
+    }
+  ],
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "id": "Text1",
+                  "size": "Medium",
+                  "weight": "Bolder",
+                  "text": "%feedbackCardTitleContent%",
+                  "wrap": true,
+                  "maxLines": 2
+                }
+              ],
+              "width": "stretch"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "id": "textBlock",
+      "text": "How would you like rate about this meeting?"
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "MeetingRate",
+      "placeholder": "Placeholder text",
+      "choices": [
+        {
+          "title": "😊",
+          "value": "Excellent"
+        },
+        {
+          "title": "🙂",
+          "value": "Good"
+        },
+        {
+          "title": "😐",
+          "value": "Fair"
+        },
+        {
+          "title": "😢",
+          "value": "Poor"
+        }
+      ],
+      "style": "expanded"
+    },
+    {
+      "type": "TextBlock",
+      "id": "ImagePath",
+      "text": "If you would like to share images of your meeting  [upload](%uploadLink%) here",
+      "weight": "Bolder"
+    },
+    {
+      "type": "TextBlock",
+      "id": "InteresttextBlock",
+      "size": "Medium",
+      "weight": "Bolder",
+      "text": "Your areas of interests"
+    },
+    {
+      "type": "ColumnSet",
+      "separator": "false",
+      "columns": [
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "Input.Toggle",
+              "id": "Sports",
+              "title": "Sports",
+              "value": "false"
+            }
+          ],
+          "width": "100px"
+        },
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "Input.Toggle",
+              "id": "Technology",
+              "title": "Technology",
+              "value": "false"
+            }
+          ],
+          "width": "100px"
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "Input.Toggle",
+              "id": "Politics",
+              "title": "Politics",
+              "value": "false"
+            }
+          ],
+          "width": "100px"
+        },
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "Input.Toggle",
+              "id": "Entertainment",
+              "title": "Entertainment",
+              "value": "false"
+            }
+          ],
+          "width": "100px"
+        }
+      ],
+      "separator": "false",
+      "type": "ColumnSet"
+    },
+    {
+      "type": "ColumnSet",
+      "separator": "false",
+      "columns": [
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "Input.Toggle",
+              "id": "ReadingBooks",
+              "title": "Reading Books",
+              "value": "false"
+            }
+          ],
+          "width": "100px"
+        },
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "Input.Toggle",
+              "id": "Travelling",
+              "title": "Travelling",
+              "value": "false"
+            }
+          ],
+          "width": "100px"
+        }
+      ]
+    }
+
+
+  ],
+  "type": "AdaptiveCard",
+  "version": "1.0"
+}

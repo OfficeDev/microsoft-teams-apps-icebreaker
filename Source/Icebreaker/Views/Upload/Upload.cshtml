@@ -1,0 +1,63 @@
+﻿
+@{
+    ViewBag.Title = "Upload";
+   
+}
+<head>
+  
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+   
+    <style type="text/css">
+        body {
+            font-family: Arial;
+            font-size: 10pt;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .Success {
+            color: green;
+        }
+    </style>
+</head>
+<script type="text/javascript">
+
+    function callfunction() {
+        var bFileEmpty = !document.getElementById('filControl').value;
+        if (bFileEmpty) {
+            document.getElementById("ErrorSpan").innerHTML= "Please select a file";
+            return false;
+        }
+           
+        else {
+            document.getElementById("ErrorSpan").innerHTML = "";
+            document.getElementById("SuccessSpan").innerHTML = "";
+            return true;
+        }
+    }
+  
+</script>
+<br />
+@using (Html.BeginForm("Upload", "Upload", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+<fieldset class="form-horizontal">
+    <div class="form-group">
+        <div class="col-md-10">
+            <input type="file" name="photo" id="filControl" />
+
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Upload" onclick="return callfunction();" />
+            <span id="ErrorSpan" class="error"></span>
+            <span id="SuccessSpan" class="Success"></span>
+        </div>
+    </div>
+</fieldset>
+
+}
