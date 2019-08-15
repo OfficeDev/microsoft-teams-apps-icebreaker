@@ -19,7 +19,7 @@ namespace Icebreaker.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -75,6 +75,60 @@ namespace Icebreaker.Properties {
         internal static string ErrorOccured {
             get {
                 return ResourceManager.GetString("ErrorOccured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Feedback.
+        /// </summary>
+        internal static string FeedbackButtonText {
+            get {
+                return ResourceManager.GetString("FeedbackButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Give some feedback and share any pictures you may have taken during you meet up..
+        /// </summary>
+        internal static string FeedbackCardContentPart {
+            get {
+                return ResourceManager.GetString("FeedbackCardContentPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How was your meeting with {0}?.
+        /// </summary>
+        internal static string FeedbackCardMatchedText {
+            get {
+                return ResourceManager.GetString("FeedbackCardMatchedText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How was your meeting?.
+        /// </summary>
+        internal static string FeedbackTitleContent {
+            get {
+                return ResourceManager.GetString("FeedbackTitleContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upload an Image.
+        /// </summary>
+        internal static string FeedbackUploadImageButtonText {
+            get {
+                return ResourceManager.GetString("FeedbackUploadImageButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Have you met with {0}..
+        /// </summary>
+        internal static string FeedbackWelcomeText {
+            get {
+                return ResourceManager.GetString("FeedbackWelcomeText", resourceCulture);
             }
         }
         

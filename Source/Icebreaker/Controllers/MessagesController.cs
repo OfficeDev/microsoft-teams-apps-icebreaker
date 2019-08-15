@@ -13,6 +13,7 @@ namespace Icebreaker
     using System.Net.Http;
     using System.Threading.Tasks;
     using System.Web.Http;
+    using Icebreaker.Helpers;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.Bot.Connector;
@@ -140,6 +141,27 @@ namespace Icebreaker
                     };
 
                     await connectorClient.Conversations.ReplyToActivityAsync(optInReply);
+                }
+                else if (string.Equals(activity.Text, "feed", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    this.telemetryClient.TrackTrace($"User {senderAadId} feed in");
+
+                    var properties = new Dictionary<string, string>
+                    {
+                        { "UserAadId", senderAadId },
+                        { "OptInStatus", "true" },
+                    };
+                    this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
+
+                    await this.bot.OptInUser(tenantId, senderAadId, activity.ServiceUrl);
+                }
+                else if (string.Equals(activity.Text.Split('_')[0].ToString(), "submit", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    this.telemetryClient.TrackTrace($"User {senderAadId} submit feedback");
+                    FeedbackInfo feedbackInfo = Newtonsoft.Json.JsonConvert.DeserializeObject<FeedbackInfo>(Convert.ToString(activity.Value));
+                    feedbackInfo.PersonGivenFrom = activity.From.Name;
+                    feedbackInfo.PersonGivenTo = activity.Text.Split('_')[1].ToString();
+                    await this.bot.SaveFeedbackInfo(feedbackInfo);
                 }
                 else
                 {
