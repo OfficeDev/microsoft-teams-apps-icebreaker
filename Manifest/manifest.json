@@ -26,7 +26,6 @@
     {
       "botId": "<bot id>",
       "scopes": [
-        "personal",
         "team"
       ],
       "supportsFiles": false,
