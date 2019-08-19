@@ -170,7 +170,7 @@
         "botDisplayName": "[parameters('appName')]",
         "botUniqueName": "[concat(variables('baseResourceName'), '-', uniqueString(resourceGroup().id))]",
         "appServiceName": "[concat(variables('baseResourceName'), '-', uniqueString(resourceGroup().id))]",
-        "cosmosDbName":"[concat(variables('baseResourceName'), '-storage-', uniqueString(resourceGroup().id))]",
+        "cosmosDbName":"[concat(uniqueString(resourceGroup().id), '-storage')]",
         "logicAppName":"[concat(variables('baseResourceName'), '-logicapp-', uniqueString(resourceGroup().id))]",
         "appInsightsName": "[variables('baseResourceName')]",
         "appHostingPlanName": "[variables('baseResourceName')]",
