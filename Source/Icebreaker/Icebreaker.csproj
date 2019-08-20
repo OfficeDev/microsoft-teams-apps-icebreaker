@@ -199,6 +199,7 @@
     <Compile Include="Helpers\AdaptiveCards\UnrecognizedInputAdaptiveCard.cs" />
     <Compile Include="Helpers\AdaptiveCards\WelcomeNewMemberAdaptiveCard.cs" />
     <Compile Include="Helpers\AdaptiveCards\WelcomeTeamAdaptiveCard.cs" />
+    <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Helpers\IcebreakerBotDataProvider.cs" />
     <Compile Include="Helpers\TeamInstallInfo.cs" />
     <Compile Include="Helpers\UserInfo.cs" />

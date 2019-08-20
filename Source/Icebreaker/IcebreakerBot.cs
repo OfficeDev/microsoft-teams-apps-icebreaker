@@ -289,11 +289,14 @@ namespace Icebreaker
             var teamsPerson1 = pair.Item1.AsTeamsChannelAccount();
             var teamsPerson2 = pair.Item2.AsTeamsChannelAccount();
 
+            var emailOfPerson2 = teamsPerson2.UserPrincipalName.CaseInsensitiveContains("#ext#") ? teamsPerson2.Email : teamsPerson2.UserPrincipalName;
+            var emailOfPerson1 = teamsPerson1.UserPrincipalName.CaseInsensitiveContains("#ext#") ? teamsPerson1.Email : teamsPerson1.UserPrincipalName;
+
             // Fill in person2's info in the card for person1
-            var cardForPerson1 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2.Name, teamsPerson1.Name, teamsPerson2.GivenName, teamsPerson1.GivenName, teamsPerson1.GivenName, teamsPerson2.UserPrincipalName, this.botDisplayName);
+            var cardForPerson1 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2.Name, teamsPerson1.Name, teamsPerson2.GivenName, teamsPerson1.GivenName, teamsPerson1.GivenName, emailOfPerson2, this.botDisplayName);
 
             // Fill in person1's info in the card for person2
-            var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson1.Name, teamsPerson2.Name, teamsPerson1.GivenName, teamsPerson2.GivenName, teamsPerson2.GivenName, teamsPerson1.UserPrincipalName, this.botDisplayName);
+            var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson1.Name, teamsPerson2.Name, teamsPerson1.GivenName, teamsPerson2.GivenName, teamsPerson2.GivenName, emailOfPerson1, this.botDisplayName);
 
             // Send notifications and return the number that was successful
             var notifyResults = await Task.WhenAll(
