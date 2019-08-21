@@ -18,6 +18,11 @@ namespace Icebreaker.Helpers.AdaptiveCards
     /// </summary>
     public static class PairUpNotificationAdaptiveCard
     {
+        /// <summary>
+        /// Having the constant created for filtering out the extension when guest users are involved.
+        /// </summary>
+        private const string ExtensionFilter = "#ext#";
+
         private static readonly string CardTemplate;
 
         static PairUpNotificationAdaptiveCard()
@@ -85,7 +90,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <returns>A value to indicate if the account is a user.</returns>
         private static bool IsGuestUser(TeamsChannelAccount account)
         {
-            return account.UserPrincipalName.IndexOf("#ext#", StringComparison.InvariantCultureIgnoreCase) >= 0;
+            return account.UserPrincipalName.IndexOf(ExtensionFilter, StringComparison.InvariantCultureIgnoreCase) >= 0;
         }
     }
 }
