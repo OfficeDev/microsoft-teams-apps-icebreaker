@@ -20,7 +20,10 @@ namespace Icebreaker.Cards
         /// This method is responsible for constructing the user welcome attachment.
         /// </summary>
         /// <returns>The attachment to append to a message.</returns>
-        public static Attachment GetCard()
+        /// <param name="botInstaller">The user that installed the bot.</param>
+        /// <param name="botDisplayName">The bot display name.</param>
+        /// <param name="teamName">The name of the team the bot has been installed to.</param>
+        public static Attachment GetCard(string botInstaller, string botDisplayName, string teamName)
         {
             var baseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain");
             var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
@@ -44,6 +47,29 @@ namespace Icebreaker.Cards
                     new AdaptiveImage
                     {
                         Url = new Uri(welcomeCardImageUrl),
+                    },
+                    new AdaptiveTextBlock
+                    {
+                        Text = string.IsNullOrEmpty(botInstaller) ?
+                        string.Format(Resources.InstallMessageUnknownInstallerPart1, teamName) :
+                        string.Format(Resources.InstallMessageKnownInstallerPart1, botInstaller, teamName),
+                        Wrap = true,
+                    },
+                    new AdaptiveTextBlock
+                    {
+                        Text = string.IsNullOrEmpty(botInstaller) ?
+                        Resources.InstallMessageUnknownInstallerPart2 :
+                        Resources.InstallMessageKnownInstallerPart2,
+                        Wrap = true,
+                        Spacing = AdaptiveSpacing.Small,
+                    },
+                    new AdaptiveTextBlock
+                    {
+                        Text = string.IsNullOrEmpty(botInstaller) ?
+                        Resources.InstallMessageUnknownInstallerPart3 :
+                        Resources.InstallMessageKnownInstallerPart3,
+                        Wrap = true,
+                        Spacing = AdaptiveSpacing.Small,
                     }
                 },
                 Actions = new List<AdaptiveAction>

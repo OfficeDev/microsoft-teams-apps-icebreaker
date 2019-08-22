@@ -13,9 +13,9 @@ namespace Icebreaker.Bots
     using System.Threading.Tasks;
     using Icebreaker.Cards;
     using Icebreaker.Helpers;
-    using Icebreaker.Helpers.AdaptiveCards;
     using Microsoft.ApplicationInsights;
     using Microsoft.Bot.Builder;
+    using Microsoft.Bot.Connector;
     using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
@@ -82,9 +82,6 @@ namespace Icebreaker.Bots
                 {
                     switch (activity.Conversation.ConversationType)
                     {
-                        case "personal":
-                            await this.OnMembersAddedToPersonalChatAsync(activity.MembersAdded, turnContext, cancellationToken);
-                            break;
                         case "channel":
                             await this.OnMembersAddedToTeamAsync(activity.MembersAdded, turnContext, cancellationToken);
                             break;
@@ -92,6 +89,29 @@ namespace Icebreaker.Bots
                             this.telemetryClient.TrackTrace($"Ignoring event from the conversation type: {activity.Conversation.ConversationType}");
                             break;
                     }
+                }
+                else if (activity.MembersRemoved?.Any(x => x.Id == activity.Recipient.Id) == true)
+                {
+                    this.telemetryClient.TrackTrace($"Bot removed from team {activity.Conversation.Id}");
+
+                    var teamDetails = ((JObject)turnContext.Activity.ChannelData).ToObject<TeamsChannelData>();
+                    var teamInstallInfo = new TeamInstallInfo
+                    {
+                        TeamId = teamDetails.Team.Id,
+                        TenantId = teamDetails.Tenant.Id,
+                        ServiceUrl = activity.ServiceUrl,
+                    };
+
+                    await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, false);
+
+                    var properties = new Dictionary<string, string>
+                    {
+                        { "Scope", activity.Conversation?.ConversationType },
+                        { "TeamId", teamDetails.Team.Id },
+                        { "UninstallerId", activity.From.Id },
+                    };
+
+                    this.telemetryClient.TrackEvent("AppUninstalled", properties);
                 }
                 else
                 {
@@ -154,30 +174,6 @@ namespace Icebreaker.Bots
         }
 
         /// <summary>
-        /// Handles the members being added due to the conversationUpdate event in a 1:1 chat.
-        /// </summary>
-        /// <param name="membersAdded">The members being added.</param>
-        /// <param name="turnContext">The current turn context/execution flow.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A unit of execution.</returns>
-        private async Task OnMembersAddedToPersonalChatAsync(
-            IList<ChannelAccount> membersAdded,
-            ITurnContext<IConversationUpdateActivity> turnContext,
-            CancellationToken cancellationToken)
-        {
-            var activity = turnContext.Activity;
-            if (membersAdded.Any(m => m.Id == activity.Recipient.Id))
-            {
-                // User started chatting with the bot in the personal scope - for the first time.
-                this.telemetryClient.TrackTrace($"Bot added to 1:1 chat {activity.Conversation.Id}");
-                var newMember = (TeamsChannelAccount)membersAdded.FirstOrDefault(m => m.Id == activity.Recipient.Id);
-
-                var userWelcomeCardAttachment = UserWelcomeCard.GetCard();
-                await turnContext.SendActivityAsync(MessageFactory.Attachment(userWelcomeCardAttachment));
-            }
-        }
-
-        /// <summary>
         /// Handles the members being added due to the conversationUpdate event in a teams scope.
         /// </summary>
         /// <param name="membersAdded">The members being added.</param>
@@ -190,6 +186,9 @@ namespace Icebreaker.Bots
             CancellationToken cancellationToken)
         {
             var activity = turnContext.Activity;
+            var teamDetails = ((JObject)turnContext.Activity.ChannelData).ToObject<TeamsChannelData>();
+            var botDisplayName = turnContext.Activity.Recipient.Name;
+
             if (membersAdded.Any(m => m.Id == activity.Recipient.Id))
             {
                 this.telemetryClient.TrackTrace($"Bot added to team {activity.Conversation.Id}");
@@ -203,15 +202,33 @@ namespace Icebreaker.Bots
                 this.telemetryClient.TrackEvent("AppInstalled", properties);
 
                 var teamMembers = await ((BotFrameworkAdapter)turnContext.Adapter).GetConversationMembersAsync(turnContext, cancellationToken);
-                var teamDetails = ((JObject)turnContext.Activity.ChannelData).ToObject<TeamsChannelData>();
-                var teamInstallInfo = ((JObject)turnContext.Activity.ChannelData).ToObject<TeamInstallInfo>();
-
                 var personThatAddedBot = teamMembers.FirstOrDefault(x => x.Id == activity.From.Id)?.Name;
-                var botDisplayName = turnContext.Activity.Recipient.Name;
+
+                var teamInstallInfo = new TeamInstallInfo()
+                {
+                    TeamId = teamDetails.Team.Id,
+                    TenantId = teamDetails.Tenant.Id,
+                    InstallerName = personThatAddedBot,
+                    ServiceUrl = turnContext.Activity.ServiceUrl
+                };
+                await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
 
                 var teamWelcomeCardAttachment = WelcomeTeamCard.GetCard(teamDetails.Team.Name, activity.From?.Name, personThatAddedBot);
-                await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
                 await turnContext.SendActivityAsync(MessageFactory.Attachment(teamWelcomeCardAttachment));
+            }
+            else
+            {
+                this.telemetryClient.TrackTrace($"Adding {membersAdded.FirstOrDefault()?.Id} - {membersAdded.FirstOrDefault()?.Name} to {teamDetails.Team.Name}");
+                var connectorClient = new ConnectorClient(new Uri(turnContext.Activity.ServiceUrl), this.microsoftAppCredentials);
+                await this.SendUserWelcomeMessage(
+                    connectorClient,
+                    membersAdded.FirstOrDefault()?.Id,
+                    teamDetails.Team.Name,
+                    teamDetails.Team.Id,
+                    teamDetails.Tenant.Id,
+                    turnContext.Activity.Recipient.Id,
+                    botDisplayName,
+                    cancellationToken);
             }
         }
 
@@ -265,6 +282,117 @@ namespace Icebreaker.Bots
 
             string text = (message.Text ?? string.Empty).Trim().ToLower();
             await turnContext.SendActivityAsync(MessageFactory.Text($"Yahtzee: {text}"));
+        }
+
+        /// <summary>
+        /// When a new member is added to the team, they are to be welcomed by the bot.
+        /// </summary>
+        /// <param name="connectorClient">The connector client.</param>
+        /// <param name="memberAddedId">Newly added team member.</param>
+        /// <param name="teamName">The team name.</param>
+        /// <param name="teamId">The teamID.</param>
+        /// <param name="tenantId">The tenantID.</param>
+        /// <param name="botId">The botID.</param>
+        /// <param name="botDisplayName">The bot display name.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A unit of execution.</returns>
+        private async Task SendUserWelcomeMessage(
+            ConnectorClient connectorClient,
+            string memberAddedId,
+            string teamName,
+            string teamId,
+            string tenantId,
+            string botId,
+            string botDisplayName,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                var allMembers = await connectorClient.Conversations.GetConversationMembersAsync(teamId, cancellationToken);
+
+                ChannelAccount userThatJustJoined = null;
+                foreach (var m in allMembers)
+                {
+                    // both values are 29: values
+                    if (m.Id == memberAddedId)
+                    {
+                        userThatJustJoined = m;
+                        break;
+                    }
+                }
+
+                if (userThatJustJoined != null)
+                {
+                    var installedTeam = await this.dataProvider.GetInstalledTeamAsync(teamId);
+                    var userWelcomeCard = UserWelcomeCard.GetCard(installedTeam.InstallerName, botDisplayName, teamName);
+                    await this.NotifyUser(
+                        connectorClient,
+                        userThatJustJoined,
+                        userWelcomeCard,
+                        botId,
+                        tenantId,
+                        cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.telemetryClient.TrackTrace($"An error occurred: {ex.Message} - {ex.InnerException}");
+                this.telemetryClient.TrackException(ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Method that will notify the user with the welcome card.
+        /// </summary>
+        /// <param name="connectorClient">The connector client.</param>
+        /// <param name="userThatJustJoined">The newly added user.</param>
+        /// <param name="attachmentToSend">The attachment to send to the user.</param>
+        /// <param name="botId">The botID.</param>
+        /// <param name="tenantId">The tenantID.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A unit of execution.</returns>
+        private async Task NotifyUser(
+            ConnectorClient connectorClient,
+            ChannelAccount userThatJustJoined,
+            Attachment attachmentToSend,
+            string botId,
+            string tenantId,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                // Ensuring that the conversation exists.
+                var bot = new ChannelAccount { Id = botId };
+                var conversationParameters = new ConversationParameters()
+                {
+                    Bot = bot,
+                    Members = new List<ChannelAccount>()
+                    {
+                        userThatJustJoined,
+                    },
+                    TenantId = tenantId,
+                };
+
+                var response = await connectorClient.Conversations.CreateConversationAsync(conversationParameters, cancellationToken);
+                var conversationId = response.Id;
+
+                var activity = new Activity()
+                {
+                    Type = ActivityTypes.Message,
+                    Attachments = new List<Attachment>()
+                    {
+                        attachmentToSend,
+                    },
+                };
+
+                await connectorClient.Conversations.SendToConversationAsync(conversationId, activity, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                this.telemetryClient.TrackTrace($"Error occurred while trying to notify {userThatJustJoined.Name}");
+                this.telemetryClient.TrackException(ex);
+            }
         }
     }
 }
