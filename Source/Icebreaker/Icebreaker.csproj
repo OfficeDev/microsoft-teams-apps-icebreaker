@@ -561,7 +561,6 @@
     <Content Include="Content\welcome-card-image.png" />
     <Content Include="default.htm" />
     <Content Include="Global.asax" />
-    <Content Include="Helpers\AdaptiveCards\UnrecognizedInputAdaptiveCard.json" />
     <Content Include="libman.json" />
     <Content Include="lib\jquery\jquery.min.map" />
     <Content Include="lib\jquery\jquery.js" />
@@ -588,7 +587,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AdaptiveCards\PairUpNotificationAdaptiveCard.cs" />
-    <Compile Include="Helpers\AdaptiveCards\UnrecognizedInputAdaptiveCard.cs" />
     <Compile Include="Helpers\IcebreakerBotDataProvider.cs" />
     <Compile Include="Helpers\TeamInstallInfo.cs" />
     <Compile Include="Helpers\TeamsAdaptiveSubmitActionData.cs" />

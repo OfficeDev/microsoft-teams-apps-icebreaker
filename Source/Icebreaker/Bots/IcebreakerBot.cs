@@ -138,12 +138,12 @@ namespace Icebreaker.Bots
         {
             try
             {
+                await this.SendTypingIndicatorAsync(turnContext);
+
                 var message = turnContext.Activity;
 
                 this.telemetryClient.TrackTrace($"Received message activity");
                 this.telemetryClient.TrackTrace($"from: {message.From?.Id}conversation: {message.Conversation.Id}, replyToId: {message.ReplyToId}");
-
-                await this.SendTypingIndicatorAsync(turnContext);
 
                 switch (message.Conversation.ConversationType)
                 {
@@ -336,18 +336,7 @@ namespace Icebreaker.Bots
             ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken)
         {
-            if (!string.IsNullOrEmpty(message.ReplyToId) &&
-                message.Value != null &&
-                ((JObject)message.Value).HasValues)
-            {
-                this.telemetryClient.TrackTrace("Card submit in channel");
-
-                // await this.OnAdaptiveCardSubmitInChannelAsync(message, turnContext, cancellationToken);
-                return;
-            }
-
-            string text = (message.Text ?? string.Empty).Trim().ToLower();
-            await turnContext.SendActivityAsync(MessageFactory.Text($"Yahtzee: {text}"));
+            await turnContext.SendActivityAsync(MessageFactory.Attachment(UnrecognizedInputCard.GetCard()));
         }
 
         /// <summary>
