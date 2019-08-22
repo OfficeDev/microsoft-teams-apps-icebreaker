@@ -33,10 +33,6 @@ namespace Icebreaker
             };
 
             // Web API configuration and services
-            var builder = new ContainerBuilder();
-            builder.RegisterType<IcebreakerModule>();
-            var container = builder.Build();
-            config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
 
             // Web API routes
             config.MapHttpAttributeRoutes();

@@ -24,9 +24,11 @@ namespace Icebreaker
         /// <summary>
         /// Initializes a new instance of the <see cref="MessagesController"/> class.
         /// </summary>
-        /// <param name="adapter">Instance of the bot framework adapter.</param>
-        /// <param name="bot">The Icebreaker bot instance</param>
-        public MessagesController(IBotFrameworkHttpAdapter adapter, IBot bot)
+        /// <param name="adapter">The bot framework adapter.</param>
+        /// <param name="bot">The interface for the bot.</param>
+        public MessagesController(
+            IBotFrameworkHttpAdapter adapter,
+            IBot bot)
         {
             this.adapter = adapter;
             this.bot = bot;
