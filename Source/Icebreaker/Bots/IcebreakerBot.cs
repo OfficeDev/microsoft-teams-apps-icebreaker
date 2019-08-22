@@ -4,7 +4,7 @@
 // </copyright>
 //----------------------------------------------------------------------------------------------
 
-namespace Icebreaker
+namespace Icebreaker.Bots
 {
     using System;
     using System.Collections.Generic;
