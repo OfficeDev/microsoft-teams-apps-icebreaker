@@ -34,7 +34,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <param name="botDisplayName">The bot display name</param>
         /// <param name="botInstaller">The name of the person that installed the bot</param>
         /// <returns>The welcome team adaptive card</returns>
-        public static Attachment GetCard(string teamName, string botDisplayName, string botInstaller)
+        public static string GetCard(string teamName, string botDisplayName, string botInstaller)
         {
             string teamIntroPart1 = string.Empty;
             string teamIntroPart2 = string.Empty;
@@ -79,11 +79,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 cardBody = cardBody.Replace($"%{kvp.Key}%", kvp.Value);
             }
 
-            return new Attachment
-            {
-                ContentType = AdaptiveCard.ContentType,
-                Content = cardBody,
-            };
+            return cardBody;
         }
     }
 }

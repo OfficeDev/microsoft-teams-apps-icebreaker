@@ -122,6 +122,19 @@ namespace Icebreaker.Bots
                 this.telemetryClient.TrackTrace($"from: {message.From?.Id}conversation: {message.Conversation.Id}, replyToId: {message.ReplyToId}");
 
                 await this.SendTypingIndicatorAsync(turnContext);
+
+                switch (message.Conversation.ConversationType)
+                {
+                    case "personal":
+                        await this.OnMessageActivityInPersonalChatAsync(message, turnContext, cancellationToken);
+                        break;
+                    case "channel":
+                        await this.OnMessageActivityInChannelAsync(message, turnContext, cancellationToken);
+                        break;
+                    default:
+                        this.telemetryClient.TrackTrace($"Received unexpected conversationType: {message.Conversation.ConversationType}");
+                        break;
+                }
             }
             catch (Exception ex)
             {
@@ -131,6 +144,7 @@ namespace Icebreaker.Bots
             }
         }
 
+        // Sends the typing indicator to the user.
         private Task SendTypingIndicatorAsync(ITurnContext turnContext)
         {
             var typingActivity = turnContext.Activity.CreateReply();
@@ -138,6 +152,13 @@ namespace Icebreaker.Bots
             return turnContext.SendActivityAsync(typingActivity);
         }
 
+        /// <summary>
+        /// Handles the members being added due to the conversationUpdate event in a 1:1 chat.
+        /// </summary>
+        /// <param name="membersAdded">The members being added.</param>
+        /// <param name="turnContext">The current turn context/execution flow.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A unit of execution.</returns>
         private async Task OnMembersAddedToPersonalChatAsync(
             IList<ChannelAccount> membersAdded,
             ITurnContext<IConversationUpdateActivity> turnContext,
@@ -153,6 +174,13 @@ namespace Icebreaker.Bots
             }
         }
 
+        /// <summary>
+        /// Handles the members being added due to the conversationUpdate event in a teams scope.
+        /// </summary>
+        /// <param name="membersAdded">The members being added.</param>
+        /// <param name="turnContext">The current turn context/execution flow.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A unit of execution.</returns>
         private async Task OnMembersAddedToTeamAsync(
             IList<ChannelAccount> membersAdded,
             ITurnContext<IConversationUpdateActivity> turnContext,
@@ -166,13 +194,22 @@ namespace Icebreaker.Bots
                 var teamDetails = ((JObject)turnContext.Activity.ChannelData).ToObject<TeamsChannelData>();
                 var botDisplayName = turnContext.Activity.Recipient.Name;
 
-                await turnContext.SendActivityAsync(MessageFactory.Text("Hello Team!"));
+                var teamWelcomeCardString = WelcomeTeamAdaptiveCard.GetCard(teamDetails.Team.Name, activity.From?.Name, string.Empty);
+                await turnContext.SendActivityAsync(MessageFactory.Text($"Hello {teamDetails.Team.Name}"));
 
-                var teamWelcomeCardAttachment = WelcomeTeamAdaptiveCard.GetCard(teamDetails.Team.Name, activity.From?.Name, string.Empty);
-                await this.SendCardToTeamAsync(turnContext, teamWelcomeCardAttachment, teamDetails.Team.Id, cancellationToken);
+                // await this.SendCardToTeamAsync(turnContext, teamWelcomeCardAttachment, teamDetails.Team.Id, cancellationToken);
+                // await turnContext.SendActivityAsync(MessageFactory.Attachment(teamWelcomeCardAttachment));
             }
         }
 
+        /// <summary>
+        /// Sending the cards to the team which would be receiving the team related notifications.
+        /// </summary>
+        /// <param name="turnContext">The current turn/execution flow.</param>
+        /// <param name="cardToSend">The card to send.</param>
+        /// <param name="teamId">The teamId to send notifications to.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A unit of execution that contains the ConversationResourceResponse.</returns>
         private async Task<ConversationResourceResponse> SendCardToTeamAsync(
             ITurnContext turnContext,
             Attachment cardToSend,
@@ -205,6 +242,58 @@ namespace Icebreaker.Bots
                 cancellationToken);
 
             return await tcs.Task;
+        }
+
+        /// <summary>
+        /// Handles message activity in the 1:1 chat (personal scope).
+        /// </summary>
+        /// <param name="message">The incoming message.</param>
+        /// <param name="turnContext">The current turn/execution flow.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A unit of execution.</returns>
+        private async Task OnMessageActivityInPersonalChatAsync(
+            IMessageActivity message,
+            ITurnContext<IMessageActivity> turnContext,
+            CancellationToken cancellationToken)
+        {
+            if (!string.IsNullOrEmpty(message.ReplyToId) &&
+                message.Value != null &&
+                ((JObject)message.Value).HasValues)
+            {
+                this.telemetryClient.TrackTrace("Card submit in 1:1 chat");
+
+                // await this.OnAdaptiveCardSubmitInPersonalChatAsync(message, turnContext, cancellationToken);
+                return;
+            }
+
+            string text = (message.Text ?? string.Empty).Trim().ToLower();
+            await turnContext.SendActivityAsync(MessageFactory.Text(text));
+        }
+
+        /// <summary>
+        /// Handles the message activity in the channel/teams scope.
+        /// </summary>
+        /// <param name="message">The current activity.</param>
+        /// <param name="turnContext">The current turn context/execution flow.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A unit of execution.</returns>
+        private async Task OnMessageActivityInChannelAsync(
+            IMessageActivity message,
+            ITurnContext<IMessageActivity> turnContext,
+            CancellationToken cancellationToken)
+        {
+            if (!string.IsNullOrEmpty(message.ReplyToId) &&
+                message.Value != null &&
+                ((JObject)message.Value).HasValues)
+            {
+                this.telemetryClient.TrackTrace("Card submit in channel");
+
+                // await this.OnAdaptiveCardSubmitInChannelAsync(message, turnContext, cancellationToken);
+                return;
+            }
+
+            string text = (message.Text ?? string.Empty).Trim().ToLower();
+            await turnContext.SendActivityAsync(MessageFactory.Text($"Yahtzee: {text}"));
         }
     }
 }
