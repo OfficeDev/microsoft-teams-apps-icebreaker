@@ -4,11 +4,7 @@
 
 namespace Icebreaker
 {
-    using System.Reflection;
     using System.Web.Http;
-    using Autofac;
-    using Autofac.Integration.WebApi;
-    using Microsoft.Bot.Builder.Dialogs;
 
 #pragma warning disable SA1649 // File name must match first type name
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
@@ -18,14 +14,15 @@ namespace Icebreaker
     {
         protected void Application_Start()
         {
-            Conversation.UpdateContainer(
-               builder =>
-               {
-                   builder.RegisterModule(new IcebreakerModule());
-
-                   builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
-                   builder.RegisterWebApiFilterProvider(GlobalConfiguration.Configuration);
-               });
+            // Conversation.UpdateContainer(
+            //   builder =>
+            //   {
+            //       builder.RegisterModule(new IcebreakerModule());
+            //
+            //       builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
+            //       builder.RegisterWebApiFilterProvider(GlobalConfiguration.Configuration);
+            //   });
+            AutofacConfig.RegisterDependencies();
             GlobalConfiguration.Configure(WebApiConfig.Register);
         }
     }
