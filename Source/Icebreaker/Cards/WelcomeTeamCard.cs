@@ -29,7 +29,13 @@ namespace Icebreaker.Cards
             string botInstaller)
         {
             var baseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain");
+            var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
+            var tourTitle = Resources.WelcomeTourTitle;
+
             var welcomeCardImageUrl = $"https://{baseDomain}/Content/welcome-card-image.png";
+            var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html?theme={{theme}}");
+            var tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}";
+
             AdaptiveCard teamWelcomeCard = new AdaptiveCard("1.0")
             {
                 Body = new List<AdaptiveElement>
@@ -67,6 +73,14 @@ namespace Icebreaker.Cards
                         Wrap = true,
                         Spacing = AdaptiveSpacing.Small,
                     }
+                },
+                Actions = new List<AdaptiveAction>
+                {
+                    new AdaptiveOpenUrlAction
+                    {
+                        Title = Resources.TakeATourButtonText,
+                        Url = new Uri(tourUrl),
+                    },
                 },
             };
 
