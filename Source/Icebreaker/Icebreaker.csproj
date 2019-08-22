@@ -579,6 +579,7 @@
     <Compile Include="AdapterWithErrorHandler.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="App_Start\AutofacConfig.cs" />
+    <Compile Include="Cards\UserWelcomeCard.cs" />
     <Compile Include="Cards\WelcomeTeamCard.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Controllers\ProcessNowController.cs" />
@@ -588,7 +589,6 @@
     <Compile Include="Helpers\AdaptiveCards\PairUpNotificationAdaptiveCard.cs" />
     <Compile Include="Helpers\AdaptiveCards\UnrecognizedInputAdaptiveCard.cs" />
     <Compile Include="Helpers\AdaptiveCards\WelcomeNewMemberAdaptiveCard.cs" />
-    <Compile Include="Helpers\AdaptiveCards\WelcomeTeamAdaptiveCard.cs" />
     <Compile Include="Helpers\IcebreakerBotDataProvider.cs" />
     <Compile Include="Helpers\TeamInstallInfo.cs" />
     <Compile Include="Helpers\UserInfo.cs" />
@@ -611,7 +611,6 @@
     <Content Include="ApplicationInsights.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Helpers\AdaptiveCards\WelcomeTeamAdaptiveCard.json" />
     <Content Include="lib\microsoft-teams\dist\MicrosoftTeams.js.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -643,9 +642,7 @@
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
     <AdditionalFiles Include="..\stylecop.json" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Providers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />

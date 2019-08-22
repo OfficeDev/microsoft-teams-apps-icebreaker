@@ -170,8 +170,10 @@ namespace Icebreaker.Bots
             {
                 // User started chatting with the bot in the personal scope - for the first time.
                 this.telemetryClient.TrackTrace($"Bot added to 1:1 chat {activity.Conversation.Id}");
+                var newMember = (TeamsChannelAccount)membersAdded.FirstOrDefault(m => m.Id == activity.Recipient.Id);
 
-                await turnContext.SendActivityAsync(MessageFactory.Text("You will get your welcome card"));
+                var userWelcomeCardAttachment = UserWelcomeCard.GetCard();
+                await turnContext.SendActivityAsync(MessageFactory.Attachment(userWelcomeCardAttachment));
             }
         }
 
@@ -192,56 +194,25 @@ namespace Icebreaker.Bots
             {
                 this.telemetryClient.TrackTrace($"Bot added to team {activity.Conversation.Id}");
 
+                var properties = new Dictionary<string, string>
+                {
+                    { "Scope", activity.Conversation?.ConversationType },
+                    { "TeamId", activity.Conversation?.Id },
+                    { "InstallerId", activity.From.Id },
+                };
+                this.telemetryClient.TrackEvent("AppInstalled", properties);
+
+                var teamMembers = await ((BotFrameworkAdapter)turnContext.Adapter).GetConversationMembersAsync(turnContext, cancellationToken);
                 var teamDetails = ((JObject)turnContext.Activity.ChannelData).ToObject<TeamsChannelData>();
+                var teamInstallInfo = ((JObject)turnContext.Activity.ChannelData).ToObject<TeamInstallInfo>();
+
+                var personThatAddedBot = teamMembers.FirstOrDefault(x => x.Id == activity.From.Id)?.Name;
                 var botDisplayName = turnContext.Activity.Recipient.Name;
 
-                var teamWelcomeCardAttachment = WelcomeTeamCard.GetCard(teamDetails.Team.Name, activity.From?.Name, string.Empty);
+                var teamWelcomeCardAttachment = WelcomeTeamCard.GetCard(teamDetails.Team.Name, activity.From?.Name, personThatAddedBot);
+                await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
                 await turnContext.SendActivityAsync(MessageFactory.Attachment(teamWelcomeCardAttachment));
-
-                // await this.SendCardToTeamAsync(turnContext, teamWelcomeCardAttachment, teamDetails.Team.Id, cancellationToken);
             }
-        }
-
-        /// <summary>
-        /// Sending the cards to the team which would be receiving the team related notifications.
-        /// </summary>
-        /// <param name="turnContext">The current turn/execution flow.</param>
-        /// <param name="cardToSend">The card to send.</param>
-        /// <param name="teamId">The teamId to send notifications to.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A unit of execution that contains the ConversationResourceResponse.</returns>
-        private async Task<ConversationResourceResponse> SendCardToTeamAsync(
-            ITurnContext turnContext,
-            Attachment cardToSend,
-            string teamId,
-            CancellationToken cancellationToken)
-        {
-            var conversationParameters = new ConversationParameters
-            {
-                Activity = (Activity)MessageFactory.Attachment(cardToSend),
-                ChannelData = new TeamsChannelData { Channel = new ChannelInfo(teamId), },
-            };
-
-            var tcs = new TaskCompletionSource<ConversationResourceResponse>();
-            await ((BotFrameworkAdapter)turnContext.Adapter).CreateConversationAsync(
-                null, // If we set channel = "msteams", there is an error as preinstalled middleware expects ChannelData to be present
-                turnContext.Activity.ServiceUrl,
-                this.microsoftAppCredentials,
-                conversationParameters,
-                (newTurnContext, newCancellationToken) =>
-                {
-                    var activity = newTurnContext.Activity;
-                    tcs.SetResult(new ConversationResourceResponse
-                    {
-                        Id = activity.Conversation.Id,
-                        ActivityId = activity.Id,
-                        ServiceUrl = activity.ServiceUrl,
-                    });
-                    return Task.CompletedTask;
-                },
-                cancellationToken);
-
-            return await tcs.Task;
         }
 
         /// <summary>
