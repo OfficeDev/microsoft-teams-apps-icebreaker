@@ -313,6 +313,11 @@ namespace Icebreaker.Bots
                     };
                     break;
                 default:
+                    this.telemetryClient.TrackTrace($"Cannot process the following: {turnContext.Activity.Text}");
+                    activityReply.Attachments = new List<Attachment>
+                    {
+                        UnrecognizedInputCard.GetCard(),
+                    };
                     break;
             }
 

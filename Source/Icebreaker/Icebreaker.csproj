@@ -579,6 +579,7 @@
     <Compile Include="AdapterWithErrorHandler.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="App_Start\AutofacConfig.cs" />
+    <Compile Include="Cards\UnrecognizedInputCard.cs" />
     <Compile Include="Cards\UserWelcomeCard.cs" />
     <Compile Include="Cards\WelcomeTeamCard.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
@@ -588,7 +589,6 @@
     </Compile>
     <Compile Include="Helpers\AdaptiveCards\PairUpNotificationAdaptiveCard.cs" />
     <Compile Include="Helpers\AdaptiveCards\UnrecognizedInputAdaptiveCard.cs" />
-    <Compile Include="Helpers\AdaptiveCards\WelcomeNewMemberAdaptiveCard.cs" />
     <Compile Include="Helpers\IcebreakerBotDataProvider.cs" />
     <Compile Include="Helpers\TeamInstallInfo.cs" />
     <Compile Include="Helpers\TeamsAdaptiveSubmitActionData.cs" />
@@ -607,7 +607,6 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Helpers\AdaptiveCards\PairUpNotificationAdaptiveCard.json" />
-    <Content Include="Helpers\AdaptiveCards\WelcomeNewMemberAdaptiveCard.json" />
     <Content Include="Connected Services\Application Insights\ConnectedService.json" />
     <Content Include="ApplicationInsights.config">
       <SubType>Designer</SubType>
