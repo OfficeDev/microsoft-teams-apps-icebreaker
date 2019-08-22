@@ -11,6 +11,7 @@ namespace Icebreaker.Bots
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using Icebreaker.Cards;
     using Icebreaker.Helpers;
     using Icebreaker.Helpers.AdaptiveCards;
     using Microsoft.ApplicationInsights;
@@ -194,11 +195,10 @@ namespace Icebreaker.Bots
                 var teamDetails = ((JObject)turnContext.Activity.ChannelData).ToObject<TeamsChannelData>();
                 var botDisplayName = turnContext.Activity.Recipient.Name;
 
-                var teamWelcomeCardString = WelcomeTeamAdaptiveCard.GetCard(teamDetails.Team.Name, activity.From?.Name, string.Empty);
-                await turnContext.SendActivityAsync(MessageFactory.Text($"Hello {teamDetails.Team.Name}"));
+                var teamWelcomeCardAttachment = WelcomeTeamCard.GetCard(teamDetails.Team.Name, activity.From?.Name, string.Empty);
+                await turnContext.SendActivityAsync(MessageFactory.Attachment(teamWelcomeCardAttachment));
 
                 // await this.SendCardToTeamAsync(turnContext, teamWelcomeCardAttachment, teamDetails.Team.Id, cancellationToken);
-                // await turnContext.SendActivityAsync(MessageFactory.Attachment(teamWelcomeCardAttachment));
             }
         }
 
