@@ -9,8 +9,10 @@ namespace Icebreaker.Helpers.AdaptiveCards
     using System.Collections.Generic;
     using System.IO;
     using System.Web.Hosting;
+    using global::AdaptiveCards;
     using Icebreaker.Properties;
     using Microsoft.Azure;
+    using Microsoft.Bot.Schema;
 
     /// <summary>
     /// Builder class for the team welcome message
@@ -32,7 +34,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <param name="botDisplayName">The bot display name</param>
         /// <param name="botInstaller">The name of the person that installed the bot</param>
         /// <returns>The welcome team adaptive card</returns>
-        public static string GetCard(string teamName, string botDisplayName, string botInstaller)
+        public static Attachment GetCard(string teamName, string botDisplayName, string botInstaller)
         {
             string teamIntroPart1 = string.Empty;
             string teamIntroPart2 = string.Empty;
@@ -77,7 +79,11 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 cardBody = cardBody.Replace($"%{kvp.Key}%", kvp.Value);
             }
 
-            return cardBody;
+            return new Attachment
+            {
+                ContentType = AdaptiveCard.ContentType,
+                Content = cardBody,
+            };
         }
     }
 }

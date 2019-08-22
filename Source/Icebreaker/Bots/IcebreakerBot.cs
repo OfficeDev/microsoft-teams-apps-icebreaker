@@ -12,9 +12,13 @@ namespace Icebreaker.Bots
     using System.Threading;
     using System.Threading.Tasks;
     using Icebreaker.Helpers;
+    using Icebreaker.Helpers.AdaptiveCards;
     using Microsoft.ApplicationInsights;
     using Microsoft.Bot.Builder;
+    using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
+    using Microsoft.Bot.Schema.Teams;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Implements the core logic for Icebreaker bot
@@ -23,18 +27,22 @@ namespace Icebreaker.Bots
     {
         private readonly TelemetryClient telemetryClient;
         private readonly IcebreakerBotDataProvider dataProvider;
+        private readonly MicrosoftAppCredentials microsoftAppCredentials;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBot"/> class.
         /// </summary>
         /// <param name="telemetryClient">The logging mechanism and logging.</param>
         /// <param name="dataProvider">The data provider.</param>
+        /// <param name="microsoftAppCredentials">The Microsoft application credentials.</param>
         public IcebreakerBot(
             TelemetryClient telemetryClient,
-            IcebreakerBotDataProvider dataProvider)
+            IcebreakerBotDataProvider dataProvider,
+            MicrosoftAppCredentials microsoftAppCredentials)
         {
             this.telemetryClient = telemetryClient;
             this.dataProvider = dataProvider;
+            this.microsoftAppCredentials = microsoftAppCredentials;
         }
 
         /// <inheritdoc/>
@@ -150,7 +158,53 @@ namespace Icebreaker.Bots
             ITurnContext<IConversationUpdateActivity> turnContext,
             CancellationToken cancellationToken)
         {
+            var activity = turnContext.Activity;
+            if (membersAdded.Any(m => m.Id == activity.Recipient.Id))
+            {
+                this.telemetryClient.TrackTrace($"Bot added to team {activity.Conversation.Id}");
 
+                var teamDetails = ((JObject)turnContext.Activity.ChannelData).ToObject<TeamsChannelData>();
+                var botDisplayName = turnContext.Activity.Recipient.Name;
+
+                await turnContext.SendActivityAsync(MessageFactory.Text("Hello Team!"));
+
+                var teamWelcomeCardAttachment = WelcomeTeamAdaptiveCard.GetCard(teamDetails.Team.Name, activity.From?.Name, string.Empty);
+                await this.SendCardToTeamAsync(turnContext, teamWelcomeCardAttachment, teamDetails.Team.Id, cancellationToken);
+            }
+        }
+
+        private async Task<ConversationResourceResponse> SendCardToTeamAsync(
+            ITurnContext turnContext,
+            Attachment cardToSend,
+            string teamId,
+            CancellationToken cancellationToken)
+        {
+            var conversationParameters = new ConversationParameters
+            {
+                Activity = (Activity)MessageFactory.Attachment(cardToSend),
+                ChannelData = new TeamsChannelData { Channel = new ChannelInfo(teamId), },
+            };
+
+            var tcs = new TaskCompletionSource<ConversationResourceResponse>();
+            await ((BotFrameworkAdapter)turnContext.Adapter).CreateConversationAsync(
+                null, // If we set channel = "msteams", there is an error as preinstalled middleware expects ChannelData to be present
+                turnContext.Activity.ServiceUrl,
+                this.microsoftAppCredentials,
+                conversationParameters,
+                (newTurnContext, newCancellationToken) =>
+                {
+                    var activity = newTurnContext.Activity;
+                    tcs.SetResult(new ConversationResourceResponse
+                    {
+                        Id = activity.Conversation.Id,
+                        ActivityId = activity.Id,
+                        ServiceUrl = activity.ServiceUrl,
+                    });
+                    return Task.CompletedTask;
+                },
+                cancellationToken);
+
+            return await tcs.Task;
         }
     }
 }
