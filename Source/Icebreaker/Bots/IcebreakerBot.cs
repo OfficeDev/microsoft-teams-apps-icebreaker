@@ -13,6 +13,7 @@ namespace Icebreaker.Bots
     using System.Threading.Tasks;
     using Icebreaker.Cards;
     using Icebreaker.Helpers;
+    using Icebreaker.Properties;
     using Microsoft.ApplicationInsights;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Connector;
@@ -244,18 +245,78 @@ namespace Icebreaker.Bots
             ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken)
         {
-            if (!string.IsNullOrEmpty(message.ReplyToId) &&
-                message.Value != null &&
-                ((JObject)message.Value).HasValues)
-            {
-                this.telemetryClient.TrackTrace("Card submit in 1:1 chat");
-
-                // await this.OnAdaptiveCardSubmitInPersonalChatAsync(message, turnContext, cancellationToken);
-                return;
-            }
+            var senderAadId = turnContext.Activity.From.AadObjectId;
+            var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
+            var activityReply = ((Activity)turnContext.Activity).CreateReply();
 
             string text = (message.Text ?? string.Empty).Trim().ToLower();
-            await turnContext.SendActivityAsync(MessageFactory.Text(text));
+            switch (text)
+            {
+                case "optout":
+                    this.telemetryClient.TrackTrace($"User {senderAadId} opted out");
+
+                    var properties = new Dictionary<string, string>
+                    {
+                        { "UserAadId", senderAadId },
+                        { "OptInStatus", "false" },
+                    };
+
+                    this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
+
+                    await this.dataProvider.SetUserInfoAsync(tenantId, senderAadId, false, turnContext.Activity.ServiceUrl);
+                    activityReply.Attachments = new List<Attachment>()
+                    {
+                        new HeroCard()
+                        {
+                            Text = Resources.OptOutConfirmation,
+                            Buttons = new List<CardAction>()
+                            {
+                                new CardAction()
+                                {
+                                    Title = Resources.ResumePairingsButtonText,
+                                    DisplayText = Resources.ResumePairingsButtonText,
+                                    Type = ActionTypes.MessageBack,
+                                    Text = "optin"
+                                }
+                            }
+                        }.ToAttachment(),
+                    };
+                    break;
+                case "optin":
+                    // User opted in
+                    this.telemetryClient.TrackTrace($"User {senderAadId} opted in");
+
+                    var optInProps = new Dictionary<string, string>
+                    {
+                        { "UserAadId", senderAadId },
+                        { "OptInStatus", "true" },
+                    };
+                    this.telemetryClient.TrackEvent("UserOptInStatusSet", optInProps);
+
+                    await this.dataProvider.SetUserInfoAsync(tenantId, senderAadId, true, turnContext.Activity.ServiceUrl);
+                    activityReply.Attachments = new List<Attachment>()
+                    {
+                        new HeroCard()
+                        {
+                            Text = Resources.OptOutConfirmation,
+                            Buttons = new List<CardAction>()
+                            {
+                                new CardAction()
+                                {
+                                    Title = Resources.PausePairingsButtonText,
+                                    DisplayText = Resources.PausePairingsButtonText,
+                                    Type = ActionTypes.MessageBack,
+                                    Text = "optout"
+                                }
+                            }
+                        }.ToAttachment(),
+                    };
+                    break;
+                default:
+                    break;
+            }
+
+            await turnContext.SendActivityAsync(activityReply);
         }
 
         /// <summary>

@@ -7,6 +7,7 @@ namespace Icebreaker.Cards
     using System;
     using System.Collections.Generic;
     using AdaptiveCards;
+    using Icebreaker.Helpers;
     using Icebreaker.Properties;
     using Microsoft.Azure;
     using Microsoft.Bot.Schema;
@@ -78,6 +79,19 @@ namespace Icebreaker.Cards
                     {
                         Title = Resources.TakeATourButtonText,
                         Url = new Uri(tourUrl),
+                    },
+                    new AdaptiveSubmitAction
+                    {
+                        Title = Resources.PausePairingsButtonText,
+                        Data = new TeamsAdaptiveSubmitActionData
+                        {
+                            MsTeams = new CardAction
+                            {
+                                Type = ActionTypes.MessageBack,
+                                DisplayText = Resources.PausePairingsButtonText,
+                                Text = "optout",
+                            },
+                        },
                     },
                 },
             };

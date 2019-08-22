@@ -591,6 +591,7 @@
     <Compile Include="Helpers\AdaptiveCards\WelcomeNewMemberAdaptiveCard.cs" />
     <Compile Include="Helpers\IcebreakerBotDataProvider.cs" />
     <Compile Include="Helpers\TeamInstallInfo.cs" />
+    <Compile Include="Helpers\TeamsAdaptiveSubmitActionData.cs" />
     <Compile Include="Helpers\UserInfo.cs" />
     <Compile Include="Bots\IcebreakerBot.cs" />
     <Compile Include="IcebreakerModule.cs" />
