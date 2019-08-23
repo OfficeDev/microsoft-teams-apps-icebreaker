@@ -34,7 +34,9 @@ namespace Icebreaker
             builder.Register(c => new IcebreakerBot(
                 c.Resolve<TelemetryClient>(),
                 c.Resolve<IcebreakerBotDataProvider>(),
-                c.Resolve<MicrosoftAppCredentials>())).SingleInstance();
+                c.Resolve<MicrosoftAppCredentials>(),
+                CloudConfigurationManager.GetSetting("MicrosoftAppId"),
+                CloudConfigurationManager.GetSetting("BotDisplayName"))).SingleInstance();
 
             builder.Register(c => new AdapterWithErrorHandler(c.Resolve<ICredentialProvider>()))
                 .SingleInstance();

@@ -33,6 +33,8 @@ namespace Icebreaker.Bots
         private readonly TelemetryClient telemetryClient;
         private readonly IcebreakerBotDataProvider dataProvider;
         private readonly MicrosoftAppCredentials microsoftAppCredentials;
+        private string botId;
+        private string botDisplayName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBot"/> class.
@@ -40,14 +42,20 @@ namespace Icebreaker.Bots
         /// <param name="telemetryClient">The logging mechanism and logging.</param>
         /// <param name="dataProvider">The data provider.</param>
         /// <param name="microsoftAppCredentials">The Microsoft application credentials.</param>
+        /// <param name="botId">The MicrosoftAppID.</param>
+        /// <param name="botDisplayName">The bot display name.</param>
         public IcebreakerBot(
             TelemetryClient telemetryClient,
             IcebreakerBotDataProvider dataProvider,
-            MicrosoftAppCredentials microsoftAppCredentials)
+            MicrosoftAppCredentials microsoftAppCredentials,
+            string botId,
+            string botDisplayName)
         {
             this.telemetryClient = telemetryClient;
             this.dataProvider = dataProvider;
             this.microsoftAppCredentials = microsoftAppCredentials;
+            this.botId = botId;
+            this.botDisplayName = botDisplayName;
         }
 
         /// <summary>
@@ -75,6 +83,7 @@ namespace Icebreaker.Bots
                 var teams = await this.dataProvider.GetInstalledTeamsAsync();
                 installedTeamsCount = teams.Count;
                 this.telemetryClient.TrackTrace($"Generating pairs for {installedTeamsCount} teams");
+                var botId = "28:" + this.botId;
 
                 foreach (var team in teams)
                 {
@@ -89,7 +98,7 @@ namespace Icebreaker.Bots
 
                         foreach (var pair in this.MakePairs(optedInUsers).Take(Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"))))
                         {
-                            usersNotifiedCount += await this.NotifyPair(connectorClient, team.TenantId, team.TeamName, pair);
+                            usersNotifiedCount += await this.NotifyPair(connectorClient, team.TenantId, team.TeamName, botId, pair);
                             pairsNotifiedCount++;
                         }
                     }
@@ -480,7 +489,7 @@ namespace Icebreaker.Bots
         /// <param name="tenantId">The tenantID.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A unit of execution.</returns>
-        private async Task NotifyUser(
+        private async Task<bool> NotifyUser(
             ConnectorClient connectorClient,
             ChannelAccount userThatJustJoined,
             Attachment attachmentToSend,
@@ -515,11 +524,13 @@ namespace Icebreaker.Bots
                 };
 
                 await connectorClient.Conversations.SendToConversationAsync(conversationId, activity, cancellationToken);
+                return true;
             }
             catch (Exception ex)
             {
                 this.telemetryClient.TrackTrace($"Error occurred while trying to notify {userThatJustJoined.Name}");
                 this.telemetryClient.TrackException(ex);
+                return false;
             }
         }
 
@@ -568,8 +579,9 @@ namespace Icebreaker.Bots
         /// <param name="teamName">The team name</param>
         /// <param name="pair">The pairup</param>
         /// <returns>Number of users notified successfully</returns>
-        private async Task<int> NotifyPair(ConnectorClient connectorClient, string tenantId, string teamName, Tuple<ChannelAccount, ChannelAccount> pair)
+        private async Task<int> NotifyPair(ConnectorClient connectorClient, string tenantId, string teamName, string botId, Tuple<ChannelAccount, ChannelAccount> pair)
         {
+            CancellationToken cancellationToken = default(CancellationToken);
             this.telemetryClient.TrackTrace($"Sending pairup notification to {pair.Item1.Id} and {pair.Item2.Id}");
 
             var teamsPerson1 = (TeamsChannelAccount)pair.Item1;
@@ -583,8 +595,8 @@ namespace Icebreaker.Bots
 
             // Send notifications and return the number that was successful
             var notifyResults = await Task.WhenAll(
-                this.NotifyUser(connectorClient, cardForPerson1, teamsPerson1, tenantId),
-                this.NotifyUser(connectorClient, cardForPerson2, teamsPerson2, tenantId));
+                this.NotifyUser(connectorClient, teamsPerson1, cardForPerson1, botId, tenantId, cancellationToken),
+                this.NotifyUser(connectorClient, teamsPerson2, cardForPerson2, botId, tenantId, cancellationToken));
             return notifyResults.Count(wasNotified => wasNotified);
         }
 
