@@ -15,6 +15,8 @@ namespace Icebreaker.Bots
     using Icebreaker.Helpers;
     using Icebreaker.Properties;
     using Microsoft.ApplicationInsights;
+    using Microsoft.ApplicationInsights.DataContracts;
+    using Microsoft.Azure;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Connector;
     using Microsoft.Bot.Connector.Authentication;
@@ -45,6 +47,76 @@ namespace Icebreaker.Bots
             this.telemetryClient = telemetryClient;
             this.dataProvider = dataProvider;
             this.microsoftAppCredentials = microsoftAppCredentials;
+        }
+
+        /// <summary>
+        /// Generate pairups and send pairup notifications.
+        /// </summary>
+        /// <returns>The number of pairups that were made</returns>
+        public async Task<int> MakePairsAndNotify()
+        {
+            this.telemetryClient.TrackTrace("Making pairups");
+
+            // Recall all the teams where we have been added
+            // For each team where bot has been added:
+            //     Pull the roster of the team
+            //     Remove the members who have opted out of pairups
+            //     Match each member with someone else
+            //     Save this pair
+            // Now notify each pair found in 1:1 and ask them to reach out to the other person
+            // When contacting the user in 1:1, give them the button to opt-out
+            var installedTeamsCount = 0;
+            var pairsNotifiedCount = 0;
+            var usersNotifiedCount = 0;
+
+            try
+            {
+                var teams = await this.dataProvider.GetInstalledTeamsAsync();
+                installedTeamsCount = teams.Count;
+                this.telemetryClient.TrackTrace($"Generating pairs for {installedTeamsCount} teams");
+
+                foreach (var team in teams)
+                {
+                    this.telemetryClient.TrackTrace($"Pairing members of team {team.Id}");
+
+                    try
+                    {
+                        MicrosoftAppCredentials.TrustServiceUrl(team.ServiceUrl);
+                        var connectorClient = new ConnectorClient(new Uri(team.ServiceUrl), this.microsoftAppCredentials);
+
+                        // var teamName = await this.GetTeamNameAsync(connectorClient, team.TeamId);
+                        var optedInUsers = await this.GetOptedInUsers(connectorClient, team);
+
+                        foreach (var pair in this.MakePairs(optedInUsers).Take(Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam")));
+                        {
+                            usersNotifiedCount += await this.NotifyPair(connectorClient, team.TenantId, teamName, pair);
+                            pairsNotifiedCount++;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        this.telemetryClient.TrackTrace($"Error pairing up team members: {ex.Message}", SeverityLevel.Warning);
+                        this.telemetryClient.TrackException(ex);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this.telemetryClient.TrackTrace($"Error making pairups: {ex.Message}", SeverityLevel.Warning);
+                this.telemetryClient.TrackException(ex);
+            }
+
+            // Log telemetry about the pairups
+            var properties = new Dictionary<string, string>
+            {
+                { "InstalledTeamsCount", installedTeamsCount.ToString() },
+                { "PairsNotifiedCount", pairsNotifiedCount.ToString() },
+                { "UsersNotifiedCount", usersNotifiedCount.ToString() },
+            };
+            this.telemetryClient.TrackEvent("ProcessedPairups", properties);
+
+            this.telemetryClient.TrackTrace($"Made {pairsNotifiedCount} pairups, {usersNotifiedCount} notifications sent");
+            return pairsNotifiedCount;
         }
 
         /// <inheritdoc/>
@@ -448,6 +520,43 @@ namespace Icebreaker.Bots
                 this.telemetryClient.TrackTrace($"Error occurred while trying to notify {userThatJustJoined.Name}");
                 this.telemetryClient.TrackException(ex);
             }
+        }
+
+        private List<Tuple<ChannelAccount, ChannelAccount>> MakePairs(List<ChannelAccount> users)
+        {
+            if (users.Count > 1)
+            {
+                this.telemetryClient.TrackTrace($"Making {users.Count / 2} pairs among {users.Count} users");
+            }
+            else
+            {
+                this.telemetryClient.TrackTrace($"Pairs could not be made because there is only 1 user in the team");
+            }
+
+            this.Randomize(users);
+
+            var pairs = new List<Tuple<ChannelAccount, ChannelAccount>>();
+            for (int i = 0; i < users.Count - 1; i += 2)
+            {
+                pairs.Add(new Tuple<ChannelAccount, ChannelAccount>(users[i], users[i + 1]));
+            }
+
+            return pairs;
+        }
+
+        private async Task<List<ChannelAccount>> GetOptedInUsers(ConnectorClient connectorClient, TeamInstallInfo teamInfo)
+        {
+            // Pull the roster of specified team and then remove everyone who has opted out explicitly
+            var members = await connectorClient.Conversations.GetConversationMembersAsync(teamInfo.TeamId);
+            this.telemetryClient.TrackTrace($"Found {members.Count} in team {teamInfo.TeamId}");
+
+            var tasks = members.Select(m => this.dataProvider.GetUserInfoAsync((m as TeamsChannelAccount).AadObjectId));
+            var results = await Task.WhenAll(tasks);
+
+            return members
+                .Zip(results, (member, userInfo) => ((userInfo == null) || userInfo.OptedIn) ? member : null)
+                .Where(m => m != null)
+                .ToList();
         }
     }
 }

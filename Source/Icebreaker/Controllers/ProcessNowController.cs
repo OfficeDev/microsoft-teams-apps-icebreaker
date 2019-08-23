@@ -54,9 +54,7 @@ namespace Icebreaker.Controllers
 
         private async Task<int> MakePairs()
         {
-            return 0;
-
-            // return await this.bot.MakePairsAndNotify();
+            return await this.bot.MakePairsAndNotify();
         }
     }
 }
