@@ -578,6 +578,7 @@
     <Compile Include="AdapterWithErrorHandler.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="App_Start\AutofacConfig.cs" />
+    <Compile Include="Cards\PairUpNotificationCard.cs" />
     <Compile Include="Cards\UnrecognizedInputCard.cs" />
     <Compile Include="Cards\UserWelcomeCard.cs" />
     <Compile Include="Cards\WelcomeTeamCard.cs" />
