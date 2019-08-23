@@ -20,6 +20,7 @@ namespace Icebreaker.Bots
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Connector;
     using Microsoft.Bot.Connector.Authentication;
+    using Microsoft.Bot.Connector.Teams;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
     using Newtonsoft.Json.Linq;
@@ -84,12 +85,11 @@ namespace Icebreaker.Bots
                         MicrosoftAppCredentials.TrustServiceUrl(team.ServiceUrl);
                         var connectorClient = new ConnectorClient(new Uri(team.ServiceUrl), this.microsoftAppCredentials);
 
-                        var teamName = await this.GetTeamNameAsync(connectorClient, team.TeamId);
                         var optedInUsers = await this.GetOptedInUsers(connectorClient, team);
 
                         foreach (var pair in this.MakePairs(optedInUsers).Take(Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"))))
                         {
-                            usersNotifiedCount += await this.NotifyPair(connectorClient, team.TenantId, teamName, pair);
+                            usersNotifiedCount += await this.NotifyPair(connectorClient, team.TenantId, team.TeamName, pair);
                             pairsNotifiedCount++;
                         }
                     }
@@ -173,6 +173,7 @@ namespace Icebreaker.Bots
                         TeamId = teamDetails.Team.Id,
                         TenantId = teamDetails.Tenant.Id,
                         ServiceUrl = activity.ServiceUrl,
+                        TeamName = teamDetails.Team.Name
                     };
 
                     await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, false);
@@ -590,14 +591,12 @@ namespace Icebreaker.Bots
         /// <summary>
         /// Get the name of a team.
         /// </summary>
-        /// <param name="connectorClient">The connector client</param>
         /// <param name="teamId">The team id</param>
         /// <returns>The name of the team</returns>
-        private async Task<string> GetTeamNameAsync(ConnectorClient connectorClient, string teamId)
+        private async Task<string> GetTeamNameAsync(string teamId)
         {
-            var teamsConnectorClient = connectorClient.GetTeamsConnectorClient();
-            var teamDetailsResult = await connectorClient.Teams.FetchTeamDetailsAsync(teamId);
-            return teamDetailsResult.Name;
+            var teamDetailsResult = await this.dataProvider.GetInstalledTeamAsync(teamId);
+            return teamDetailsResult.TeamName;
         }
 
         private void Randomize<T>(IList<T> items)

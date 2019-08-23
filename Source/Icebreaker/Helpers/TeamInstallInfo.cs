@@ -43,6 +43,12 @@ namespace Icebreaker.Helpers
         [JsonProperty("installerName")]
         public string InstallerName { get; set; }
 
+        /// <summary>
+        /// Gets or sets the name of the team that the bot has been installed to.
+        /// </summary>
+        [JsonProperty("teamName")]
+        public string TeamName { get; set; }
+
         /// <inheritdoc/>
         public override string ToString()
         {
