@@ -49,15 +49,18 @@ namespace Icebreaker
         {
             this.LogActivityTelemetry(activity);
 
-            using (var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl)))
+            if (this.IsValidTenantId(activity))
             {
-                if (activity.Type == ActivityTypes.Message)
+                using (var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl)))
                 {
-                    await this.HandleMessageActivity(connectorClient, activity);
-                }
-                else
-                {
-                    await this.HandleSystemActivity(connectorClient, activity);
+                    if (activity.Type == ActivityTypes.Message)
+                    {
+                        await this.HandleMessageActivity(connectorClient, activity);
+                    }
+                    else
+                    {
+                        await this.HandleSystemActivity(connectorClient, activity);
+                    }
                 }
             }
 
@@ -262,6 +265,22 @@ namespace Icebreaker
                 { "Platform", clientInfoEntity?.Properties["platform"]?.ToString() }
             };
             this.telemetryClient.TrackEvent("UserActivity", properties);
+        }
+
+        // Verify if the current user tenant Id is the same tenant Id used when application was configured
+        private bool IsValidTenantId(Activity activity)
+        {
+            var currentTenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
+
+            if (currentTenantId.Equals(this.bot.GetConfigTenantId()))
+            {
+                return true;
+            }
+            else
+            {
+                this.telemetryClient.TrackTrace($"Invalid tenant id: " + currentTenantId + " tried accessing the application");
+                return false;
+            }
         }
     }
 }
