@@ -33,8 +33,8 @@ namespace Icebreaker.Bots
         private readonly TelemetryClient telemetryClient;
         private readonly IcebreakerBotDataProvider dataProvider;
         private readonly MicrosoftAppCredentials microsoftAppCredentials;
-        private string botId;
-        private string botDisplayName;
+        private readonly string botId = CloudConfigurationManager.GetSetting("MicrosoftAppId");
+        private readonly string botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBot"/> class.
@@ -42,20 +42,14 @@ namespace Icebreaker.Bots
         /// <param name="telemetryClient">The logging mechanism and logging.</param>
         /// <param name="dataProvider">The data provider.</param>
         /// <param name="microsoftAppCredentials">The Microsoft application credentials.</param>
-        /// <param name="botId">The MicrosoftAppID.</param>
-        /// <param name="botDisplayName">The bot display name.</param>
         public IcebreakerBot(
             TelemetryClient telemetryClient,
             IcebreakerBotDataProvider dataProvider,
-            MicrosoftAppCredentials microsoftAppCredentials,
-            string botId,
-            string botDisplayName)
+            MicrosoftAppCredentials microsoftAppCredentials)
         {
             this.telemetryClient = telemetryClient;
             this.dataProvider = dataProvider;
             this.microsoftAppCredentials = microsoftAppCredentials;
-            this.botId = botId;
-            this.botDisplayName = botDisplayName;
         }
 
         /// <summary>
@@ -233,7 +227,7 @@ namespace Icebreaker.Bots
                         await this.OnMessageActivityInPersonalChatAsync(message, turnContext, cancellationToken);
                         break;
                     case "channel":
-                        await this.OnMessageActivityInChannelAsync(message, turnContext, cancellationToken);
+                        await this.OnMessageActivityInChannelAsync(turnContext, cancellationToken);
                         break;
                     default:
                         this.telemetryClient.TrackTrace($"Received unexpected conversationType: {message.Conversation.ConversationType}");
@@ -292,7 +286,8 @@ namespace Icebreaker.Bots
                     TeamId = teamDetails.Team.Id,
                     TenantId = teamDetails.Tenant.Id,
                     InstallerName = personThatAddedBot,
-                    ServiceUrl = turnContext.Activity.ServiceUrl
+                    ServiceUrl = turnContext.Activity.ServiceUrl,
+                    TeamName = teamDetails.Team.Name
                 };
                 await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
 
@@ -403,22 +398,20 @@ namespace Icebreaker.Bots
                     break;
             }
 
-            await turnContext.SendActivityAsync(activityReply);
+            await turnContext.SendActivityAsync(activityReply, cancellationToken);
         }
 
         /// <summary>
         /// Handles the message activity in the channel/teams scope.
         /// </summary>
-        /// <param name="message">The current activity.</param>
         /// <param name="turnContext">The current turn context/execution flow.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A unit of execution.</returns>
         private async Task OnMessageActivityInChannelAsync(
-            IMessageActivity message,
             ITurnContext<IMessageActivity> turnContext,
             CancellationToken cancellationToken)
         {
-            await turnContext.SendActivityAsync(MessageFactory.Attachment(UnrecognizedInputCard.GetCard()));
+            await turnContext.SendActivityAsync(MessageFactory.Attachment(UnrecognizedInputCard.GetCard()), cancellationToken);
         }
 
         /// <summary>
@@ -562,7 +555,7 @@ namespace Icebreaker.Bots
             var members = await connectorClient.Conversations.GetConversationMembersAsync(teamInfo.TeamId);
             this.telemetryClient.TrackTrace($"Found {members.Count} in team {teamInfo.TeamId}");
 
-            var tasks = members.Select(m => this.dataProvider.GetUserInfoAsync((m as TeamsChannelAccount).AadObjectId));
+            var tasks = members.Select(m => this.dataProvider.GetUserInfoAsync(m.Properties["objectId"].ToString()));
             var results = await Task.WhenAll(tasks);
 
             return members
@@ -577,26 +570,28 @@ namespace Icebreaker.Bots
         /// <param name="connectorClient">The connector client</param>
         /// <param name="tenantId">The tenant id</param>
         /// <param name="teamName">The team name</param>
+        /// <param name="botId">The bot id.</param>
         /// <param name="pair">The pairup</param>
         /// <returns>Number of users notified successfully</returns>
         private async Task<int> NotifyPair(ConnectorClient connectorClient, string tenantId, string teamName, string botId, Tuple<ChannelAccount, ChannelAccount> pair)
         {
-            CancellationToken cancellationToken = default(CancellationToken);
+            CancellationToken cancellationToken = default;
             this.telemetryClient.TrackTrace($"Sending pairup notification to {pair.Item1.Id} and {pair.Item2.Id}");
 
-            var teamsPerson1 = (TeamsChannelAccount)pair.Item1;
-            var teamsPerson2 = (TeamsChannelAccount)pair.Item2;
+            var teamsPerson1 = pair.Item1;
+            var teamsPerson2 = pair.Item2;
 
             // Fill in person2's info in the card for person1
-            var cardForPerson1 = PairUpNotificationCard.GetCard(teamName, teamsPerson2.Name, teamsPerson1.Name, teamsPerson2.GivenName, teamsPerson1.GivenName, teamsPerson1.GivenName, teamsPerson2.UserPrincipalName, this.botDisplayName);
+            var cardForPerson1 = PairUpNotificationCard.GetCard(teamName, teamsPerson2, teamsPerson1, this.botDisplayName);
 
             // Fill in person1's info in the card for person2
-            var cardForPerson2 = PairUpNotificationCard.GetCard(teamName, teamsPerson1.Name, teamsPerson2.Name, teamsPerson1.GivenName, teamsPerson2.GivenName, teamsPerson2.GivenName, teamsPerson1.UserPrincipalName, this.botDisplayName);
+            // var cardForPerson2 = PairUpNotificationCard.GetCard(teamName, teamsPerson1.Name, teamsPerson2.Name, teamsPerson1.GivenName, teamsPerson2.GivenName, teamsPerson2.GivenName, teamsPerson1.UserPrincipalName, this.botDisplayName);
+            var cardForPerson2 = PairUpNotificationCard.GetCard(teamName, teamsPerson1, teamsPerson2, this.botDisplayName);
 
             // Send notifications and return the number that was successful
             var notifyResults = await Task.WhenAll(
-                this.NotifyUser(connectorClient, teamsPerson1, cardForPerson1, botId, tenantId, cancellationToken),
-                this.NotifyUser(connectorClient, teamsPerson2, cardForPerson2, botId, tenantId, cancellationToken));
+                this.NotifyUser(connectorClient, teamsPerson1, cardForPerson2, botId, tenantId, cancellationToken),
+                this.NotifyUser(connectorClient, teamsPerson2, cardForPerson1, botId, tenantId, cancellationToken));
             return notifyResults.Count(wasNotified => wasNotified);
         }
 
