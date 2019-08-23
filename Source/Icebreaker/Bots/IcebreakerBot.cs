@@ -84,10 +84,10 @@ namespace Icebreaker.Bots
                         MicrosoftAppCredentials.TrustServiceUrl(team.ServiceUrl);
                         var connectorClient = new ConnectorClient(new Uri(team.ServiceUrl), this.microsoftAppCredentials);
 
-                        // var teamName = await this.GetTeamNameAsync(connectorClient, team.TeamId);
+                        var teamName = await this.GetTeamNameAsync(connectorClient, team.TeamId);
                         var optedInUsers = await this.GetOptedInUsers(connectorClient, team);
 
-                        foreach (var pair in this.MakePairs(optedInUsers).Take(Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam")));
+                        foreach (var pair in this.MakePairs(optedInUsers).Take(Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"))))
                         {
                             usersNotifiedCount += await this.NotifyPair(connectorClient, team.TenantId, teamName, pair);
                             pairsNotifiedCount++;
@@ -557,6 +557,62 @@ namespace Icebreaker.Bots
                 .Zip(results, (member, userInfo) => ((userInfo == null) || userInfo.OptedIn) ? member : null)
                 .Where(m => m != null)
                 .ToList();
+        }
+
+        /// <summary>
+        /// Notify a pairup.
+        /// </summary>
+        /// <param name="connectorClient">The connector client</param>
+        /// <param name="tenantId">The tenant id</param>
+        /// <param name="teamName">The team name</param>
+        /// <param name="pair">The pairup</param>
+        /// <returns>Number of users notified successfully</returns>
+        private async Task<int> NotifyPair(ConnectorClient connectorClient, string tenantId, string teamName, Tuple<ChannelAccount, ChannelAccount> pair)
+        {
+            this.telemetryClient.TrackTrace($"Sending pairup notification to {pair.Item1.Id} and {pair.Item2.Id}");
+
+            var teamsPerson1 = (TeamsChannelAccount)pair.Item1;
+            var teamsPerson2 = (TeamsChannelAccount)pair.Item2;
+
+            // Fill in person2's info in the card for person1
+            var cardForPerson1 = PairUpNotificationCard.GetCard(teamName, teamsPerson2.Name, teamsPerson1.Name, teamsPerson2.GivenName, teamsPerson1.GivenName, teamsPerson1.GivenName, teamsPerson2.UserPrincipalName, this.botDisplayName);
+
+            // Fill in person1's info in the card for person2
+            var cardForPerson2 = PairUpNotificationCard.GetCard(teamName, teamsPerson1.Name, teamsPerson2.Name, teamsPerson1.GivenName, teamsPerson2.GivenName, teamsPerson2.GivenName, teamsPerson1.UserPrincipalName, this.botDisplayName);
+
+            // Send notifications and return the number that was successful
+            var notifyResults = await Task.WhenAll(
+                this.NotifyUser(connectorClient, cardForPerson1, teamsPerson1, tenantId),
+                this.NotifyUser(connectorClient, cardForPerson2, teamsPerson2, tenantId));
+            return notifyResults.Count(wasNotified => wasNotified);
+        }
+
+        /// <summary>
+        /// Get the name of a team.
+        /// </summary>
+        /// <param name="connectorClient">The connector client</param>
+        /// <param name="teamId">The team id</param>
+        /// <returns>The name of the team</returns>
+        private async Task<string> GetTeamNameAsync(ConnectorClient connectorClient, string teamId)
+        {
+            var teamsConnectorClient = connectorClient.GetTeamsConnectorClient();
+            var teamDetailsResult = await connectorClient.Teams.FetchTeamDetailsAsync(teamId);
+            return teamDetailsResult.Name;
+        }
+
+        private void Randomize<T>(IList<T> items)
+        {
+            Random rand = new Random(Guid.NewGuid().GetHashCode());
+
+            // For each spot in the array, pick
+            // a random item to swap into that spot.
+            for (int i = 0; i < items.Count - 1; i++)
+            {
+                int j = rand.Next(i, items.Count);
+                T temp = items[i];
+                items[i] = items[j];
+                items[j] = temp;
+            }
         }
     }
 }
