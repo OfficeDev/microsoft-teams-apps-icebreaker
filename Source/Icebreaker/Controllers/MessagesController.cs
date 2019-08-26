@@ -278,7 +278,7 @@ namespace Icebreaker
             }
             else
             {
-                this.telemetryClient.TrackTrace($"Invalid tenant id: " + currentTenantId + " tried accessing the application");
+                this.telemetryClient.TrackTrace($"Invalid tenant id: {currentTenantId} tried accessing the application");
                 return false;
             }
         }
