@@ -42,6 +42,7 @@ namespace Icebreaker.Cards
             var content = string.Format(Resources.MeetupContent, botDisplayName);
             var escapedContent = Uri.EscapeDataString(content);
 
+            var isGuest = IsGuestUser(person2);
             var personUpn = IsGuestUser(person2) ? person2.Email : person2.UserPrincipalName;
             var meetingLink = "https://teams.microsoft.com/l/meeting/new?subject=" + escapedTitle + "&attendees=" + personUpn + "&content=" + escapedContent;
             var chatMessageLink = $"https://teams.microsoft.com/l/chat/0/0?users={personUpn}&message=Hi%20there%20";
@@ -69,32 +70,7 @@ namespace Icebreaker.Cards
                         Text = string.Format(Resources.MatchUpCardContentPart1, botDisplayName, teamName, secondPerson.Name),
                     },
                 },
-                Actions = new List<AdaptiveAction>
-                {
-                    new AdaptiveOpenUrlAction
-                    {
-                        Title = string.Format(Resources.ChatWithMatchButtonText, secondPersonFirstName),
-                        Url = new Uri(chatMessageLink),
-                    },
-                    new AdaptiveOpenUrlAction
-                    {
-                        Title = Resources.ProposeMeetupButtonText,
-                        Url = new Uri(meetingLink),
-                    },
-                    new AdaptiveSubmitAction
-                    {
-                        Title = Resources.PausePairingsButtonText,
-                        Data = new TeamsAdaptiveSubmitActionData
-                        {
-                            MsTeams = new CardAction
-                            {
-                                Type = ActionTypes.MessageBack,
-                                DisplayText = Resources.PausePairingsButtonText,
-                                Text = "optout",
-                            },
-                        },
-                    },
-                },
+                Actions = BuildActionList(isGuest, chatMessageLink, secondPersonFirstName, meetingLink),
             };
 
             return new Attachment
@@ -112,6 +88,50 @@ namespace Icebreaker.Cards
         private static bool IsGuestUser(TeamsChannelAccount account)
         {
             return account.UserPrincipalName.IndexOf("#ext#", StringComparison.InvariantCultureIgnoreCase) >= 0;
+        }
+
+        /// <summary>
+        /// Building the actions list for the pairup card.
+        /// </summary>
+        /// <param name="isGuestUser">A boolean value determining whether or not a user is a guest.</param>
+        /// <param name="chatLink">The deeplink for the chat</param>
+        /// <param name="receiverName">The receiver name.</param>
+        /// <param name="meetingLink">The meeting link for proposing a meetup.</param>
+        /// <returns>A list of actions.</returns>
+        private static List<AdaptiveAction> BuildActionList(bool isGuestUser, string chatLink, string receiverName, string meetingLink)
+        {
+            var actionList = new List<AdaptiveAction>();
+
+            actionList.Add(new AdaptiveOpenUrlAction
+            {
+                Title = string.Format(Resources.ChatWithMatchButtonText, receiverName),
+                Url = new Uri(chatLink),
+            });
+
+            if (isGuestUser)
+            {
+                actionList.Add(new AdaptiveOpenUrlAction
+                {
+                    Title = Resources.ProposeMeetupButtonText,
+                    Url = new Uri(meetingLink),
+                });
+            }
+
+            actionList.Add(new AdaptiveSubmitAction
+            {
+                Title = Resources.PausePairingsButtonText,
+                Data = new TeamsAdaptiveSubmitActionData
+                {
+                    MsTeams = new CardAction
+                    {
+                        Type = ActionTypes.MessageBack,
+                        DisplayText = Resources.PausePairingsButtonText,
+                        Text = "optout",
+                    },
+                },
+            });
+
+            return actionList;
         }
     }
 }
