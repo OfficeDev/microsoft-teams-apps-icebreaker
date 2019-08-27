@@ -11,12 +11,18 @@ namespace Icebreaker.Helpers.AdaptiveCards
     using System.IO;
     using System.Web.Hosting;
     using Icebreaker.Properties;
+    using Microsoft.Bot.Connector.Teams.Models;
 
     /// <summary>
     /// Builder class for the pairup notification card
     /// </summary>
     public static class PairUpNotificationAdaptiveCard
     {
+        /// <summary>
+        /// Default marker string in the UPN that indicates a user is externally-authenticated
+        /// </summary>
+        private const string ExternallyAuthenticatedUpnMarker = "#ext#";
+
         private static readonly string CardTemplate;
 
         static PairUpNotificationAdaptiveCard()
@@ -28,30 +34,29 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <summary>
         /// Creates the pairup notification card.
         /// </summary>
-        /// <param name="teamName">Name of the team</param>
-        /// <param name="firstPersonName">Name of the matched person</param>
-        /// <param name="secondPersonName">First name of the matched person</param>
-        /// <param name="firstPersonFirstName">First name of the first person</param>
-        /// <param name="secondPersonFirstName">First name of the second person</param>
-        /// <param name="receiverName">Name of the receiver</param>
-        /// <param name="personUpn">UPN of the person</param>
-        /// <param name="botDisplayName">This is the display name of the bot that is set from the deployment</param>
+        /// <param name="teamName">The team name.</param>
+        /// <param name="sender">The user who will be sending this card.</param>
+        /// <param name="recipient">The user who will be receiving this card.</param>
+        /// <param name="botDisplayName">The bot display name.</param>
         /// <returns>Pairup notification card</returns>
-        public static string GetCard(string teamName, string firstPersonName, string secondPersonName, string firstPersonFirstName, string secondPersonFirstName, string receiverName, string personUpn, string botDisplayName)
+        public static string GetCard(string teamName, TeamsChannelAccount sender, TeamsChannelAccount recipient, string botDisplayName)
         {
-            var title = string.Format(Resources.MeetupTitle, firstPersonFirstName, secondPersonFirstName);
-            var escapedTitle = Uri.EscapeDataString(title);
+            // Guest users may not have their given name specified in AAD, so fall back to the full name if needed
+            var senderGivenName = string.IsNullOrEmpty(sender.GivenName) ? sender.Name : sender.GivenName;
+            var recipientGivenName = string.IsNullOrEmpty(recipient.GivenName) ? recipient.Name : recipient.GivenName;
 
-            var content = string.Format(Resources.MeetupContent, botDisplayName);
-            var escapedContent = Uri.EscapeDataString(content);
+            // To start a chat with a guest user, use their external email, not the UPN
+            var recipientUpn = !IsGuestUser(recipient) ? recipient.UserPrincipalName : recipient.Email;
 
-            var meetingLink = "https://teams.microsoft.com/l/meeting/new?subject=" + escapedTitle + "&attendees=" + personUpn + "&content=" + escapedContent;
+            var meetingTitle = string.Format(Resources.MeetupTitle, senderGivenName, recipientGivenName);
+            var meetingContent = string.Format(Resources.MeetupContent, botDisplayName);
+            var meetingLink = "https://teams.microsoft.com/l/meeting/new?subject=" + Uri.EscapeDataString(meetingTitle) + "&attendees=" + recipientUpn + "&content=" + Uri.EscapeDataString(meetingContent);
 
             var matchUpCardTitleContent = Resources.MatchUpCardTitleContent;
-            var matchUpCardMatchedText = string.Format(Resources.MatchUpCardMatchedText, firstPersonName);
-            var matchUpCardContentPart1 = string.Format(Resources.MatchUpCardContentPart1, botDisplayName, teamName, firstPersonName);
+            var matchUpCardMatchedText = string.Format(Resources.MatchUpCardMatchedText, recipient.Name);
+            var matchUpCardContentPart1 = string.Format(Resources.MatchUpCardContentPart1, botDisplayName, teamName, recipient.Name);
             var matchUpCardContentPart2 = Resources.MatchUpCardContentPart2;
-            var chatWithMatchButtonText = string.Format(Resources.ChatWithMatchButtonText, firstPersonFirstName);
+            var chatWithMatchButtonText = string.Format(Resources.ChatWithMatchButtonText, recipientGivenName);
             var pauseMatchesButtonText = Resources.PausePairingsButtonText;
             var proposeMeetupButtonText = Resources.ProposeMeetupButtonText;
 
@@ -65,7 +70,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 { "pauseMatchesButtonText", pauseMatchesButtonText },
                 { "proposeMeetupButtonText", proposeMeetupButtonText },
                 { "meetingLink", meetingLink },
-                { "personUpn", personUpn }
+                { "personUpn", recipientUpn }
             };
 
             var cardBody = CardTemplate;
@@ -75,6 +80,16 @@ namespace Icebreaker.Helpers.AdaptiveCards
             }
 
             return cardBody;
+        }
+
+        /// <summary>
+        /// Checks whether or not the account is a guest user.
+        /// </summary>
+        /// <param name="account">The <see cref="TeamsChannelAccount"/> user to check.</param>
+        /// <returns>True if the account is a guest user, false otherwise.</returns>
+        private static bool IsGuestUser(TeamsChannelAccount account)
+        {
+            return account.UserPrincipalName.IndexOf(ExternallyAuthenticatedUpnMarker, StringComparison.InvariantCultureIgnoreCase) >= 0;
         }
     }
 }
