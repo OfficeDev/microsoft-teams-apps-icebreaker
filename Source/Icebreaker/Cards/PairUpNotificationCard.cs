@@ -43,7 +43,7 @@ namespace Icebreaker.Cards
             var escapedContent = Uri.EscapeDataString(content);
 
             var isGuest = IsGuestUser(person2);
-            var personUpn = IsGuestUser(person2) ? person2.Email : person2.UserPrincipalName;
+            var personUpn = !IsGuestUser(person2) ? person2.UserPrincipalName : person2.Email;
             var meetingLink = "https://teams.microsoft.com/l/meeting/new?subject=" + escapedTitle + "&attendees=" + personUpn + "&content=" + escapedContent;
             var chatMessageLink = $"https://teams.microsoft.com/l/chat/0/0?users={personUpn}&message=Hi%20there%20";
 
