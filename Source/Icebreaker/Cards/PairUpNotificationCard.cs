@@ -108,7 +108,7 @@ namespace Icebreaker.Cards
                 Url = new Uri(chatLink),
             });
 
-            if (isGuestUser)
+            if (!isGuestUser)
             {
                 actionList.Add(new AdaptiveOpenUrlAction
                 {
