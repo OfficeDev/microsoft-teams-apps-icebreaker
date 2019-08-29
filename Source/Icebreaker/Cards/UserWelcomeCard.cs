@@ -22,17 +22,16 @@ namespace Icebreaker.Cards
         /// </summary>
         /// <returns>The attachment to append to a message.</returns>
         /// <param name="botInstaller">The user that installed the bot.</param>
-        /// <param name="botDisplayName">The bot display name.</param>
         /// <param name="teamName">The name of the team the bot has been installed to.</param>
-        public static Attachment GetCard(string botInstaller, string botDisplayName, string teamName)
+        public static Attachment GetCard(string botInstaller, string teamName)
         {
             var baseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain");
             var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
-            var tourTitle = Resources.WelcomeTourTitle;
 
             var welcomeCardImageUrl = $"https://{baseDomain}/Content/welcome-card-image.png";
             var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html?theme={{theme}}");
-            var tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}";
+            var escapedTourTitle = Uri.EscapeDataString(Resources.WelcomeTourTitle);
+            var escapedTourUrl = Uri.EscapeDataString($"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={escapedTourTitle}");
 
             AdaptiveCard userWelcomeCard = new AdaptiveCard("1.0")
             {
@@ -52,23 +51,23 @@ namespace Icebreaker.Cards
                     new AdaptiveTextBlock
                     {
                         Text = string.IsNullOrEmpty(botInstaller) ?
-                        string.Format(Resources.InstallMessageUnknownInstallerPart1, teamName) :
-                        string.Format(Resources.InstallMessageKnownInstallerPart1, botInstaller, teamName),
+                            string.Format(Resources.InstallMessageUnknownInstallerPart1, teamName) :
+                            string.Format(Resources.InstallMessageKnownInstallerPart1, botInstaller, teamName),
                         Wrap = true,
                     },
                     new AdaptiveTextBlock
                     {
                         Text = string.IsNullOrEmpty(botInstaller) ?
-                        Resources.InstallMessageUnknownInstallerPart2 :
-                        Resources.InstallMessageKnownInstallerPart2,
+                            Resources.InstallMessageUnknownInstallerPart2 :
+                            Resources.InstallMessageKnownInstallerPart2,
                         Wrap = true,
                         Spacing = AdaptiveSpacing.Small,
                     },
                     new AdaptiveTextBlock
                     {
                         Text = string.IsNullOrEmpty(botInstaller) ?
-                        Resources.InstallMessageUnknownInstallerPart3 :
-                        Resources.InstallMessageKnownInstallerPart3,
+                            Resources.InstallMessageUnknownInstallerPart3 :
+                            Resources.InstallMessageKnownInstallerPart3,
                         Wrap = true,
                         Spacing = AdaptiveSpacing.Small,
                     }
@@ -78,7 +77,7 @@ namespace Icebreaker.Cards
                     new AdaptiveOpenUrlAction
                     {
                         Title = Resources.TakeATourButtonText,
-                        Url = new Uri(tourUrl),
+                        Url = new Uri(escapedTourUrl),
                     },
                     new AdaptiveSubmitAction
                     {

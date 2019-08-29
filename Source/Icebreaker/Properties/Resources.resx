@@ -201,6 +201,10 @@
     <value>Take a tour</value>
     <comment>The text for the button which launches a tour when clicked</comment>
   </data>
+  <data name="UnknownErrorMessage" xml:space="preserve">
+    <value>Sorry, it looks like something went wrong.</value>
+    <comment>The message for the catch-all apology.</comment>
+  </data>
   <data name="UnrecognizedInput" xml:space="preserve">
     <value>I'm sorry, but I can't process the incoming message. You can take a tour, though, to learn more about my functionality.</value>
     <comment>The text for the unrecognized input scenario</comment>

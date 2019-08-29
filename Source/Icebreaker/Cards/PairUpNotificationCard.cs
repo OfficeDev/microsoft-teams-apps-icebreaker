@@ -22,30 +22,26 @@ namespace Icebreaker.Cards
         /// </summary>
         /// <returns>An attachment to append to a message.</returns>
         /// <param name="teamName">The team name.</param>
-        /// <param name="firstPerson">The first person in the pair up.</param>
-        /// <param name="secondPerson">The second person in the pair up.</param>
+        /// <param name="sender">The first person in the pair up.</param>
+        /// <param name="recipient">The second person in the pair up.</param>
         /// <param name="botDisplayName">The bot display name.</param>
         public static Attachment GetCard(
             string teamName,
-            ChannelAccount firstPerson,
-            ChannelAccount secondPerson,
+            TeamsChannelAccount sender,
+            TeamsChannelAccount recipient,
             string botDisplayName)
         {
-            var person1 = firstPerson.Properties.ToObject<TeamsChannelAccount>();
-            var person2 = secondPerson.Properties.ToObject<TeamsChannelAccount>();
-
-            var firstPersonFirstName = string.IsNullOrEmpty(person1.GivenName) ? firstPerson.Name : person1.GivenName;
-            var secondPersonFirstName = string.IsNullOrEmpty(person2.GivenName) ? secondPerson.Name : person2.GivenName;
-            var title = string.Format(Resources.MeetupTitle, firstPersonFirstName, secondPersonFirstName);
+            var senderGivenName = string.IsNullOrEmpty(sender.GivenName) ? sender.Name : sender.GivenName;
+            var recipientGivenName = string.IsNullOrEmpty(recipient.GivenName) ? recipient.Name : recipient.GivenName;
+            var title = string.Format(Resources.MeetupTitle, senderGivenName, recipientGivenName);
 
             var escapedTitle = Uri.EscapeDataString(title);
             var content = string.Format(Resources.MeetupContent, botDisplayName);
             var escapedContent = Uri.EscapeDataString(content);
 
-            var isGuest = IsGuestUser(person2);
-            var personUpn = !IsGuestUser(person2) ? person2.UserPrincipalName : person2.Email;
-            var meetingLink = "https://teams.microsoft.com/l/meeting/new?subject=" + escapedTitle + "&attendees=" + personUpn + "&content=" + escapedContent;
-            var chatMessageLink = $"https://teams.microsoft.com/l/chat/0/0?users={personUpn}&message=Hi%20there%20";
+            var recipientUpn = !IsGuestUser(recipient) ? recipient.UserPrincipalName : recipient.Email;
+            var meetingLink = Uri.EscapeDataString("https://teams.microsoft.com/l/meeting/new?subject=" + escapedTitle + "&attendees=" + recipientUpn + "&content=" + escapedContent);
+            var chatMessageLink = Uri.EscapeDataString($"https://teams.microsoft.com/l/chat/0/0?users={recipientUpn}&message=Hi%20there%20");
 
             AdaptiveCard pairUpCard = new AdaptiveCard("1.0")
             {
@@ -62,15 +58,15 @@ namespace Icebreaker.Cards
                     new AdaptiveTextBlock
                     {
                         Wrap = true,
-                        Text = string.Format(Resources.MatchUpCardMatchedText, secondPerson.Name),
+                        Text = string.Format(Resources.MatchUpCardMatchedText, recipient.Name),
                     },
                     new AdaptiveTextBlock
                     {
                         Wrap = true,
-                        Text = string.Format(Resources.MatchUpCardContentPart1, botDisplayName, teamName, secondPerson.Name),
+                        Text = string.Format(Resources.MatchUpCardContentPart1, botDisplayName, teamName, recipient.Name),
                     },
                 },
-                Actions = BuildActionList(isGuest, chatMessageLink, secondPersonFirstName, meetingLink),
+                Actions = BuildActionList(IsGuestUser(recipient), chatMessageLink, recipientGivenName, meetingLink),
             };
 
             return new Attachment

@@ -291,7 +291,7 @@ namespace Icebreaker.Bots
                 };
                 await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
 
-                var teamWelcomeCardAttachment = WelcomeTeamCard.GetCard(teamDetails.Team.Name, activity.From?.Name, personThatAddedBot);
+                var teamWelcomeCardAttachment = WelcomeTeamCard.GetCard(teamDetails.Team.Name, personThatAddedBot);
                 await turnContext.SendActivityAsync(MessageFactory.Attachment(teamWelcomeCardAttachment));
             }
             else
@@ -305,7 +305,6 @@ namespace Icebreaker.Bots
                     teamDetails.Team.Id,
                     teamDetails.Tenant.Id,
                     turnContext.Activity.Recipient.Id,
-                    botDisplayName,
                     cancellationToken);
             }
         }
@@ -423,7 +422,6 @@ namespace Icebreaker.Bots
         /// <param name="teamId">The teamID.</param>
         /// <param name="tenantId">The tenantID.</param>
         /// <param name="botId">The botID.</param>
-        /// <param name="botDisplayName">The bot display name.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A unit of execution.</returns>
         private async Task SendUserWelcomeMessage(
@@ -433,7 +431,6 @@ namespace Icebreaker.Bots
             string teamId,
             string tenantId,
             string botId,
-            string botDisplayName,
             CancellationToken cancellationToken)
         {
             try
@@ -454,7 +451,7 @@ namespace Icebreaker.Bots
                 if (userThatJustJoined != null)
                 {
                     var installedTeam = await this.dataProvider.GetInstalledTeamAsync(teamId);
-                    var userWelcomeCard = UserWelcomeCard.GetCard(installedTeam.InstallerName, botDisplayName, teamName);
+                    var userWelcomeCard = UserWelcomeCard.GetCard(installedTeam.InstallerName, teamName);
                     await this.NotifyUser(
                         connectorClient,
                         userThatJustJoined,
@@ -582,11 +579,11 @@ namespace Icebreaker.Bots
             var teamsPerson2 = pair.Item2;
 
             // Fill in person2's info in the card for person1
-            var cardForPerson1 = PairUpNotificationCard.GetCard(teamName, teamsPerson2, teamsPerson1, this.botDisplayName);
+            var cardForPerson1 = PairUpNotificationCard.GetCard(teamName, teamsPerson2.Properties.ToObject<TeamsChannelAccount>(), teamsPerson1.Properties.ToObject<TeamsChannelAccount>(), this.botDisplayName);
 
             // Fill in person1's info in the card for person2
             // var cardForPerson2 = PairUpNotificationCard.GetCard(teamName, teamsPerson1.Name, teamsPerson2.Name, teamsPerson1.GivenName, teamsPerson2.GivenName, teamsPerson2.GivenName, teamsPerson1.UserPrincipalName, this.botDisplayName);
-            var cardForPerson2 = PairUpNotificationCard.GetCard(teamName, teamsPerson1, teamsPerson2, this.botDisplayName);
+            var cardForPerson2 = PairUpNotificationCard.GetCard(teamName, teamsPerson1.Properties.ToObject<TeamsChannelAccount>(), teamsPerson2.Properties.ToObject<TeamsChannelAccount>(), this.botDisplayName);
 
             // Send notifications and return the number that was successful
             var notifyResults = await Task.WhenAll(

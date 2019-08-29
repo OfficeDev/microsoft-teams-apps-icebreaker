@@ -7,7 +7,6 @@ namespace Icebreaker
     using System.Reflection;
     using System.Web.Http;
     using Autofac;
-    using Autofac.Integration.Mvc;
     using Autofac.Integration.WebApi;
     using Icebreaker.Bots;
     using Icebreaker.Helpers;
@@ -49,14 +48,11 @@ namespace Icebreaker
                 return new MicrosoftAppCredentials(CloudConfigurationManager.GetSetting("MicrosoftAppId"), CloudConfigurationManager.GetSetting("MicrosoftAppPassword"));
             }).SingleInstance();
 
-            builder.RegisterControllers(Assembly.GetExecutingAssembly());
-            builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
-
             builder.RegisterType<ConfigurationCredentialProvider>().As<ICredentialProvider>().SingleInstance();
-            builder.RegisterType<AdapterWithErrorHandler>().As<IBotFrameworkHttpAdapter>();
-
-            builder.RegisterModule(new IcebreakerModule());
+            builder.RegisterType<AdapterWithErrorHandler>().As<IBotFrameworkHttpAdapter>().SingleInstance();
+            builder.RegisterType<IcebreakerBotDataProvider>().SingleInstance();
             builder.RegisterType<IcebreakerBot>().As<IBot>().SingleInstance();
+            builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
 
             var container = builder.Build();
             GlobalConfiguration.Configuration.DependencyResolver = new AutofacWebApiDependencyResolver(container);

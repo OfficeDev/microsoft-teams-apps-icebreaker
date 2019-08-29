@@ -23,11 +23,12 @@ namespace Icebreaker.Cards
         public static Attachment GetCard()
         {
             var baseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain");
-            var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html?theme={{theme}}");
             var tourTitle = Resources.WelcomeTourTitle;
             var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
-            var tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}";
-            var tourButtonText = Resources.TakeATourButtonText;
+
+            var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html?theme={{theme}}");
+            var escapedTourTitle = Uri.EscapeDataString(tourTitle);
+            var escapedTourUrl = Uri.EscapeDataString($"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={escapedTourTitle}");
 
             AdaptiveCard unrecognizedInputCard = new AdaptiveCard("1.0")
             {
@@ -44,7 +45,7 @@ namespace Icebreaker.Cards
                     new AdaptiveOpenUrlAction
                     {
                         Title = Resources.TakeATourButtonText,
-                        Url = new Uri(tourUrl),
+                        Url = new Uri(escapedTourUrl),
                     },
                 },
             };
