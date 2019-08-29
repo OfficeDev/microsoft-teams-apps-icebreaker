@@ -32,7 +32,7 @@ namespace Icebreaker.Cards
 
             var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html?theme={{theme}}");
             var escapedTourTitle = Uri.EscapeDataString(Resources.WelcomeTourTitle);
-            var escapedTourUrl = Uri.EscapeDataString($"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={escapedTourTitle}"); ;
+            var escapedTourUrl = Uri.EscapeDataString($"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={escapedTourTitle}");
 
             AdaptiveCard teamWelcomeCard = new AdaptiveCard("1.0")
             {
