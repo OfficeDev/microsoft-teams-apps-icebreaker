@@ -27,21 +27,25 @@ namespace Icebreaker.Cards
         /// <param name="botDisplayName">The bot display name.</param>
         public static Attachment GetCard(
             string teamName,
-            TeamsChannelAccount sender,
-            TeamsChannelAccount recipient,
+            ChannelAccount sender,
+            ChannelAccount recipient,
             string botDisplayName)
         {
-            var senderGivenName = string.IsNullOrEmpty(sender.GivenName) ? sender.Name : sender.GivenName;
-            var recipientGivenName = string.IsNullOrEmpty(recipient.GivenName) ? recipient.Name : recipient.GivenName;
+            var senderGivenName = string.IsNullOrEmpty(sender.Properties.ToObject<TeamsChannelAccount>().GivenName) ?
+                sender.Name : sender.Properties.ToObject<TeamsChannelAccount>().GivenName;
+            var recipientGivenName = string.IsNullOrEmpty(recipient.Properties.ToObject<TeamsChannelAccount>().GivenName) ?
+                recipient.Name : recipient.Properties.ToObject<TeamsChannelAccount>().GivenName;
             var title = string.Format(Resources.MeetupTitle, senderGivenName, recipientGivenName);
 
             var escapedTitle = Uri.EscapeDataString(title);
             var content = string.Format(Resources.MeetupContent, botDisplayName);
             var escapedContent = Uri.EscapeDataString(content);
 
-            var recipientUpn = !IsGuestUser(recipient) ? recipient.UserPrincipalName : recipient.Email;
-            var meetingLink = Uri.EscapeDataString("https://teams.microsoft.com/l/meeting/new?subject=" + escapedTitle + "&attendees=" + recipientUpn + "&content=" + escapedContent);
-            var chatMessageLink = Uri.EscapeDataString($"https://teams.microsoft.com/l/chat/0/0?users={recipientUpn}&message=Hi%20there%20");
+            var recipientUpn = !IsGuestUser(recipient.Properties.ToObject<TeamsChannelAccount>()) ?
+                recipient.Properties.ToObject<TeamsChannelAccount>().UserPrincipalName :
+                recipient.Properties.ToObject<TeamsChannelAccount>().Email;
+            var meetingLink = $"https://teams.microsoft.com/l/meeting/new?subject=" + escapedTitle + "&attendees=" + recipientUpn + "&content=" + escapedContent;
+            var chatMessageLink = $"https://teams.microsoft.com/l/chat/0/0?users={recipientUpn}&message=Hi%20there%20";
 
             AdaptiveCard pairUpCard = new AdaptiveCard("1.0")
             {
@@ -66,7 +70,11 @@ namespace Icebreaker.Cards
                         Text = string.Format(Resources.MatchUpCardContentPart1, botDisplayName, teamName, recipient.Name),
                     },
                 },
-                Actions = BuildActionList(IsGuestUser(recipient), chatMessageLink, recipientGivenName, meetingLink),
+                Actions = BuildActionList(
+                    IsGuestUser(recipient.Properties.ToObject<TeamsChannelAccount>()),
+                    chatMessageLink,
+                    recipientGivenName,
+                    meetingLink),
             };
 
             return new Attachment
@@ -94,7 +102,11 @@ namespace Icebreaker.Cards
         /// <param name="receiverName">The receiver name.</param>
         /// <param name="meetingLink">The meeting link for proposing a meetup.</param>
         /// <returns>A list of actions.</returns>
-        private static List<AdaptiveAction> BuildActionList(bool isGuestUser, string chatLink, string receiverName, string meetingLink)
+        private static List<AdaptiveAction> BuildActionList(
+            bool isGuestUser,
+            string chatLink,
+            string receiverName,
+            string meetingLink)
         {
             var actionList = new List<AdaptiveAction>();
 
