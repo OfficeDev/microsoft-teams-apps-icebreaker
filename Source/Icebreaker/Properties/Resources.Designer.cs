@@ -19,7 +19,7 @@ namespace Icebreaker.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -75,6 +75,15 @@ namespace Icebreaker.Properties {
         internal static string ErrorOccured {
             get {
                 return ResourceManager.GetString("ErrorOccured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hi there.
+        /// </summary>
+        internal static string HiThereChatMessageText {
+            get {
+                return ResourceManager.GetString("HiThereChatMessageText", resourceCulture);
             }
         }
         
@@ -246,6 +255,15 @@ namespace Icebreaker.Properties {
         internal static string TakeATourButtonText {
             get {
                 return ResourceManager.GetString("TakeATourButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sorry, it looks like something went wrong..
+        /// </summary>
+        internal static string UnknownErrorMessage {
+            get {
+                return ResourceManager.GetString("UnknownErrorMessage", resourceCulture);
             }
         }
         
