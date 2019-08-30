@@ -14,14 +14,6 @@ namespace Icebreaker
     {
         protected void Application_Start()
         {
-            // Conversation.UpdateContainer(
-            //   builder =>
-            //   {
-            //       builder.RegisterModule(new IcebreakerModule());
-            //
-            //       builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
-            //       builder.RegisterWebApiFilterProvider(GlobalConfiguration.Configuration);
-            //   });
             AutofacConfig.RegisterDependencies();
             GlobalConfiguration.Configure(WebApiConfig.Register);
         }
