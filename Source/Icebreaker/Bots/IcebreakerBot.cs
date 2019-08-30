@@ -20,7 +20,6 @@ namespace Icebreaker.Bots
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Connector;
     using Microsoft.Bot.Connector.Authentication;
-    using Microsoft.Bot.Connector.Teams;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
     using Newtonsoft.Json.Linq;
@@ -575,14 +574,13 @@ namespace Icebreaker.Bots
             CancellationToken cancellationToken = default;
             this.telemetryClient.TrackTrace($"Sending pairup notification to {pair.Item1.Id} and {pair.Item2.Id}");
 
-            var teamsPerson1 = pair.Item1;
-            var teamsPerson2 = pair.Item2;
+            var teamsPerson1 = JObject.FromObject(pair.Item1).ToObject<TeamsChannelAccount>();
+            var teamsPerson2 = JObject.FromObject(pair.Item2).ToObject<TeamsChannelAccount>();
 
             // Fill in person2's info in the card for person1
             var cardForPerson1 = PairUpNotificationCard.GetCard(teamName, teamsPerson2, teamsPerson1, this.botDisplayName);
 
             // Fill in person1's info in the card for person2
-            // var cardForPerson2 = PairUpNotificationCard.GetCard(teamName, teamsPerson1.Name, teamsPerson2.Name, teamsPerson1.GivenName, teamsPerson2.GivenName, teamsPerson2.GivenName, teamsPerson1.UserPrincipalName, this.botDisplayName);
             var cardForPerson2 = PairUpNotificationCard.GetCard(teamName, teamsPerson1, teamsPerson2, this.botDisplayName);
 
             // Send notifications and return the number that was successful

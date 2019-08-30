@@ -28,7 +28,7 @@ namespace Icebreaker.Cards
 
             var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html?theme={{theme}}");
             var escapedTourTitle = Uri.EscapeDataString(tourTitle);
-            var escapedTourUrl = Uri.EscapeDataString($"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={escapedTourTitle}");
+            var tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={escapedTourTitle}";
 
             AdaptiveCard unrecognizedInputCard = new AdaptiveCard("1.0")
             {
@@ -45,7 +45,7 @@ namespace Icebreaker.Cards
                     new AdaptiveOpenUrlAction
                     {
                         Title = Resources.TakeATourButtonText,
-                        Url = new Uri(escapedTourUrl),
+                        Url = new Uri(tourUrl),
                     },
                 },
             };

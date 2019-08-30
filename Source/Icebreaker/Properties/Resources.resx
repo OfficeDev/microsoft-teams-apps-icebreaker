@@ -125,6 +125,10 @@
     <value>There was an error while processing request. Retry?</value>
     <comment>A generic message that is sent when there is an error occurring</comment>
   </data>
+  <data name="HiThereChatMessageText" xml:space="preserve">
+    <value>Hi there</value>
+    <comment>When a user clicks on the "Chat with x" button, this text will be prefilled inside of the compose box.</comment>
+  </data>
   <data name="InstallMessageKnownInstallerPart1" xml:space="preserve">
     <value>If you're reading this, it's most likely because {0} added me to the **{1} Team.**</value>
     <comment>Install message and also the welcome message when the app installer is known - {0} is the placeholder for the name of the user that has installed the app to the team, and {1} is the placeholder for the name of the team that the app has been installed to</comment>

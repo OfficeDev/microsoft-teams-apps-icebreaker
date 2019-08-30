@@ -27,25 +27,22 @@ namespace Icebreaker.Cards
         /// <param name="botDisplayName">The bot display name.</param>
         public static Attachment GetCard(
             string teamName,
-            ChannelAccount sender,
-            ChannelAccount recipient,
+            TeamsChannelAccount sender,
+            TeamsChannelAccount recipient,
             string botDisplayName)
         {
-            var senderGivenName = string.IsNullOrEmpty(sender.Properties.ToObject<TeamsChannelAccount>().GivenName) ?
-                sender.Name : sender.Properties.ToObject<TeamsChannelAccount>().GivenName;
-            var recipientGivenName = string.IsNullOrEmpty(recipient.Properties.ToObject<TeamsChannelAccount>().GivenName) ?
-                recipient.Name : recipient.Properties.ToObject<TeamsChannelAccount>().GivenName;
+            var senderGivenName = string.IsNullOrEmpty(sender.GivenName) ? sender.Name : sender.GivenName;
+            var recipientGivenName = string.IsNullOrEmpty(recipient.GivenName) ? recipient.Name : recipient.GivenName;
             var title = string.Format(Resources.MeetupTitle, senderGivenName, recipientGivenName);
 
             var escapedTitle = Uri.EscapeDataString(title);
             var content = string.Format(Resources.MeetupContent, botDisplayName);
             var escapedContent = Uri.EscapeDataString(content);
+            var escapedChatMessageContent = Uri.EscapeDataString(Resources.HiThereChatMessageText);
 
-            var recipientUpn = !IsGuestUser(recipient.Properties.ToObject<TeamsChannelAccount>()) ?
-                recipient.Properties.ToObject<TeamsChannelAccount>().UserPrincipalName :
-                recipient.Properties.ToObject<TeamsChannelAccount>().Email;
+            var recipientUpn = !IsGuestUser(recipient) ? recipient.UserPrincipalName : recipient.Email;
             var meetingLink = $"https://teams.microsoft.com/l/meeting/new?subject=" + escapedTitle + "&attendees=" + recipientUpn + "&content=" + escapedContent;
-            var chatMessageLink = $"https://teams.microsoft.com/l/chat/0/0?users={recipientUpn}&message=Hi%20there%20";
+            var chatMessageLink = $"https://teams.microsoft.com/l/chat/0/0?users={recipientUpn}&message={escapedChatMessageContent}";
 
             AdaptiveCard pairUpCard = new AdaptiveCard("1.0")
             {

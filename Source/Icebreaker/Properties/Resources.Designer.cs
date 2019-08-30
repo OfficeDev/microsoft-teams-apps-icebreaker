@@ -79,6 +79,15 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hi there.
+        /// </summary>
+        internal static string HiThereChatMessageText {
+            get {
+                return ResourceManager.GetString("HiThereChatMessageText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to If you&apos;re reading this, it&apos;s most likely because {0} added me to the **{1} Team.**.
         /// </summary>
         internal static string InstallMessageKnownInstallerPart1 {
