@@ -9,7 +9,6 @@ namespace Icebreaker.Controllers
     using System.Threading.Tasks;
     using System.Web.Hosting;
     using System.Web.Http;
-    using Microsoft.ApplicationInsights;
     using Microsoft.Azure;
     using Microsoft.Bot.Connector;
 
