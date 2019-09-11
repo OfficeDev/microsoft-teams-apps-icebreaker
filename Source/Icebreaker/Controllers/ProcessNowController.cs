@@ -19,19 +19,16 @@ namespace Icebreaker.Controllers
     public class ProcessNowController : ApiController
     {
         private readonly IcebreakerBot bot;
-        private readonly TelemetryClient telemetryClient;
         private readonly MicrosoftAppCredentials botCredentials;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProcessNowController"/> class.
         /// </summary>
         /// <param name="bot">The Icebreaker bot instance</param>
-        /// <param name="telemetryClient">The telemetry client to use</param>
         /// <param name="botCredentials">The bot AAD credentials</param>
-        public ProcessNowController(IcebreakerBot bot, TelemetryClient telemetryClient, MicrosoftAppCredentials botCredentials)
+        public ProcessNowController(IcebreakerBot bot, MicrosoftAppCredentials botCredentials)
         {
             this.bot = bot;
-            this.telemetryClient = telemetryClient;
             this.botCredentials = botCredentials;
         }
 
