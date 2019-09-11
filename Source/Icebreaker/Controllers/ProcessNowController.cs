@@ -11,6 +11,7 @@ namespace Icebreaker.Controllers
     using System.Web.Http;
     using Microsoft.ApplicationInsights;
     using Microsoft.Azure;
+    using Microsoft.Bot.Connector;
 
     /// <summary>
     /// API controller to process matches.
@@ -19,16 +20,19 @@ namespace Icebreaker.Controllers
     {
         private readonly IcebreakerBot bot;
         private readonly TelemetryClient telemetryClient;
+        private readonly MicrosoftAppCredentials botCredentials;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProcessNowController"/> class.
         /// </summary>
         /// <param name="bot">The Icebreaker bot instance</param>
         /// <param name="telemetryClient">The telemetry client to use</param>
-        public ProcessNowController(IcebreakerBot bot, TelemetryClient telemetryClient)
+        /// <param name="botCredentials">The bot AAD credentials</param>
+        public ProcessNowController(IcebreakerBot bot, TelemetryClient telemetryClient, MicrosoftAppCredentials botCredentials)
         {
             this.bot = bot;
             this.telemetryClient = telemetryClient;
+            this.botCredentials = botCredentials;
         }
 
         /// <summary>
@@ -37,11 +41,15 @@ namespace Icebreaker.Controllers
         /// <param name="key">API key</param>
         /// <returns>Success (1) or failure (-1) code</returns>
         [Route("api/processnow/{key}")]
-        public IHttpActionResult Get([FromUri]string key)
+        public async Task<IHttpActionResult> Get([FromUri]string key)
         {
             var isKeyMatch = object.Equals(key, CloudConfigurationManager.GetSetting("Key"));
             if (isKeyMatch)
             {
+                // Get the token here to proactively trigger a refresh if the cached token is expired
+                // This avoids a race condition in MicrosoftAppCredentials.GetTokenAsync that can lead it to return an expired token
+                await this.botCredentials.GetTokenAsync();
+
                 HostingEnvironment.QueueBackgroundWorkItem(ct => this.MakePairs());
                 return this.StatusCode(System.Net.HttpStatusCode.OK);
             }
