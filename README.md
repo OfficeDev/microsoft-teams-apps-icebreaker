@@ -11,7 +11,7 @@ Icebreaker works really well for cultivating small, interest-based communities w
 
 ## Legal notice
 
-Please read the license terms applicable to this app template [here](https://github.com/OfficeDev/microsoft-teams-apps-incentives/blob/master/LICENSE). In addition to these terms, by using this app template you agree to the following:
+Please read the license terms applicable to this app template [here](https://github.com/OfficeDev/microsoft-teams-icebreaker-app/blob/master/LICENSE). In addition to these terms, by using this app template you agree to the following:
 
 * You are responsible for complying with applicable privacy and security regulations related to use, collection and handling of any personal data by your app.  This includes complying with all internal privacy and security policies of your organization if your app is developed to be sideloaded internally within your organization.
 
