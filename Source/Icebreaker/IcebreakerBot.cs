@@ -418,6 +418,12 @@ namespace Icebreaker
             LinkedList<ChannelAccount> queue = new LinkedList<ChannelAccount>(users);
             var pairs = new List<Tuple<ChannelAccount, ChannelAccount>>();
 
+            /*
+             * The idea of the following matching algorithm is as follows:
+             * Pick first user X from queue.
+             * Find in FIFO manner from the rest of the queue the first user Y such that X and Y have not been "recently paired".
+             * If no such perfect pairing is possible, match with next user in queue.
+             */
             while (queue.Count > 0)
             {
                 ChannelAccount pairUserOne = queue.First.Value;
@@ -456,6 +462,11 @@ namespace Icebreaker
             return pairs;
         }
 
+        /// <summary>
+        /// This method serves to update the pair's respective "RecentlyPaired" fields with each other.
+        /// </summary>
+        /// <param name="userOneInfo">UserInfo of the first user in pair</param>
+        /// <param name="userTwoInfo">UserInfo of the second user in pair</param>
         private async void UpdateUserRecentlyPairedAsync(UserInfo userOneInfo, UserInfo userTwoInfo)
         {
             int maxRecentPairsToSave = 3;
@@ -477,6 +488,12 @@ namespace Icebreaker
             await this.dataProvider.SetUserInfoAsync(userTwoInfo.TenantId, userTwoInfo.UserId, userTwoInfo.OptedIn, userTwoInfo.ServiceUrl, userTwoInfo.RecentPairUps);
         }
 
+        /// <summary>
+        /// This method returns True if UserOne in pair was not 'recently matched' with UserTwo
+        /// </summary>
+        /// <param name="userOneInfo">UserInfo of the first user in pair</param>
+        /// <param name="userTwoInfo">UserInfo of the second user in pair</param>
+        /// <returns>True if users were NOT paired recently</returns>
         private bool SamePairNotCreatedRecently(UserInfo userOneInfo, UserInfo userTwoInfo)
         {
             foreach (UserInfo userTwoRecentPair in userTwoInfo.RecentPairUps)
