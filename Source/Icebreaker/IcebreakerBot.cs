@@ -29,6 +29,7 @@ namespace Icebreaker
         private readonly IcebreakerBotDataProvider dataProvider;
         private readonly TelemetryClient telemetryClient;
         private readonly int maxPairUpsPerTeam;
+        private readonly int maxRecentPairUpsToPersistPerUser;
         private readonly string botDisplayName;
         private readonly string botId;
         private readonly bool isTesting;
@@ -43,6 +44,7 @@ namespace Icebreaker
             this.dataProvider = dataProvider;
             this.telemetryClient = telemetryClient;
             this.maxPairUpsPerTeam = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"));
+            this.maxRecentPairUpsToPersistPerUser = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxRecentPairUpsToPersistPerUser"));
             this.botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
             this.botId = CloudConfigurationManager.GetSetting("MicrosoftAppId");
             this.isTesting = Convert.ToBoolean(CloudConfigurationManager.GetSetting("Testing"));
@@ -482,14 +484,12 @@ namespace Icebreaker
         /// <param name="userTwoInfo">UserInfo of the second user in pair</param>
         private async void UpdateUserRecentlyPairedAsync(UserInfo userOneInfo, UserInfo userTwoInfo)
         {
-            int maxRecentPairsToSave = 3;
-
-            if (userOneInfo.RecentPairUps.Count == maxRecentPairsToSave)
+            if (userOneInfo.RecentPairUps.Count == this.maxRecentPairUpsToPersistPerUser)
             {
                 userOneInfo.RecentPairUps.RemoveAt(0);
             }
 
-            if (userTwoInfo.RecentPairUps.Count == maxRecentPairsToSave)
+            if (userTwoInfo.RecentPairUps.Count == this.maxRecentPairUpsToPersistPerUser)
             {
                 userTwoInfo.RecentPairUps.RemoveAt(0);
             }
