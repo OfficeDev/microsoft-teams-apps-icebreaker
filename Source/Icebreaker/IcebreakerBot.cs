@@ -7,6 +7,7 @@
 namespace Icebreaker
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -435,9 +436,21 @@ namespace Icebreaker
                 for (LinkedListNode<ChannelAccount> restOfQueue = queue.First; restOfQueue != null; restOfQueue = restOfQueue.Next)
                 {
                     pairUserTwo = restOfQueue.Value;
-                    UserInfo pairUserOneInfo = this.dataProvider.GetUserInfoAsync(pairUserOne.AsTeamsChannelAccount().ObjectId).Result;
-                    UserInfo pairUserTwoInfo = this.dataProvider.GetUserInfoAsync(pairUserTwo.AsTeamsChannelAccount().ObjectId).Result;
+                    UserInfo pairUserOneInfo = this.dataProvider.GetUserInfoAsync(pairUserOne.AsTeamsChannelAccount().ObjectId)?.Result;
+                    UserInfo pairUserTwoInfo = this.dataProvider.GetUserInfoAsync(pairUserTwo.AsTeamsChannelAccount().ObjectId)?.Result;
 
+                    // if no recent pairups, create this list
+                    if (pairUserOneInfo?.RecentPairUps == null)
+                    {
+                        pairUserOneInfo.RecentPairUps = new List<UserInfo>();
+                    }
+
+                    if (pairUserTwoInfo?.RecentPairUps == null)
+                    {
+                        pairUserTwoInfo.RecentPairUps = new List<UserInfo>();
+                    }
+
+                    // check if userone and usertwo have already paired recently
                     if (this.SamePairNotCreatedRecently(pairUserOneInfo, pairUserTwoInfo))
                     {
                         pairs.Add(new Tuple<ChannelAccount, ChannelAccount>(pairUserOne, pairUserTwo));
@@ -496,6 +509,11 @@ namespace Icebreaker
         /// <returns>True if users were NOT paired recently</returns>
         private bool SamePairNotCreatedRecently(UserInfo userOneInfo, UserInfo userTwoInfo)
         {
+            if (userOneInfo == null || userTwoInfo == null)
+            {
+                return false;
+            }
+
             foreach (UserInfo userTwoRecentPair in userTwoInfo.RecentPairUps)
             {
                 if (userOneInfo.RecentPairUps.Contains(userTwoRecentPair))
