@@ -51,25 +51,33 @@ namespace Icebreaker.Helpers.AdaptiveCards
             var meetingTitle = string.Format(Resources.MeetupTitle, senderGivenName, recipientGivenName);
             var meetingContent = string.Format(Resources.MeetupContent, botDisplayName);
             var meetingLink = "https://teams.microsoft.com/l/meeting/new?subject=" + Uri.EscapeDataString(meetingTitle) + "&attendees=" + recipientUpn + "&content=" + Uri.EscapeDataString(meetingContent);
+            var meetingLink2 = "https://outlook.office.com/calendar/view/day";
 
             var matchUpCardTitleContent = Resources.MatchUpCardTitleContent;
+            var matchUpCardTitleContent2 = Resources.MatchUpCardTitleContent;
+            var cardMeetupUrl = $"https://{baseDomain}/Content/card-meetup.png";
             var matchUpCardMatchedText = string.Format(Resources.MatchUpCardMatchedText, recipient.Name);
             var matchUpCardContentPart1 = string.Format(Resources.MatchUpCardContentPart1, botDisplayName, teamName, recipient.Name);
             var matchUpCardContentPart2 = Resources.MatchUpCardContentPart2;
             var chatWithMatchButtonText = string.Format(Resources.ChatWithMatchButtonText, recipientGivenName);
             var pauseMatchesButtonText = Resources.PausePairingsButtonText;
             var proposeMeetupButtonText = Resources.ProposeMeetupButtonText;
+            var proposeMeetupButtonText2 = Resources.ProposeMeetupButtonText;
 
             var variablesToValues = new Dictionary<string, string>()
             {
                 { "matchUpCardTitleContent", matchUpCardTitleContent },
+                { "matchUpCardTitleContent2", matchUpCardTitleContent2 },
+                { "cardMeedupUrl", cardMeetupUrl },
                 { "matchUpCardMatchedText", matchUpCardMatchedText },
                 { "matchUpCardContentPart1", matchUpCardContentPart1 },
                 { "matchUpCardContentPart2", matchUpCardContentPart2 },
                 { "chatWithMatchButtonText", chatWithMatchButtonText },
                 { "pauseMatchesButtonText", pauseMatchesButtonText },
                 { "proposeMeetupButtonText", proposeMeetupButtonText },
+                { "proposeMeetupButtonText2", proposeMeetupButtonText2 },
                 { "meetingLink", meetingLink },
+                { "meetingLink2", meetingLink2 },
                 { "personUpn", recipientUpn }
             };
 
