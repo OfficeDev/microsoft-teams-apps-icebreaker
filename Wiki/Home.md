@@ -10,8 +10,13 @@ A lot of good things in life come about through just happenstance. Icebreaker en
     * [Data stores](Data-stores)
     * [Telemetry](Telemetry)
     * [Cost estimate](Cost-estimate)
+* Running Local
+    
 * Deploying the app
     * [Deployment guide](Deployment-guide)
     * [Troubleshooting](Troubleshooting)
 * [Best practices](Best-practices-when-using-Icebreaker)
-* [Extending Icebreaker](Taking-it-further)
+* Extending Icebreaker
+    * [Run solution on local machine](Run-local)
+    * [Extending Icebreaker features](Taking-it-further)
+
