@@ -182,7 +182,7 @@
         "appServiceBaseDomain": "[concat(variables('appServiceName'), '.azurewebsites.net')]",
         "appServiceBaseUrl": "[concat('https://', variables('appServiceBaseDomain'))]",
         "botMessagingUrl": "[concat(variables('appServiceBaseUrl'), '/api/messages')]",
-        "pairingStartUrl": "[concat(variables('appServiceBaseUrl'), '/api/processnow/', parameters('pairingStartKey'))]",
+        "pairingStartUrl": "[concat(variables('appServiceBaseUrl'), '/api/processnow')]",
         "pairingFrequency": "Week",
         "pairingMinute": 0,
         "manifestAppId": "d55d08d9-bacb-4567-942f-afd85d632dcc"
@@ -424,7 +424,10 @@
                             "type": "Http",
                             "inputs": {
                                 "method": "GET",
-                                "uri": "[variables('pairingStartUrl')]"
+                                "uri": "[variables('pairingStartUrl')]",
+                                "headers": {
+                                    "X-Key": "[parameters('pairingStartKey')]"
+                                }
                             }
                         }
                     },

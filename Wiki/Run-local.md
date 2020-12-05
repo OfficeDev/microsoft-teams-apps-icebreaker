@@ -99,7 +99,18 @@ This bot has been created using [Bot Framework](https://dev.botframework.com).
 
 ## Interacting with the bot in Teams
 
-> Note: After installing the bot in a team. You can trigger the matching algorithm manually from the browser by going to `http://localhost:3979/api/processnow/19c6e180-0c37-4056-bbf7-11810f6f9305`.
+> Note: After installing the bot in a team. You can trigger the matching algorithm manually from PostMan or Curl.
+
+Curl tool:
+`curl --header "X-Key: 19c6e180-0c37-4056-bbf7-11810f6f9305" http://localhost:3979/api/processnow/`
+
+Powershell: 
+`curl -H @{"X-Key" = "19c6e180-0c37-4056-bbf7-11810f6f9305"} http://localhost:3979/api/processnow`
+
+![Curl-Powershell: workflow execution](images/curl-workflow-execution.png)
+
+Postman:
+![Postman: workflow execution](images/postman-workflow-execution.png)
 
 > Once the match is done, the bot will send messages to matched pairs to plan their meeting.
 ![Bot matching message](images/bot-matching-message.png)
