@@ -8,6 +8,7 @@ namespace Icebreaker.Helpers
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;
@@ -128,6 +129,51 @@ namespace Icebreaker.Helpers
             {
                 var documentUri = UriFactory.CreateDocumentUri(this.database.Id, this.usersCollection.Id, userId);
                 return await this.documentClient.ReadDocumentAsync<UserInfo>(documentUri, new RequestOptions { PartitionKey = new PartitionKey(userId) });
+            }
+            catch (Exception ex)
+            {
+                this.telemetryClient.TrackException(ex.InnerException);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get the stored information about given users
+        /// </summary>
+        /// <returns>User information</returns>
+        public async Task<Dictionary<string, bool>> GetAllUsersOptInStatusAsync()
+        {
+            await this.EnsureInitializedAsync();
+
+            try
+            {
+                var collectionLink = UriFactory.CreateDocumentCollectionUri(this.database.Id, this.usersCollection.Id);
+                var query = this.documentClient.CreateDocumentQuery<UserInfo>(
+                        collectionLink,
+                        new FeedOptions
+                        {
+                            EnableCrossPartitionQuery = true,
+
+                            // Fetch items in bulk according to DB engine capability
+                            MaxItemCount = -1,
+
+                            // Max partition to query at a time
+                            MaxDegreeOfParallelism = -1
+                        })
+                    .Select(u => new UserInfo { Id = u.Id, OptedIn = u.OptedIn })
+                    .AsDocumentQuery();
+                var usersOptInStatusLookup = new Dictionary<string, bool>();
+                while (query.HasMoreResults)
+                {
+                    // Note that ExecuteNextAsync can return many records in each call
+                    var responseBatch = await query.ExecuteNextAsync<UserInfo>();
+                    foreach (var userInfo in responseBatch)
+                    {
+                        usersOptInStatusLookup.Add(userInfo.Id, userInfo.OptedIn);
+                    }
+                }
+
+                return usersOptInStatusLookup;
             }
             catch (Exception ex)
             {
