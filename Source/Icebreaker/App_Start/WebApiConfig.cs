@@ -5,8 +5,9 @@
 namespace Icebreaker
 {
     using System.Web.Http;
+    using System.Web.Http.Dependencies;
+    using Autofac;
     using Autofac.Integration.WebApi;
-    using Microsoft.Bot.Builder.Dialogs;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
 
@@ -33,7 +34,7 @@ namespace Icebreaker
             };
 
             // Web API configuration and services
-            config.DependencyResolver = new AutofacWebApiDependencyResolver(Conversation.Container);
+            config.DependencyResolver = GetDependencyResolver();
 
             // Web API routes
             config.MapHttpAttributeRoutes();
@@ -42,6 +43,19 @@ namespace Icebreaker
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional });
+        }
+
+        /// <summary>
+        /// Build container and return dependency resolver
+        /// </summary>
+        /// <returns>Dependency resolver</returns>
+        private static IDependencyResolver GetDependencyResolver()
+        {
+            var builder = new ContainerBuilder();
+            builder.RegisterModule(new IcebreakerModule());
+            var container = builder.Build();
+            var resolver = new AutofacWebApiDependencyResolver(container);
+            return resolver;
         }
     }
 }

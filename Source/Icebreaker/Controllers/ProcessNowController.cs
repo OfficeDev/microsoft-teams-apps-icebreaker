@@ -11,8 +11,9 @@ namespace Icebreaker.Controllers
     using System.Threading.Tasks;
     using System.Web.Hosting;
     using System.Web.Http;
+    using Icebreaker.Services;
     using Microsoft.Azure;
-    using Microsoft.Bot.Connector;
+    using Microsoft.Bot.Connector.Authentication;
 
     /// <summary>
     /// API controller to process matches.
@@ -20,18 +21,18 @@ namespace Icebreaker.Controllers
     public class ProcessNowController : ApiController
     {
         private const string KeyHeaderName = "X-Key";
-        private readonly IcebreakerBot bot;
+        private readonly MatchingService matchingService;
         private readonly MicrosoftAppCredentials botCredentials;
         private readonly string apiKey;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProcessNowController"/> class.
         /// </summary>
-        /// <param name="bot">The Icebreaker bot instance</param>
+        /// <param name="matchingService">Matching service contains logic to pair and match users</param>
         /// <param name="botCredentials">The bot AAD credentials</param>
-        public ProcessNowController(IcebreakerBot bot, MicrosoftAppCredentials botCredentials)
+        public ProcessNowController(MatchingService matchingService, MicrosoftAppCredentials botCredentials)
         {
-            this.bot = bot;
+            this.matchingService = matchingService;
             this.botCredentials = botCredentials;
             this.apiKey = CloudConfigurationManager.GetSetting("Key");
         }
@@ -41,7 +42,7 @@ namespace Icebreaker.Controllers
         /// </summary>
         /// <returns>Success (1) or failure (-1) code</returns>
         [Route("api/processnow")]
-        public async Task<IHttpActionResult> Get()
+        public async Task<IHttpActionResult> GetAsync()
         {
             IEnumerable<string> keys;
             if (this.Request.Headers.TryGetValues(KeyHeaderName, out keys))
@@ -53,7 +54,7 @@ namespace Icebreaker.Controllers
                     // This avoids a race condition in MicrosoftAppCredentials.GetTokenAsync that can lead it to return an expired token
                     await this.botCredentials.GetTokenAsync();
 
-                    HostingEnvironment.QueueBackgroundWorkItem(ct => this.MakePairs());
+                    HostingEnvironment.QueueBackgroundWorkItem(ct => this.MakePairsAsync());
                     return this.StatusCode(System.Net.HttpStatusCode.OK);
                 }
             }
@@ -61,9 +62,9 @@ namespace Icebreaker.Controllers
             return this.Unauthorized();
         }
 
-        private async Task<int> MakePairs()
+        private async Task<int> MakePairsAsync()
         {
-            return await this.bot.MakePairsAndNotify();
+            return await this.matchingService.MakePairsAndNotifyAsync();
         }
     }
 }
