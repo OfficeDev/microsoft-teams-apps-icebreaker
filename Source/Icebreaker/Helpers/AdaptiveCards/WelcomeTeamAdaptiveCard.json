@@ -8,7 +8,7 @@
           "type": "TextBlock",
           "size": "Medium",
           "weight": "Bolder",
-          "text": "%salutationText%"
+          "text": "${salutationText}"
         }
       ]
     },
@@ -18,24 +18,24 @@
         {
           "type": "Image",
           "horizontalAlignment": "Center",
-          "url": "%welcomeCardImageUrl%",
+          "url": "${welcomeCardImageUrl}",
           "width": "424px",
           "height": "248px"
         },
         {
           "type": "TextBlock",
-          "text": "%teamIntroPart1%",
+          "text": "${teamIntroPart1}",
           "wrap": true
         },
         {
-          "type": "TextBlock",
-          "text": "%teamIntroPart2%",
-          "wrap": true,
-          "spacing": "Medium"
+            "type": "TextBlock",
+            "text": "${teamIntroPart2}",
+            "wrap": true,
+            "spacing": "Medium"
         },
         {
           "type": "TextBlock",
-          "text": "%teamIntroPart3%",
+          "text": "${teamIntroPart3}",
           "wrap": true,
           "spacing": "Medium"
         }
@@ -45,8 +45,8 @@
   "actions": [
     {
       "type": "Action.OpenUrl",
-      "title": "%tourButtonText%",
-      "url": "%tourUrl%"
+      "title": "${tourButtonText}",
+      "url": "${tourUrl}"
     }
   ],
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",

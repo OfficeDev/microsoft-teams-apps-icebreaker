@@ -344,7 +344,7 @@ namespace Icebreaker.Bot
             if (userThatJustJoined != null)
             {
                 var welcomeMessageCard = WelcomeNewMemberAdaptiveCard.GetCard(teamName, userThatJustJoined.Name, this.botDisplayName, installedTeam.InstallerName);
-                await this.conversationHelper.NotifyUserAsync(turnContext, welcomeMessageCard, userThatJustJoined, tenantId, cancellationToken);
+                await this.conversationHelper.NotifyUserAsync(turnContext, MessageFactory.Attachment(welcomeMessageCard), userThatJustJoined, tenantId, cancellationToken);
             }
             else
             {
@@ -365,8 +365,8 @@ namespace Icebreaker.Bot
             this.telemetryClient.TrackTrace($"Sending welcome message for team {teamId}");
 
             var teamName = turnContext.Activity.TeamsGetTeamInfo().Name;
-            var welcomeTeamMessageCard = WelcomeTeamAdaptiveCard.GetCard(teamName, this.botDisplayName, botInstaller);
-            await this.NotifyTeamAsync(turnContext, welcomeTeamMessageCard, teamId, cancellationToken);
+            var welcomeTeamMessageCard = WelcomeTeamAdaptiveCard.GetCard(teamName, botInstaller);
+            await this.NotifyTeamAsync(turnContext, MessageFactory.Attachment(welcomeTeamMessageCard), teamId, cancellationToken);
         }
 
         /// <summary>
@@ -378,15 +378,7 @@ namespace Icebreaker.Bot
         /// <returns>Tracking task</returns>
         public async Task SendUnrecognizedInputMessageAsync(ITurnContext turnContext, Activity replyActivity, CancellationToken cancellationToken)
         {
-            var unrecognizedInputAdaptiveCard = UnrecognizedInputAdaptiveCard.GetCard();
-            replyActivity.Attachments = new List<Attachment>()
-            {
-                new Attachment()
-                {
-                    ContentType = "application/vnd.microsoft.card.adaptive",
-                    Content = JsonConvert.DeserializeObject(unrecognizedInputAdaptiveCard)
-                }
-            };
+            replyActivity.Attachments = new List<Attachment>{ UnrecognizedInputAdaptiveCard.GetCard() };
             await turnContext.SendActivityAsync(replyActivity, cancellationToken);
         }
 
@@ -456,36 +448,24 @@ namespace Icebreaker.Bot
         /// that this bot has been installed to
         /// </summary>
         /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
-        /// <param name="cardToSend">The actual welcome card (for the team)</param>
+        /// <param name="activity">The actual welcome card (for the team)</param>
         /// <param name="teamId">The team id</param>
         /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
         /// <returns>A tracking task</returns>
-        private async Task NotifyTeamAsync(ITurnContext turnContext, string cardToSend, string teamId, CancellationToken cancellationToken)
+        private async Task NotifyTeamAsync(ITurnContext turnContext, IMessageActivity activity, string teamId, CancellationToken cancellationToken)
         {
             this.telemetryClient.TrackTrace($"Sending notification to team {teamId}");
 
             try
             {
-                var activity = new Activity()
+                activity.Conversation = new ConversationAccount()
                 {
-                    Type = ActivityTypes.Message,
-                    Conversation = new ConversationAccount()
-                    {
-                        Id = teamId
-                    },
-                    Attachments = new List<Attachment>()
-                    {
-                        new Attachment()
-                        {
-                            ContentType = "application/vnd.microsoft.card.adaptive",
-                            Content = JsonConvert.DeserializeObject(cardToSend)
-                        }
-                    }
+                    Id = teamId
                 };
 
                 var conversationParameters = new ConversationParameters
                 {
-                    Activity = activity,
+                    Activity = (Activity)activity,
                     ChannelData = new TeamsChannelData { Channel = new ChannelInfo(teamId) },
                 };
 

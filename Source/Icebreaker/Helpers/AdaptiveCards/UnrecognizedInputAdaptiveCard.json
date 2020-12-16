@@ -8,7 +8,7 @@
       "items": [
         {
           "type": "TextBlock",
-          "text": "%messageContent%",
+          "text": "${messageContent}",
           "wrap": true
         }
       ]
@@ -17,8 +17,8 @@
   "actions": [
     {
       "type": "Action.OpenUrl",
-      "title": "%tourButtonText%",
-      "url": "%tourUrl%"
+      "title": "${tourButtonText}",
+      "url": "${tourUrl}"
     }
   ]
 }

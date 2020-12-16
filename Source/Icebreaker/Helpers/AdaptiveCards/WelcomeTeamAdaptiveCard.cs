@@ -3,40 +3,34 @@
 // Copyright (c) Microsoft. All rights reserved.
 // </copyright>
 //----------------------------------------------------------------------------------------------
+
 namespace Icebreaker.Helpers.AdaptiveCards
 {
     using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Web.Hosting;
+    using global::AdaptiveCards.Templating;
     using Icebreaker.Properties;
     using Microsoft.Azure;
+    using Microsoft.Bot.Schema;
 
     /// <summary>
     /// Builder class for the team welcome message
     /// </summary>
-    public class WelcomeTeamAdaptiveCard
+    public class WelcomeTeamAdaptiveCard : AdaptiveCardBase
     {
-        private static readonly string CardTemplate;
-
-        static WelcomeTeamAdaptiveCard()
-        {
-            var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/WelcomeTeamAdaptiveCard.json");
-            CardTemplate = File.ReadAllText(cardJsonFilePath);
-        }
+        private static readonly Lazy<AdaptiveCardTemplate> AdaptiveCardTemplate =
+            new Lazy<AdaptiveCardTemplate>(() => CardTemplateHelper.GetAdaptiveCardTemplate(AdaptiveCardName.WelcomeTeam));
 
         /// <summary>
         /// Creates the adaptive card for the team welcome message
         /// </summary>
         /// <param name="teamName">The team name</param>
-        /// <param name="botDisplayName">The bot display name</param>
         /// <param name="botInstaller">The name of the person that installed the bot</param>
         /// <returns>The welcome team adaptive card</returns>
-        public static string GetCard(string teamName, string botDisplayName, string botInstaller)
+        public static Attachment GetCard(string teamName, string botInstaller)
         {
-            string teamIntroPart1 = string.Empty;
-            string teamIntroPart2 = string.Empty;
-            string teamIntroPart3 = string.Empty;
+            string teamIntroPart1;
+            string teamIntroPart2;
+            string teamIntroPart3;
 
             if (string.IsNullOrEmpty(botInstaller))
             {
@@ -55,29 +49,19 @@ namespace Icebreaker.Helpers.AdaptiveCards
             var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html?theme={{theme}}");
             var tourTitle = Resources.WelcomeTourTitle;
             var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
-            var welcomeCardImageUrl = $"https://{baseDomain}/Content/welcome-card-image.png";
-            var tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}";
-            var salutationText = Resources.SalutationTitleText;
-            var tourButtonText = Resources.TakeATourButtonText;
 
-            var variablesToValues = new Dictionary<string, string>()
+            var welcomeData = new
             {
-                { "teamIntroPart1", teamIntroPart1 },
-                { "teamIntroPart2", teamIntroPart2 },
-                { "teamIntroPart3", teamIntroPart3 },
-                { "welcomeCardImageUrl", welcomeCardImageUrl },
-                { "tourUrl", tourUrl },
-                { "salutationText", salutationText },
-                { "tourButtonText", tourButtonText }
+                teamIntroPart1,
+                teamIntroPart2,
+                teamIntroPart3,
+                welcomeCardImageUrl = $"https://{baseDomain}/Content/welcome-card-image.png",
+                tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}",
+                salutationText = Resources.SalutationTitleText,
+                tourButtonText = Resources.TakeATourButtonText
             };
 
-            var cardBody = CardTemplate;
-            foreach (var kvp in variablesToValues)
-            {
-                cardBody = cardBody.Replace($"%{kvp.Key}%", kvp.Value);
-            }
-
-            return cardBody;
+            return GetCard(AdaptiveCardTemplate.Value, welcomeData);
         }
     }
 }
