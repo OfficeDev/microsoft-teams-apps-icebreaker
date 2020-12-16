@@ -19,6 +19,7 @@ namespace Icebreaker.Services
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Builder.Integration.AspNet.WebApi;
     using Microsoft.Bot.Builder.Teams;
+    using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
     using Newtonsoft.Json.Linq;
@@ -30,6 +31,7 @@ namespace Icebreaker.Services
     {
         private readonly IcebreakerBotDataProvider dataProvider;
         private readonly ConversationHelper conversationHelper;
+        private readonly MicrosoftAppCredentials appCredentials;
         private readonly TelemetryClient telemetryClient;
         private readonly BotFrameworkHttpAdapter botAdapter;
         private readonly int maxPairUpsPerTeam;
@@ -41,12 +43,14 @@ namespace Icebreaker.Services
         /// </summary>
         /// <param name="dataProvider">The data provider to use</param>
         /// <param name="conversationHelper">Conversation helper instance to notify team members</param>
+        /// <param name="appCredentials">Microsoft app credentials to use.</param>
         /// <param name="telemetryClient">The telemetry client to use</param>
         /// <param name="botAdapter">Bot adapter.</param>
         public MatchingService(IcebreakerBotDataProvider dataProvider, ConversationHelper conversationHelper, TelemetryClient telemetryClient, IBotFrameworkHttpAdapter botAdapter)
         {
             this.dataProvider = dataProvider;
             this.conversationHelper = conversationHelper;
+            this.appCredentials = appCredentials;
             this.telemetryClient = telemetryClient;
             this.botAdapter = (BotFrameworkHttpAdapter)botAdapter;
             this.maxPairUpsPerTeam = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"));
@@ -79,6 +83,7 @@ namespace Icebreaker.Services
             {
                 var teams = await this.dataProvider.GetInstalledTeamsAsync();
                 installedTeamsCount = teams.Count;
+                this.telemetryClient.TrackTrace($"Generating pairs for {installedTeamsCount} teams");
 
                 // Fetch all db users opt-in status/lookup
                 var dbMembersLookup = await this.dataProvider.GetAllUsersOptInStatusAsync();
@@ -164,8 +169,8 @@ namespace Icebreaker.Services
 
             // Send notifications and return the number that was successful
             var notifyResults = await Task.WhenAll(
-                this.conversationHelper.NotifyUserAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, cardForPerson1, teamsPerson1, teamModel.TenantId, cancellationToken),
-                this.conversationHelper.NotifyUserAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, cardForPerson2, teamsPerson2, teamModel.TenantId, cancellationToken));
+                this.conversationHelper.NotifyUserAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, MessageFactory.Attachment(cardForPerson1), teamsPerson1, teamModel.TenantId, cancellationToken),
+                this.conversationHelper.NotifyUserAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, MessageFactory.Attachment(cardForPerson2), teamsPerson2, teamModel.TenantId, cancellationToken));
             return notifyResults.Count(wasNotified => wasNotified);
         }
 
@@ -181,12 +186,6 @@ namespace Icebreaker.Services
             var members = await this.GetTeamMembers(teamInfo);
 
             this.telemetryClient.TrackTrace($"Found {members.Count} in team {teamInfo.TeamId}");
-
-            var teamMembersIdList = members
-                .Where(member => member != null)
-                .Select(this.GetChannelUserObjectId)
-                .Where(memberObjectId => memberObjectId != null)
-                .ToList();
 
             return members
                 .Where(member => member != null)

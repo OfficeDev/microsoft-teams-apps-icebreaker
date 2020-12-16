@@ -7,29 +7,23 @@
 namespace Icebreaker.Helpers.AdaptiveCards
 {
     using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Web.Hosting;
+    using global::AdaptiveCards.Templating;
     using Icebreaker.Properties;
+    using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
 
     /// <summary>
     /// Builder class for the pairup notification card
     /// </summary>
-    public static class PairUpNotificationAdaptiveCard
+    public class PairUpNotificationAdaptiveCard : AdaptiveCardBase
     {
         /// <summary>
         /// Default marker string in the UPN that indicates a user is externally-authenticated
         /// </summary>
         private const string ExternallyAuthenticatedUpnMarker = "#ext#";
 
-        private static readonly string CardTemplate;
-
-        static PairUpNotificationAdaptiveCard()
-        {
-            var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/PairUpNotificationAdaptiveCard.json");
-            CardTemplate = File.ReadAllText(cardJsonFilePath);
-        }
+        private static readonly Lazy<AdaptiveCardTemplate> AdaptiveCardTemplate =
+            new Lazy<AdaptiveCardTemplate>(() => CardTemplateHelper.GetAdaptiveCardTemplate(AdaptiveCardName.PairUpNotification));
 
         /// <summary>
         /// Creates the pairup notification card.
@@ -39,7 +33,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <param name="recipient">The user who will be receiving this card.</param>
         /// <param name="botDisplayName">The bot display name.</param>
         /// <returns>Pairup notification card</returns>
-        public static string GetCard(string teamName, TeamsChannelAccount sender, TeamsChannelAccount recipient, string botDisplayName)
+        public static Attachment GetCard(string teamName, TeamsChannelAccount sender, TeamsChannelAccount recipient, string botDisplayName)
         {
             // Guest users may not have their given name specified in AAD, so fall back to the full name if needed
             var senderGivenName = string.IsNullOrEmpty(sender.GivenName) ? sender.Name : sender.GivenName;
@@ -52,34 +46,21 @@ namespace Icebreaker.Helpers.AdaptiveCards
             var meetingContent = string.Format(Resources.MeetupContent, botDisplayName);
             var meetingLink = "https://teams.microsoft.com/l/meeting/new?subject=" + Uri.EscapeDataString(meetingTitle) + "&attendees=" + recipientUpn + "&content=" + Uri.EscapeDataString(meetingContent);
 
-            var matchUpCardTitleContent = Resources.MatchUpCardTitleContent;
-            var matchUpCardMatchedText = string.Format(Resources.MatchUpCardMatchedText, recipient.Name);
-            var matchUpCardContentPart1 = string.Format(Resources.MatchUpCardContentPart1, botDisplayName, teamName, recipient.Name);
-            var matchUpCardContentPart2 = Resources.MatchUpCardContentPart2;
-            var chatWithMatchButtonText = string.Format(Resources.ChatWithMatchButtonText, recipientGivenName);
-            var pauseMatchesButtonText = Resources.PausePairingsButtonText;
-            var proposeMeetupButtonText = Resources.ProposeMeetupButtonText;
-
-            var variablesToValues = new Dictionary<string, string>()
+            var cardData = new
             {
-                { "matchUpCardTitleContent", matchUpCardTitleContent },
-                { "matchUpCardMatchedText", matchUpCardMatchedText },
-                { "matchUpCardContentPart1", matchUpCardContentPart1 },
-                { "matchUpCardContentPart2", matchUpCardContentPart2 },
-                { "chatWithMatchButtonText", chatWithMatchButtonText },
-                { "pauseMatchesButtonText", pauseMatchesButtonText },
-                { "proposeMeetupButtonText", proposeMeetupButtonText },
-                { "meetingLink", meetingLink },
-                { "personUpn", recipientUpn }
+                matchUpCardTitleContent = Resources.MatchUpCardTitleContent,
+                matchUpCardMatchedText = string.Format(Resources.MatchUpCardMatchedText, recipient.Name),
+                matchUpCardContentPart1 = string.Format(Resources.MatchUpCardContentPart1, botDisplayName, teamName, recipient.Name),
+                matchUpCardContentPart2 = Resources.MatchUpCardContentPart2,
+                chatWithMatchButtonText = string.Format(Resources.ChatWithMatchButtonText, recipientGivenName),
+                chatWithMessageGreeting = Resources.ChatWithMessageGreeting,
+                pauseMatchesButtonText = Resources.PausePairingsButtonText,
+                proposeMeetupButtonText = Resources.ProposeMeetupButtonText,
+                personUpn = recipientUpn,
+                meetingLink,
             };
 
-            var cardBody = CardTemplate;
-            foreach (var kvp in variablesToValues)
-            {
-                cardBody = cardBody.Replace($"%{kvp.Key}%", kvp.Value);
-            }
-
-            return cardBody;
+            return GetCard(AdaptiveCardTemplate.Value, cardData);
         }
 
         /// <summary>

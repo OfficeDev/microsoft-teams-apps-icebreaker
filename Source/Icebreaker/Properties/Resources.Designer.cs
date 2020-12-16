@@ -70,6 +70,15 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hi%20there%20.
+        /// </summary>
+        internal static string ChatWithMessageGreeting {
+            get {
+                return ResourceManager.GetString("ChatWithMessageGreeting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error while processing request. Retry?.
         /// </summary>
         internal static string ErrorOccured {

@@ -121,6 +121,10 @@
     <value>Chat with {0}</value>
     <comment>Button text to initiate a chat with the person the user has been matched up with</comment>
   </data>
+  <data name="ChatWithMessageGreeting" xml:space="preserve">
+    <value>Hi%20there%20</value>
+    <comment>This is the greeting of the chat with matched member message</comment>
+  </data>
   <data name="ErrorOccured" xml:space="preserve">
     <value>There was an error while processing request. Retry?</value>
     <comment>A generic message that is sent when there is an error occurring</comment>

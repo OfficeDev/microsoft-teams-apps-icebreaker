@@ -5,7 +5,6 @@
 namespace Icebreaker.Helpers
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
@@ -17,7 +16,6 @@ namespace Icebreaker.Helpers
     using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Contains shared logic to notify team members
@@ -51,7 +49,7 @@ namespace Icebreaker.Helpers
         /// <param name="tenantId">Tenant id</param>
         /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
         /// <returns>True/False operation status</returns>
-        public async Task<bool> NotifyUserAsync(ITurnContext turnContext, string cardToSend, ChannelAccount user, string tenantId, CancellationToken cancellationToken)
+        public async Task<bool> NotifyUserAsync(ITurnContext turnContext, IMessageActivity cardToSend, ChannelAccount user, string tenantId, CancellationToken cancellationToken)
         {
             var botFrameworkAdapter = (BotFrameworkHttpAdapter)turnContext.Adapter;
             var teamsChannelId = turnContext.Activity.TeamsGetChannelId();
@@ -71,26 +69,12 @@ namespace Icebreaker.Helpers
         /// <param name="tenantId">Tenant id</param>
         /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
         /// <returns>True/False operation status</returns>
-        public async Task<bool> NotifyUserAsync(BotFrameworkHttpAdapter botFrameworkAdapter, string serviceUrl, string teamsChannelId, string cardToSend, ChannelAccount user, string tenantId, CancellationToken cancellationToken)
+        public async Task<bool> NotifyUserAsync(BotFrameworkHttpAdapter botFrameworkAdapter, string serviceUrl, string teamsChannelId, IMessageActivity cardToSend, ChannelAccount user, string tenantId, CancellationToken cancellationToken)
         {
             this.telemetryClient.TrackTrace($"Sending notification to user {user.Id}");
 
             try
             {
-                // construct the activity we want to post
-                var welcomeActivity = new Activity()
-                {
-                    Type = ActivityTypes.Message,
-                    Attachments = new List<Attachment>()
-                    {
-                        new Attachment()
-                        {
-                            ContentType = "application/vnd.microsoft.card.adaptive",
-                            Content = JsonConvert.DeserializeObject(cardToSend),
-                        }
-                    }
-                };
-
                 // conversation parameters
                 var conversationParameters = new ConversationParameters
                 {
@@ -121,7 +105,7 @@ namespace Icebreaker.Helpers
                                 conversationReference,
                                 async (conversationTurnContext, conversationCancellationToken) =>
                                 {
-                                    await conversationTurnContext.SendActivityAsync(welcomeActivity, conversationCancellationToken);
+                                    await conversationTurnContext.SendActivityAsync(cardToSend, conversationCancellationToken);
                                 },
                                 cancellationToken);
                         },

@@ -8,7 +8,7 @@
           "type": "TextBlock",
           "size": "Medium",
           "weight": "Bolder",
-          "text": "%matchUpCardTitleContent%",
+          "text": "${matchUpCardTitleContent}",
           "wrap": true,
           "maxLines": 2
         }
@@ -22,7 +22,7 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "%matchUpCardMatchedText%",
+              "text": "${matchUpCardMatchedText}",
               "wrap": true
             }
           ]
@@ -32,14 +32,14 @@
           "items": [
             {
               "type": "TextBlock",
-              "text": "%matchUpCardContentPart1%",
+              "text": "${matchUpCardContentPart1}",
               "wrap": true
             }
           ]
         },
         {
           "type": "TextBlock",
-          "text": "%matchUpCardContentPart2%",
+          "text": "${matchUpCardContentPart2}",
           "wrap": true
         }
       ]
@@ -48,21 +48,21 @@
   "actions": [
     {
       "type": "Action.OpenUrl",
-      "title": "%chatWithMatchButtonText%",
-      "url": "https://teams.microsoft.com/l/chat/0/0?users=%personUpn%&message=Hi%20there%20"
+      "title": "${chatWithMatchButtonText}",
+      "url": "https://teams.microsoft.com/l/chat/0/0?users=${personUpn}&message=${chatWithMessageGreeting}"
     },
     {
       "type": "Action.OpenUrl",
-      "title": "%proposeMeetupButtonText%",
-      "url": "%meetingLink%"
+      "title": "${proposeMeetupButtonText}",
+      "url": "${meetingLink}"
     },
     {
       "type": "Action.Submit",
-      "title": "%pauseMatchesButtonText%",
+      "title": "${pauseMatchesButtonText}",
       "data": {
         "msteams": {
           "type": "messageBack",
-          "displayText": "%pauseMatchesButtonText%",
+          "displayText": "${pauseMatchesButtonText}",
           "text": "optout"
         }
       }

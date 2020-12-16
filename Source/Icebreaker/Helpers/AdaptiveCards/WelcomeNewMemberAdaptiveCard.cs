@@ -7,24 +7,18 @@
 namespace Icebreaker.Helpers.AdaptiveCards
 {
     using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Web.Hosting;
+    using global::AdaptiveCards.Templating;
     using Icebreaker.Properties;
     using Microsoft.Azure;
+    using Microsoft.Bot.Schema;
 
     /// <summary>
     /// Builder class for the welcome new member card
     /// </summary>
-    public static class WelcomeNewMemberAdaptiveCard
+    public class WelcomeNewMemberAdaptiveCard : AdaptiveCardBase
     {
-        private static readonly string CardTemplate;
-
-        static WelcomeNewMemberAdaptiveCard()
-        {
-            var cardJsonFilePath = HostingEnvironment.MapPath("~/Helpers/AdaptiveCards/WelcomeNewMemberAdaptiveCard.json");
-            CardTemplate = File.ReadAllText(cardJsonFilePath);
-        }
+        private static readonly Lazy<AdaptiveCardTemplate> AdaptiveCardTemplate =
+            new Lazy<AdaptiveCardTemplate>(() => CardTemplateHelper.GetAdaptiveCardTemplate(AdaptiveCardName.WelcomeNewMember));
 
         /// <summary>
         /// Creates the welcome new member card.
@@ -34,11 +28,11 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <param name="botDisplayName">The bot name</param>
         /// <param name="botInstaller">The person that installed the bot to the team</param>
         /// <returns>The welcome new member card</returns>
-        public static string GetCard(string teamName, string personFirstName, string botDisplayName, string botInstaller)
+        public static Attachment GetCard(string teamName, string personFirstName, string botDisplayName, string botInstaller)
         {
-            string introMessagePart1 = string.Empty;
-            string introMessagePart2 = string.Empty;
-            string introMessagePart3 = string.Empty;
+            string introMessagePart1;
+            string introMessagePart2;
+            string introMessagePart3;
 
             if (string.IsNullOrEmpty(botInstaller))
             {
@@ -57,34 +51,23 @@ namespace Icebreaker.Helpers.AdaptiveCards
             var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html?theme={{theme}}");
             var tourTitle = Resources.WelcomeTourTitle;
             var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
-            var pauseMatchesText = Resources.PausePairingsButtonText;
-            var welcomeCardImageUrl = $"https://{baseDomain}/Content/welcome-card-image.png";
-            var tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}";
-            var salutationText = Resources.SalutationTitleText;
-            var tourButtonText = Resources.TakeATourButtonText;
 
-            var variablesToValues = new Dictionary<string, string>()
+            var welcomeData = new
             {
-                { "team", teamName },
-                { "personFirstName", personFirstName },
-                { "botDisplayName", botDisplayName },
-                { "introMessagePart1", introMessagePart1 },
-                { "introMessagePart2", introMessagePart2 },
-                { "introMessagePart3", introMessagePart3 },
-                { "welcomeCardImageUrl", welcomeCardImageUrl },
-                { "pauseMatchesText", pauseMatchesText },
-                { "tourUrl", tourUrl },
-                { "salutationText", salutationText },
-                { "tourButtonText", tourButtonText }
+                personFirstName,
+                botDisplayName,
+                introMessagePart1,
+                introMessagePart2,
+                introMessagePart3,
+                team = teamName,
+                welcomeCardImageUrl = $"https://{baseDomain}/Content/welcome-card-image.png",
+                pauseMatchesText = Resources.PausePairingsButtonText,
+                tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}",
+                salutationText = Resources.SalutationTitleText,
+                tourButtonText = Resources.TakeATourButtonText
             };
 
-            var cardBody = CardTemplate;
-            foreach (var kvp in variablesToValues)
-            {
-                cardBody = cardBody.Replace($"%{kvp.Key}%", kvp.Value);
-            }
-
-            return cardBody;
+            return GetCard(AdaptiveCardTemplate.Value, welcomeData);
         }
     }
 }

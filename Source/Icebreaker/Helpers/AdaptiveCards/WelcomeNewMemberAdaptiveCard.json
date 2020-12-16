@@ -8,7 +8,7 @@
           "type": "TextBlock",
           "size": "Medium",
           "weight": "Bolder",
-          "text": "%salutationText%"
+          "text": "${salutationText}"
         }
       ]
     },
@@ -18,24 +18,24 @@
         {
           "type": "Image",
           "horizontalAlignment": "Center",
-          "url": "%welcomeCardImageUrl%",
+          "url": "${welcomeCardImageUrl}",
           "width": "424px",
           "height": "248px"
         },
         {
           "type": "TextBlock",
-          "text": "%introMessagePart1%",
+          "text": "${introMessagePart1}",
           "wrap": true
         },
         {
           "type": "TextBlock",
-          "text": "%introMessagePart2%",
+          "text": "${introMessagePart2}",
           "wrap": true,
           "spacing": "Medium"
         },
         {
           "type": "TextBlock",
-          "text": "%introMessagePart3%",
+          "text": "${introMessagePart3}",
           "wrap": true, 
           "spacing": "Medium"
         }
@@ -45,16 +45,16 @@
   "actions": [
     {
       "type": "Action.OpenUrl",
-      "title": "%tourButtonText%",
-      "url": "%tourUrl%"
+      "title": "${tourButtonText}",
+      "url": "${tourUrl}"
     },
     {
       "type": "Action.Submit",
-      "title": "%pauseMatchesText%",
+      "title": "${pauseMatchesText}",
       "data": {
         "msteams": {
           "type": "messageBack",
-          "displayText": "%pauseMatchesText%",
+          "displayText": "${pauseMatchesText}",
           "text": "optout"
         }
       }
