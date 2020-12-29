@@ -172,6 +172,8 @@
         "appServiceName": "[concat(variables('baseResourceName'), '-', uniqueString(resourceGroup().id))]",
         "cosmosDbName":"[concat(variables('baseResourceName'), '-storage-', uniqueString(resourceGroup().id))]",
         "logicAppName":"[concat(variables('baseResourceName'), '-logicapp-', uniqueString(resourceGroup().id))]",
+        "keyVaultName":"[concat('keyvault-', uniqueString(resourceGroup().id))]",
+        "KeyVaultURI" : "[concat('https://', variables('keyVaultName'), '.vault.azure.net')]",
         "appInsightsName": "[variables('baseResourceName')]",
         "appHostingPlanName": "[variables('baseResourceName')]",
         "sharedSkus": [ "Free", "Shared" ],
@@ -253,6 +255,9 @@
             "name": "[variables('appServiceName')]",
             "apiVersion": "2016-08-01",
             "location": "[parameters('location')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
             "scale": null,
             "properties": {
                 "enabled": true,
@@ -265,20 +270,8 @@
                             "value": "[parameters('botAppID')]"
                         },
                         {
-                            "name": "MicrosoftAppPassword",
-                            "value": "[parameters('botAppPassword')]"
-                        },
-                        {
-                            "name": "Key",
-                            "value": "[parameters('pairingStartKey')]"
-                        },
-                        {
                             "name": "CosmosDBEndpointUrl",
                             "value": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('cosmosDbName'))).documentEndpoint]"
-                        },
-                        {
-                            "name": "CosmosDBKey",
-                            "value": "[listKeys(concat('Microsoft.DocumentDB/databaseAccounts/', variables('cosmosDbName')), '2015-04-08').primaryMasterKey]"
                         },
                         {
                             "name": "CosmosDBDatabaseName",
@@ -319,6 +312,10 @@
                         {
                             "name": "WEBSITE_NODE_DEFAULT_VERSION",
                             "value": "8.9.4"
+                        },
+                        {
+                            "name": "KeyVaultURI",
+                            "value": "[variables('KeyVaultURI')]"
                         }
                     ]
                 },
@@ -449,6 +446,69 @@
                 "Application_Type": "other"
             },
             "dependsOn": []
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "name": "[variables('keyVaultName')]",
+            "apiVersion": "2019-09-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "Standard"
+                },
+                "tenantId": "[subscription().tenantId]",
+                "enabledForTemplateDeployment": true,
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[reference(resourceId('Microsoft.Web/sites', variables('appServiceName')), '2018-11-01', 'Full').identity.principalId]",
+                        "permissions": {
+                            "secrets": [
+                                "get"
+                            ]
+                        }
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Web/sites/', variables('appServiceName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/Key')]",
+            "apiVersion": "2019-09-01",
+            "properties": {
+                "contentType": "text/plain",
+                "value": "[parameters('pairingStartKey')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/MicrosoftAppPassword')]",
+            "apiVersion": "2019-09-01",
+            "properties": {
+                "contentType": "text/plain",
+                "value": "[parameters('botAppPassword')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/CosmosDBKey')]",
+            "apiVersion": "2019-09-01",
+            "properties": {
+                "value": "[listKeys(concat('Microsoft.DocumentDB/databaseAccounts/', variables('cosmosDbName')), '2015-04-08').primaryMasterKey]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+            ]
         }
     ]
 }

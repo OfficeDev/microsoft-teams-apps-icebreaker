@@ -10,6 +10,7 @@ namespace Icebreaker.Helpers
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Icebreaker.Interfaces;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.Azure;
@@ -31,14 +32,17 @@ namespace Icebreaker.Helpers
         private Database database;
         private DocumentCollection teamsCollection;
         private DocumentCollection usersCollection;
+        private readonly ISecretsHelper secretsHelper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBotDataProvider"/> class.
         /// </summary>
         /// <param name="telemetryClient">The telemetry client to use</param>
-        public IcebreakerBotDataProvider(TelemetryClient telemetryClient)
+        /// <param name="secretsHelper">Secrets helper to fetch secrets</param>
+        public IcebreakerBotDataProvider(TelemetryClient telemetryClient, ISecretsHelper secretsHelper)
         {
             this.telemetryClient = telemetryClient;
+            this.secretsHelper = secretsHelper;
             this.initializeTask = new Lazy<Task>(() => this.InitializeAsync());
         }
 
@@ -213,12 +217,11 @@ namespace Icebreaker.Helpers
             this.telemetryClient.TrackTrace("Initializing data store");
 
             var endpointUrl = CloudConfigurationManager.GetSetting("CosmosDBEndpointUrl");
-            var primaryKey = CloudConfigurationManager.GetSetting("CosmosDBKey");
             var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
             var teamsCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
             var usersCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
 
-            this.documentClient = new DocumentClient(new Uri(endpointUrl), primaryKey);
+            this.documentClient = new DocumentClient(new Uri(endpointUrl), this.secretsHelper.CosmosDBKey);
 
             var requestOptions = new RequestOptions { OfferThroughput = DefaultRequestThroughput };
             bool useSharedOffer = true;

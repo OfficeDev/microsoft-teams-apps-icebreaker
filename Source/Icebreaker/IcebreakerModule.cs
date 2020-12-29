@@ -10,12 +10,12 @@ namespace Icebreaker
     using Autofac.Integration.WebApi;
     using Icebreaker.Bot;
     using Icebreaker.Helpers;
+    using Icebreaker.Interfaces;
     using Icebreaker.Services;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.Azure;
     using Microsoft.Bot.Builder;
-    using Microsoft.Bot.Builder.BotFramework;
     using Microsoft.Bot.Builder.Integration.AspNet.WebApi;
     using Microsoft.Bot.Connector.Authentication;
     using Module = Autofac.Module;
@@ -33,16 +33,24 @@ namespace Icebreaker
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
             builder.RegisterWebApiFilterProvider(GlobalConfiguration.Configuration);
 
-            // The ConfigurationCredentialProvider will retrieve the MicrosoftAppId and
-            // MicrosoftAppPassword from Web.config
-            builder.RegisterType<ConfigurationCredentialProvider>().As<ICredentialProvider>().SingleInstance();
+            builder.RegisterType<SecretsHelper>().As<ISecretsHelper>()
+                .SingleInstance();
+
+            // ICredentialProvider is required for AD queries
+            builder.Register(c => new SimpleCredentialProvider(
+                    CloudConfigurationManager.GetSetting("MicrosoftAppId"),
+                    c.Resolve<ISecretsHelper>().MicrosoftAppPassword))
+                .As<ICredentialProvider>()
+                .SingleInstance();
 
             builder.Register(c =>
             {
                 return new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
             }).SingleInstance();
 
-            builder.Register(c => new MicrosoftAppCredentials(CloudConfigurationManager.GetSetting("MicrosoftAppId"), CloudConfigurationManager.GetSetting("MicrosoftAppPassword")))
+            builder.Register(c => new MicrosoftAppCredentials(
+                    CloudConfigurationManager.GetSetting("MicrosoftAppId"),
+                    c.Resolve<ISecretsHelper>().MicrosoftAppPassword))
                 .SingleInstance();
 
             builder.RegisterType<BotFrameworkHttpAdapter>().As<IBotFrameworkHttpAdapter>()

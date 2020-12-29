@@ -11,8 +11,8 @@ namespace Icebreaker.Controllers
     using System.Threading.Tasks;
     using System.Web.Hosting;
     using System.Web.Http;
+    using Icebreaker.Interfaces;
     using Icebreaker.Services;
-    using Microsoft.Azure;
     using Microsoft.Bot.Connector.Authentication;
 
     /// <summary>
@@ -30,11 +30,12 @@ namespace Icebreaker.Controllers
         /// </summary>
         /// <param name="matchingService">Matching service contains logic to pair and match users</param>
         /// <param name="botCredentials">The bot AAD credentials</param>
-        public ProcessNowController(MatchingService matchingService, MicrosoftAppCredentials botCredentials)
+        /// <param name="secretsHelper">Secrets helper to fetch secrets</param>
+        public ProcessNowController(MatchingService matchingService, MicrosoftAppCredentials botCredentials, ISecretsHelper secretsHelper)
         {
             this.matchingService = matchingService;
             this.botCredentials = botCredentials;
-            this.apiKey = CloudConfigurationManager.GetSetting("Key");
+            this.apiKey = secretsHelper.Key;
         }
 
         /// <summary>
