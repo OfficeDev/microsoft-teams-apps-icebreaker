@@ -43,14 +43,12 @@ namespace Icebreaker.Services
         /// </summary>
         /// <param name="dataProvider">The data provider to use</param>
         /// <param name="conversationHelper">Conversation helper instance to notify team members</param>
-        /// <param name="appCredentials">Microsoft app credentials to use.</param>
         /// <param name="telemetryClient">The telemetry client to use</param>
         /// <param name="botAdapter">Bot adapter.</param>
         public MatchingService(IcebreakerBotDataProvider dataProvider, ConversationHelper conversationHelper, TelemetryClient telemetryClient, IBotFrameworkHttpAdapter botAdapter)
         {
             this.dataProvider = dataProvider;
             this.conversationHelper = conversationHelper;
-            this.appCredentials = appCredentials;
             this.telemetryClient = telemetryClient;
             this.botAdapter = (BotFrameworkHttpAdapter)botAdapter;
             this.maxPairUpsPerTeam = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"));
