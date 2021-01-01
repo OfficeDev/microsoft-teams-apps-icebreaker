@@ -13,6 +13,7 @@ namespace Icebreaker.Bot
     using System.Threading.Tasks;
     using Helpers;
     using Helpers.AdaptiveCards;
+    using Icebreaker.Interfaces;
     using Icebreaker.Properties;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;
@@ -22,14 +23,13 @@ namespace Icebreaker.Bot
     using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Implements the core logic for Icebreaker bot
     /// </summary>
     public class IcebreakerBot : TeamsActivityHandler
     {
-        private readonly IcebreakerBotDataProvider dataProvider;
+        private readonly IBotDataProvider dataProvider;
         private readonly ConversationHelper conversationHelper;
         private readonly MicrosoftAppCredentials appCredentials;
         private readonly TelemetryClient telemetryClient;
@@ -42,7 +42,7 @@ namespace Icebreaker.Bot
         /// <param name="conversationHelper">Conversation helper instance to notify team members</param>
         /// <param name="appCredentials">Microsoft app credentials to use.</param>
         /// <param name="telemetryClient">The telemetry client to use</param>
-        public IcebreakerBot(IcebreakerBotDataProvider dataProvider, ConversationHelper conversationHelper, MicrosoftAppCredentials appCredentials, TelemetryClient telemetryClient)
+        public IcebreakerBot(IBotDataProvider dataProvider, ConversationHelper conversationHelper, MicrosoftAppCredentials appCredentials, TelemetryClient telemetryClient)
         {
             this.dataProvider = dataProvider;
             this.conversationHelper = conversationHelper;
@@ -139,7 +139,7 @@ namespace Icebreaker.Bot
 
                         // Try to determine the name of the person that installed the app, which is usually the sender of the message (From.Id)
                         // Note that in some cases we cannot resolve it to a team member, because the app was installed to the team programmatically via Graph
-                        var personThatAddedBot = (await TeamsInfo.GetMemberAsync(turnContext, message.From.Id, cancellationToken))?.Name;
+                        var personThatAddedBot = (await this.conversationHelper.GetMemberAsync(turnContext, message.From.Id, cancellationToken))?.Name;
 
                         await this.SaveAddedToTeam(message.ServiceUrl, teamId, teamsChannelData.Tenant.Id, personThatAddedBot);
                         await this.WelcomeTeam(turnContext, personThatAddedBot, cancellationToken);
@@ -190,7 +190,7 @@ namespace Icebreaker.Bot
                 this.telemetryClient.TrackEvent("AppUninstalled", properties);
 
                 // we were just removed from a team
-                await this.SaveRemoveFromTeam(message.ServiceUrl, teamId, teamsChannelData.Tenant.Id);
+                await this.SaveRemoveFromTeam(teamId, teamsChannelData.Tenant.Id);
             }
 
             await base.OnMembersRemovedAsync(membersRemoved, turnContext, cancellationToken);
@@ -229,7 +229,7 @@ namespace Icebreaker.Bot
                 var senderAadId = activity.From.AadObjectId;
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
 
-                if (string.Equals(activity.Text, "optout", StringComparison.InvariantCultureIgnoreCase))
+                if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
                 {
                     // User opted out
                     this.telemetryClient.TrackTrace($"User {senderAadId} opted out");
@@ -256,7 +256,7 @@ namespace Icebreaker.Bot
                                     Title = Resources.ResumePairingsButtonText,
                                     DisplayText = Resources.ResumePairingsButtonText,
                                     Type = ActionTypes.MessageBack,
-                                    Text = "optin"
+                                    Text = MatchingActions.OptIn
                                 }
                             }
                         }.ToAttachment(),
@@ -264,7 +264,7 @@ namespace Icebreaker.Bot
 
                     await turnContext.SendActivityAsync(optOutReply, cancellationToken).ConfigureAwait(false);
                 }
-                else if (string.Equals(activity.Text, "optin", StringComparison.InvariantCultureIgnoreCase))
+                else if (string.Equals(activity.Text, MatchingActions.OptIn, StringComparison.InvariantCultureIgnoreCase))
                 {
                     // User opted in
                     this.telemetryClient.TrackTrace($"User {senderAadId} opted in");
@@ -291,7 +291,7 @@ namespace Icebreaker.Bot
                                     Title = Resources.PausePairingsButtonText,
                                     DisplayText = Resources.PausePairingsButtonText,
                                     Type = ActionTypes.MessageBack,
-                                    Text = "optout"
+                                    Text = MatchingActions.OptOut
                                 }
                             }
                         }.ToAttachment(),
@@ -319,7 +319,7 @@ namespace Icebreaker.Bot
         /// </summary>
         /// <param name="teamId">The team id</param>
         /// <returns>The team that the bot has been installed to</returns>
-        public Task<TeamInstallInfo> GetInstalledTeam(string teamId)
+        private Task<TeamInstallInfo> GetInstalledTeam(string teamId)
         {
             return this.dataProvider.GetInstalledTeamAsync(teamId);
         }
@@ -333,13 +333,13 @@ namespace Icebreaker.Bot
         /// <param name="teamId">The id of the team the user was added to</param>
         /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
         /// <returns>Tracking task</returns>
-        public async Task WelcomeUser(ITurnContext turnContext, string memberAddedId, string tenantId, string teamId, CancellationToken cancellationToken)
+        private async Task WelcomeUser(ITurnContext turnContext, string memberAddedId, string tenantId, string teamId, CancellationToken cancellationToken)
         {
             this.telemetryClient.TrackTrace($"Sending welcome message for user {memberAddedId}");
 
             var installedTeam = await this.GetInstalledTeam(teamId);
             var teamName = turnContext.Activity.TeamsGetTeamInfo().Name;
-            ChannelAccount userThatJustJoined = await TeamsInfo.GetMemberAsync(turnContext, memberAddedId, cancellationToken);
+            ChannelAccount userThatJustJoined = await this.conversationHelper.GetMemberAsync(turnContext, memberAddedId, cancellationToken);
 
             if (userThatJustJoined != null)
             {
@@ -359,7 +359,7 @@ namespace Icebreaker.Bot
         /// <param name="botInstaller">The installer of the application</param>
         /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
         /// <returns>Tracking task</returns>
-        public async Task WelcomeTeam(ITurnContext turnContext, string botInstaller, CancellationToken cancellationToken)
+        private async Task WelcomeTeam(ITurnContext turnContext, string botInstaller, CancellationToken cancellationToken)
         {
             var teamId = turnContext.Activity.Conversation.Id;
             this.telemetryClient.TrackTrace($"Sending welcome message for team {teamId}");
@@ -376,7 +376,7 @@ namespace Icebreaker.Bot
         /// <param name="replyActivity">The activity for replying to a message</param>
         /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
         /// <returns>Tracking task</returns>
-        public async Task SendUnrecognizedInputMessageAsync(ITurnContext turnContext, Activity replyActivity, CancellationToken cancellationToken)
+        private async Task SendUnrecognizedInputMessageAsync(ITurnContext turnContext, Activity replyActivity, CancellationToken cancellationToken)
         {
             replyActivity.Attachments = new List<Attachment>{ UnrecognizedInputAdaptiveCard.GetCard() };
             await turnContext.SendActivityAsync(replyActivity, cancellationToken);
@@ -390,7 +390,7 @@ namespace Icebreaker.Bot
         /// <param name="tenantId">The tenant id</param>
         /// <param name="botInstaller">Person that has added the bot to the team</param>
         /// <returns>Tracking task</returns>
-        public Task SaveAddedToTeam(string serviceUrl, string teamId, string tenantId, string botInstaller)
+        private Task SaveAddedToTeam(string serviceUrl, string teamId, string tenantId, string botInstaller)
         {
             var teamInstallInfo = new TeamInstallInfo
             {
@@ -405,11 +405,10 @@ namespace Icebreaker.Bot
         /// <summary>
         /// Save information about the team from which the bot was removed.
         /// </summary>
-        /// <param name="serviceUrl">The service url</param>
         /// <param name="teamId">The team id</param>
         /// <param name="tenantId">The tenant id</param>
         /// <returns>Tracking task</returns>
-        public Task SaveRemoveFromTeam(string serviceUrl, string teamId, string tenantId)
+        private Task SaveRemoveFromTeam(string teamId, string tenantId)
         {
             var teamInstallInfo = new TeamInstallInfo
             {
@@ -426,7 +425,7 @@ namespace Icebreaker.Bot
         /// <param name="userId">The user id</param>
         /// <param name="serviceUrl">The service url</param>
         /// <returns>Tracking task</returns>
-        public Task OptOutUser(string tenantId, string userId, string serviceUrl)
+        private Task OptOutUser(string tenantId, string userId, string serviceUrl)
         {
             return this.dataProvider.SetUserInfoAsync(tenantId, userId, false, serviceUrl);
         }
@@ -438,7 +437,7 @@ namespace Icebreaker.Bot
         /// <param name="userId">The user id</param>
         /// <param name="serviceUrl">The service url</param>
         /// <returns>Tracking task</returns>
-        public Task OptInUser(string tenantId, string userId, string serviceUrl)
+        private Task OptInUser(string tenantId, string userId, string serviceUrl)
         {
             return this.dataProvider.SetUserInfoAsync(tenantId, userId, true, serviceUrl);
         }

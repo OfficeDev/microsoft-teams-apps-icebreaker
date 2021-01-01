@@ -4,8 +4,8 @@
 
 namespace Icebreaker.Helpers
 {
+    using System;
     using System.IO;
-    using System.Web.Hosting;
     using global::AdaptiveCards.Templating;
 
     /// <summary>
@@ -13,7 +13,7 @@ namespace Icebreaker.Helpers
     /// </summary>
     public class CardTemplateHelper
     {
-        private const string CardsPath = "~/Helpers/AdaptiveCards";
+        private const string CardsPath = @"Helpers\AdaptiveCards";
 
         /// <summary>
         /// This method will create an instance of adaptiveCardTemplate with the cardPath.
@@ -32,7 +32,7 @@ namespace Icebreaker.Helpers
         /// <returns>Adaptive card template.</returns>
         public static AdaptiveCardTemplate GetAdaptiveCardTemplate(AdaptiveCardName card)
         {
-            return GetAdaptiveCardTemplate(HostingEnvironment.MapPath(Path.Combine(CardsPath, $"{card}AdaptiveCard.json")));
+            return GetAdaptiveCardTemplate(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CardsPath, $"{card}AdaptiveCard.json"));
         }
     }
 }

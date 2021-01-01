@@ -13,13 +13,13 @@ namespace Icebreaker.Services
     using System.Threading.Tasks;
     using Helpers;
     using Helpers.AdaptiveCards;
+    using Icebreaker.Interfaces;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.Azure;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Builder.Integration.AspNet.WebApi;
     using Microsoft.Bot.Builder.Teams;
-    using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
     using Newtonsoft.Json.Linq;
@@ -29,11 +29,10 @@ namespace Icebreaker.Services
     /// </summary>
     public class MatchingService
     {
-        private readonly IcebreakerBotDataProvider dataProvider;
+        private readonly IBotDataProvider dataProvider;
         private readonly ConversationHelper conversationHelper;
-        private readonly MicrosoftAppCredentials appCredentials;
         private readonly TelemetryClient telemetryClient;
-        private readonly BotFrameworkHttpAdapter botAdapter;
+        private readonly BotAdapter botAdapter;
         private readonly int maxPairUpsPerTeam;
         private readonly string botDisplayName;
         private readonly string botId;
@@ -45,12 +44,12 @@ namespace Icebreaker.Services
         /// <param name="conversationHelper">Conversation helper instance to notify team members</param>
         /// <param name="telemetryClient">The telemetry client to use</param>
         /// <param name="botAdapter">Bot adapter.</param>
-        public MatchingService(IcebreakerBotDataProvider dataProvider, ConversationHelper conversationHelper, TelemetryClient telemetryClient, IBotFrameworkHttpAdapter botAdapter)
+        public MatchingService(IBotDataProvider dataProvider, ConversationHelper conversationHelper, TelemetryClient telemetryClient, BotAdapter botAdapter)
         {
             this.dataProvider = dataProvider;
             this.conversationHelper = conversationHelper;
             this.telemetryClient = telemetryClient;
-            this.botAdapter = (BotFrameworkHttpAdapter)botAdapter;
+            this.botAdapter = botAdapter;
             this.maxPairUpsPerTeam = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"));
             this.botId = CloudConfigurationManager.GetSetting("MicrosoftAppId");
             this.botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
@@ -205,7 +204,7 @@ namespace Icebreaker.Services
             IList<ChannelAccount> members = new List<ChannelAccount>();
             await this.ExecuteInNewTurnContext(teamInfo, async (newTurnContext, newCancellationToken) =>
             {
-                members = await this.botAdapter.GetConversationMembersAsync(newTurnContext, default(CancellationToken))
+                members = await ((BotFrameworkAdapter)this.botAdapter).GetConversationMembersAsync(newTurnContext, default(CancellationToken))
                     .ConfigureAwait(false);
             });
             return members;

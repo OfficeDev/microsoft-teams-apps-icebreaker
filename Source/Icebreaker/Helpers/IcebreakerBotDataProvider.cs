@@ -21,7 +21,7 @@ namespace Icebreaker.Helpers
     /// <summary>
     /// Data provider routines
     /// </summary>
-    public class IcebreakerBotDataProvider
+    public class IcebreakerBotDataProvider : IBotDataProvider
     {
         // Request the minimum throughput by default
         private const int DefaultRequestThroughput = 400;

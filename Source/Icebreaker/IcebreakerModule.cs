@@ -53,7 +53,9 @@ namespace Icebreaker
                     c.Resolve<ISecretsHelper>().MicrosoftAppPassword))
                 .SingleInstance();
 
-            builder.RegisterType<BotFrameworkHttpAdapter>().As<IBotFrameworkHttpAdapter>()
+            builder.RegisterType<BotFrameworkHttpAdapter>()
+                .As<IBotFrameworkHttpAdapter>()
+                .As<BotAdapter>()
                 .SingleInstance();
 
             builder.RegisterType<ConversationHelper>()
@@ -65,7 +67,7 @@ namespace Icebreaker
             builder.RegisterType<MatchingService>()
                 .SingleInstance();
 
-            builder.RegisterType<IcebreakerBotDataProvider>()
+            builder.RegisterType<IcebreakerBotDataProvider>().As<IBotDataProvider>()
                 .SingleInstance();
         }
     }

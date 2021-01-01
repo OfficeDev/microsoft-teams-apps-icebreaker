@@ -304,7 +304,9 @@
     <Content Include="Content\welcome-card-image.png" />
     <Content Include="default.htm" />
     <Content Include="Global.asax" />
-    <Content Include="Helpers\AdaptiveCards\UnrecognizedInputAdaptiveCard.json" />
+    <Content Include="Helpers\AdaptiveCards\UnrecognizedInputAdaptiveCard.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="libman.json" />
     <Content Include="lib\jquery\jquery.min.map" />
     <Content Include="lib\jquery\jquery.js" />
@@ -326,8 +328,10 @@
     <Compile Include="Helpers\AdaptiveCard.cs" />
     <Compile Include="Helpers\AdaptiveCards\AdaptiveCardBase.cs" />
     <Compile Include="Helpers\CardTemplateHelper.cs" />
+    <Compile Include="Helpers\MatchingActions.cs" />
     <Compile Include="Helpers\SecretsHelper.cs" />
     <Compile Include="Interfaces\ISecretsHelper.cs" />
+    <Compile Include="Interfaces\IBotDataProvider.cs" />
     <Compile Include="Services\MatchingService.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -352,13 +356,19 @@
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Helpers\AdaptiveCards\PairUpNotificationAdaptiveCard.json" />
-    <Content Include="Helpers\AdaptiveCards\WelcomeNewMemberAdaptiveCard.json" />
+    <Content Include="Helpers\AdaptiveCards\PairUpNotificationAdaptiveCard.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Helpers\AdaptiveCards\WelcomeNewMemberAdaptiveCard.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Connected Services\Application Insights\ConnectedService.json" />
     <Content Include="ApplicationInsights.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Helpers\AdaptiveCards\WelcomeTeamAdaptiveCard.json" />
+    <Content Include="Helpers\AdaptiveCards\WelcomeTeamAdaptiveCard.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="lib\microsoft-teams\dist\MicrosoftTeams.js.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
