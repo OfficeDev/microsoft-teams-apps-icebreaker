@@ -4,9 +4,8 @@
 
 namespace Icebreaker.Interfaces
 {
-
     /// <summary>
-    /// 
+    /// Used to fetch secrets from reliable sources
     /// </summary>
     public interface ISecretsHelper
     {
