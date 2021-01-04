@@ -18,8 +18,6 @@ namespace Icebreaker.Services
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.Azure;
     using Microsoft.Bot.Builder;
-    using Microsoft.Bot.Builder.Integration.AspNet.WebApi;
-    using Microsoft.Bot.Builder.Teams;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
     using Newtonsoft.Json.Linq;
@@ -27,7 +25,7 @@ namespace Icebreaker.Services
     /// <summary>
     /// Implements the core logic for Icebreaker bot
     /// </summary>
-    public class MatchingService
+    public class MatchingService : IMatchingService
     {
         private readonly IBotDataProvider dataProvider;
         private readonly ConversationHelper conversationHelper;
@@ -35,7 +33,6 @@ namespace Icebreaker.Services
         private readonly BotAdapter botAdapter;
         private readonly int maxPairUpsPerTeam;
         private readonly string botDisplayName;
-        private readonly string botId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MatchingService"/> class.
@@ -51,7 +48,6 @@ namespace Icebreaker.Services
             this.telemetryClient = telemetryClient;
             this.botAdapter = botAdapter;
             this.maxPairUpsPerTeam = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"));
-            this.botId = CloudConfigurationManager.GetSetting("MicrosoftAppId");
             this.botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
         }
 
@@ -92,7 +88,7 @@ namespace Icebreaker.Services
 
                     try
                     {
-                        var teamName = await this.GetTeamNameByIdAsync(team);
+                        var teamName = await this.conversationHelper.GetTeamNameByIdAsync(this.botAdapter, team);
                         var optedInUsers = await this.GetOptedInUsersAsync(dbMembersLookup, team);
 
                         foreach (var pair in this.MakePairs(optedInUsers).Take(this.maxPairUpsPerTeam))
@@ -126,21 +122,6 @@ namespace Icebreaker.Services
 
             this.telemetryClient.TrackTrace($"Made {pairsNotifiedCount} pairups, {usersNotifiedCount} notifications sent");
             return pairsNotifiedCount;
-        }
-
-        /// <summary>
-        /// Get the name of a team.
-        /// </summary>
-        /// <param name="teamInfo">DB team model info.</param>
-        /// <returns>The name of the team</returns>
-        private async Task<string> GetTeamNameByIdAsync(TeamInstallInfo teamInfo)
-        {
-            TeamDetails teamDetails = null;
-            await this.ExecuteInNewTurnContext(teamInfo, async (newTurnContext, newCancellationToken) =>
-            {
-                teamDetails = await TeamsInfo.GetTeamDetailsAsync(newTurnContext, teamInfo.TeamId, newCancellationToken);
-            });
-            return teamDetails?.Name;
         }
 
         /// <summary>
@@ -180,7 +161,7 @@ namespace Icebreaker.Services
         private async Task<List<ChannelAccount>> GetOptedInUsersAsync(Dictionary<string, bool> dbMembersLookup, TeamInstallInfo teamInfo)
         {
             // Pull the roster of specified team and then remove everyone who has opted out explicitly
-            var members = await this.GetTeamMembers(teamInfo);
+            var members = await this.conversationHelper.GetTeamMembers(this.botAdapter, teamInfo);
 
             this.telemetryClient.TrackTrace($"Found {members.Count} in team {teamInfo.TeamId}");
 
@@ -192,46 +173,6 @@ namespace Icebreaker.Services
                     return !dbMembersLookup.ContainsKey(memberObjectId) || dbMembersLookup[memberObjectId];
                 })
                 .ToList();
-        }
-
-        /// <summary>
-        /// Get team members.
-        /// </summary>
-        /// <param name="teamInfo">The team that the bot has been installed to</param>
-        /// <returns>List of team members channel accounts</returns>
-        private async Task<IList<ChannelAccount>> GetTeamMembers(TeamInstallInfo teamInfo)
-        {
-            IList<ChannelAccount> members = new List<ChannelAccount>();
-            await this.ExecuteInNewTurnContext(teamInfo, async (newTurnContext, newCancellationToken) =>
-            {
-                members = await ((BotFrameworkAdapter)this.botAdapter).GetConversationMembersAsync(newTurnContext, default(CancellationToken))
-                    .ConfigureAwait(false);
-            });
-            return members;
-        }
-
-        /// <summary>
-        /// Create a new turn context and execute callback parameter to do desired function
-        /// </summary>
-        /// <param name="teamInfo">The team that the bot has been installed to</param>
-        /// <param name="callback">The method to call for the resulting bot turn.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        private async Task ExecuteInNewTurnContext(TeamInstallInfo teamInfo, BotCallbackHandler callback)
-        {
-            var conversationReference = new ConversationReference
-            {
-                ServiceUrl = teamInfo.ServiceUrl,
-                Conversation = new ConversationAccount
-                {
-                    Id = teamInfo.TeamId,
-                },
-            };
-
-            await this.botAdapter.ContinueConversationAsync(
-                this.botId,
-                conversationReference,
-                callback,
-                default(CancellationToken)).ConfigureAwait(false);
         }
 
         /// <summary>

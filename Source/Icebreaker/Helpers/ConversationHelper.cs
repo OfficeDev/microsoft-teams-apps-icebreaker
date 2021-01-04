@@ -5,13 +5,13 @@
 namespace Icebreaker.Helpers
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.Azure;
     using Microsoft.Bot.Builder;
-    using Microsoft.Bot.Builder.Integration.AspNet.WebApi;
     using Microsoft.Bot.Builder.Teams;
     using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
@@ -122,7 +122,7 @@ namespace Icebreaker.Helpers
         }
 
         /// <summary>
-        /// Gets the account of a single conversation member. 
+        /// Gets the account of a single conversation member.
         /// This works in one-on-one, group, and teams scoped conversations.
         /// </summary>
         /// <param name="turnContext"> Turn context. </param>
@@ -132,6 +132,76 @@ namespace Icebreaker.Helpers
         public virtual async Task<TeamsChannelAccount> GetMemberAsync(ITurnContext turnContext, string memberId, CancellationToken cancellationToken)
         {
             return await TeamsInfo.GetMemberAsync(turnContext, memberId, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the details for the given team id. This only works in teams scoped conversations.
+        /// </summary>
+        /// <param name="turnContext"> Turn context. </param>
+        /// <param name="teamId"> The id of the Teams team. </param>
+        /// <param name="cancellationToken"> Cancellation token. </param>
+        /// <returns>Team Details.</returns>
+        public virtual async Task<TeamDetails> GetTeamDetailsAsync(ITurnContext turnContext, string teamId, CancellationToken cancellationToken)
+        {
+            return await TeamsInfo.GetTeamDetailsAsync(turnContext, teamId, cancellationToken);
+        }
+
+        /// <summary>
+        /// Get the name of a team.
+        /// </summary>
+        /// <param name="botAdapter">Bot adapter.</param>
+        /// <param name="teamInfo">DB team model info.</param>
+        /// <returns>The name of the team</returns>
+        public virtual async Task<string> GetTeamNameByIdAsync(BotAdapter botAdapter, TeamInstallInfo teamInfo)
+        {
+            TeamDetails teamDetails = null;
+            await this.ExecuteInNewTurnContext(botAdapter, teamInfo, async (newTurnContext, newCancellationToken) =>
+            {
+                teamDetails = await this.GetTeamDetailsAsync(newTurnContext, teamInfo.TeamId, newCancellationToken);
+            });
+            return teamDetails?.Name;
+        }
+
+        /// <summary>
+        /// Get team members.
+        /// </summary>
+        /// <param name="botAdapter">Bot adapter.</param>
+        /// <param name="teamInfo">The team that the bot has been installed to</param>
+        /// <returns>List of team members channel accounts</returns>
+        public virtual async Task<IList<ChannelAccount>> GetTeamMembers(BotAdapter botAdapter, TeamInstallInfo teamInfo)
+        {
+            IList<ChannelAccount> members = new List<ChannelAccount>();
+            await this.ExecuteInNewTurnContext(botAdapter, teamInfo, async (newTurnContext, newCancellationToken) =>
+            {
+                members = await ((BotFrameworkAdapter)botAdapter).GetConversationMembersAsync(newTurnContext, default(CancellationToken))
+                    .ConfigureAwait(false);
+            });
+            return members;
+        }
+
+        /// <summary>
+        /// Create a new turn context and execute callback parameter to do desired function
+        /// </summary>
+        /// <param name="botAdapter">Bot adapter.</param>
+        /// <param name="teamInfo">The team that the bot has been installed to</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        private async Task ExecuteInNewTurnContext(BotAdapter botAdapter, TeamInstallInfo teamInfo, BotCallbackHandler callback)
+        {
+            var conversationReference = new ConversationReference
+            {
+                ServiceUrl = teamInfo.ServiceUrl,
+                Conversation = new ConversationAccount
+                {
+                    Id = teamInfo.TeamId,
+                },
+            };
+
+            await botAdapter.ContinueConversationAsync(
+                this.botId,
+                conversationReference,
+                callback,
+                default(CancellationToken)).ConfigureAwait(false);
         }
     }
 }

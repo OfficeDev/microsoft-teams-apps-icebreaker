@@ -330,6 +330,7 @@
     <Compile Include="Helpers\CardTemplateHelper.cs" />
     <Compile Include="Helpers\MatchingActions.cs" />
     <Compile Include="Helpers\SecretsHelper.cs" />
+    <Compile Include="Interfaces\IMatchingService.cs" />
     <Compile Include="Interfaces\ISecretsHelper.cs" />
     <Compile Include="Interfaces\IBotDataProvider.cs" />
     <Compile Include="Services\MatchingService.cs" />
