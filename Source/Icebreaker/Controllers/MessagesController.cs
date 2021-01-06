@@ -31,6 +31,10 @@ namespace Icebreaker.Controllers
             this.bot = bot;
         }
 
+        /// <summary>
+        /// Action to process bot messages
+        /// </summary>
+        /// <returns>Bot compliant message card</returns>
         public async Task<HttpResponseMessage> PostAsync()
         {
             var response = new HttpResponseMessage();

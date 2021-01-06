@@ -378,7 +378,7 @@ namespace Icebreaker.Bot
         /// <returns>Tracking task</returns>
         private async Task SendUnrecognizedInputMessageAsync(ITurnContext turnContext, Activity replyActivity, CancellationToken cancellationToken)
         {
-            replyActivity.Attachments = new List<Attachment>{ UnrecognizedInputAdaptiveCard.GetCard() };
+            replyActivity.Attachments = new List<Attachment> { UnrecognizedInputAdaptiveCard.GetCard() };
             await turnContext.SendActivityAsync(replyActivity, cancellationToken);
         }
 

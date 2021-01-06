@@ -28,11 +28,11 @@ namespace Icebreaker.Helpers
 
         private readonly TelemetryClient telemetryClient;
         private readonly Lazy<Task> initializeTask;
+        private readonly ISecretsHelper secretsHelper;
         private DocumentClient documentClient;
         private Database database;
         private DocumentCollection teamsCollection;
         private DocumentCollection usersCollection;
-        private readonly ISecretsHelper secretsHelper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBotDataProvider"/> class.
@@ -154,6 +154,7 @@ namespace Icebreaker.Helpers
                 var collectionLink = UriFactory.CreateDocumentCollectionUri(this.database.Id, this.usersCollection.Id);
                 var query = this.documentClient.CreateDocumentQuery<UserInfo>(
                         collectionLink,
+#pragma warning disable SA1118 // Parameter must not span multiple lines
                         new FeedOptions
                         {
                             EnableCrossPartitionQuery = true,
@@ -164,6 +165,7 @@ namespace Icebreaker.Helpers
                             // Max partition to query at a time
                             MaxDegreeOfParallelism = -1
                         })
+#pragma warning restore SA1118 // Parameter must not span multiple lines
                     .Select(u => new UserInfo { Id = u.Id, OptedIn = u.OptedIn })
                     .AsDocumentQuery();
                 var usersOptInStatusLookup = new Dictionary<string, bool>();
