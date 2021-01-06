@@ -13,7 +13,6 @@ namespace Icebreaker.Interfaces
     /// </summary>
     public interface IBotDataProvider
     {
-
         /// <summary>
         /// Get the list of teams to which the app was installed.
         /// </summary>
