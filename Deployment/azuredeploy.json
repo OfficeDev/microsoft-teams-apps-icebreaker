@@ -36,7 +36,7 @@
         "appIconUrl": {
             "type": "string",
             "minLength": 1,
-            "defaultValue": "https://raw.githubusercontent.com/OfficeDev/microsoft-teams-icebreaker-app/master/Manifest/color.png",
+            "defaultValue": "https://raw.githubusercontent.com/OfficeDev/microsoft-teams-icebreaker-app/main/Manifest/color.png",
             "metadata": {
                 "description": "The link to the icon for the bot. It must resolve to a PNG file."
             }
@@ -159,7 +159,7 @@
         "gitBranch": {
             "type": "string",
             "minLength": 1,
-            "defaultValue": "master",
+            "defaultValue": "main",
             "metadata": {
               "description": "The branch of the GitHub repository to deploy."
             }
