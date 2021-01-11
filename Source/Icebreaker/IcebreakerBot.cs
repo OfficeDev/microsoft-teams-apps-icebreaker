@@ -262,6 +262,15 @@ namespace Icebreaker
         }
 
         /// <summary>
+        /// Get valid tenant Id from configuration
+        /// </summary>
+        /// <returns>tenant id</returns>
+        public string GetConfigTenantId()
+        {
+            return CloudConfigurationManager.GetSetting("TenantId");
+        }
+
+        /// <summary>
         /// Get the name of a team.
         /// </summary>
         /// <param name="connectorClient">The connector client</param>

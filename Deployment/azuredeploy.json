@@ -41,6 +41,15 @@
                 "description": "The link to the icon for the bot. It must resolve to a PNG file."
             }
         },
+        "tenantId": {
+            "type": "string",
+            "defaultValue": "[subscription().tenantId]",
+            "minLength": 1,
+            "maxLength": 36,
+            "metadata": {
+                "description": "The ID of the tenant to which the app will be deployed."
+            }
+        },
         "pairingWeekInterval": {
             "type": "int",
             "minValue": 1,
@@ -315,6 +324,10 @@
                         {
                             "name": "AppBaseDomain",
                             "value": "[variables('appServiceBaseDomain')]"
+                        },
+                        {
+                            "name": "TenantId",
+                            "value": "[parameters('tenantId')]"
                         },
                         {
                             "name": "WEBSITE_NODE_DEFAULT_VERSION",
