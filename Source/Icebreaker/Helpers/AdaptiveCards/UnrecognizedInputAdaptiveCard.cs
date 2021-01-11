@@ -27,14 +27,13 @@ namespace Icebreaker.Helpers.AdaptiveCards
         public static Attachment GetCard()
         {
             var baseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain");
-            var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html?theme={{theme}}");
             var tourTitle = Resources.WelcomeTourTitle;
             var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
 
             var cardData = new
             {
                 messageContent = Resources.UnrecognizedInput,
-                tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}",
+                tourUrl = GetTourFullUrl(appId, GetTourUrl(baseDomain), tourTitle),
                 tourButtonText = Resources.TakeATourButtonText
             };
 

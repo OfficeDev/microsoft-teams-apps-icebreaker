@@ -1,0 +1,97 @@
+﻿@using Icebreaker.Properties
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>@(Resources.TourContentPageTitleText)</title>
+    <script src="/lib/microsoft-teams/dist/MicrosoftTeams.min.js"></script>
+    <script src="/lib/jquery/jquery.min.js"></script>
+    <link href="/Content/styles.css" rel="stylesheet" />
+    <script type="text/javascript">
+        $(document).ready(function () {
+            let queryParameters = GetQueryParameters();
+            let currentTheme = queryParameters["theme"];
+
+            var setTheme = function (theme) {
+                if (theme === "dark")
+                    document.getElementById("themeCSS").className = "theme-dark";
+                else if (theme === "contrast")
+                    document.getElementById("themeCSS").className = "theme-highContrast";
+                else
+                    document.getElementById("themeCSS").className = "theme-default";
+            };
+
+            microsoftTeams.initialize();
+            setTheme(currentTheme);
+            microsoftTeams.registerOnThemeChangeHandler(setTheme);
+        });
+
+        function ShowDivOnClick(div1, div2) {
+            d1 = document.getElementById(div1);
+            d2 = document.getElementById(div2);
+
+            d1.style.display = "flex";
+            d2.style.display = "none";
+        }
+
+        function GetQueryParameters() {
+            let queryParams = {};
+            location.search.substr(1).split("?").forEach(function (item) {
+                let queryStrings = item.split("&");
+                for (var queryString of queryStrings) {
+                    let s = queryString.split("="),
+                        k = s[0],
+                        v = s[1] && decodeURIComponent(s[1]);
+                    queryParams[k] = v;
+                }
+            });
+            return queryParams;
+        }
+
+        function CloseWindow() {
+            microsoftTeams.tasks.submitTask(null);
+        }
+    </script>
+</head>
+<body id="themeCSS" class="theme-default">
+    <div id="introDiv" class="surface">
+        <div class="imageDiv">
+            <img src="/Content/welcome-dialog.png" alt="@(Resources.TourWelcomeImageAltText)" />
+        </div>
+        <div class="textDiv">
+            <p class="bold-header">@(Resources.TourWelcomeHeaderText)</p>
+            <p class="regular-content">
+                @(Resources.TourWelcomeBodyText)
+            </p>
+        </div>
+        <div class="footer">
+            <button class="primary-button" onclick="ShowDivOnClick('matchesDiv', 'introDiv')">
+                @(Resources.NextButtonText)
+            </button>
+        </div>
+    </div>
+    <div id="matchesDiv" class="surface">
+        <div class="imageDiv">
+            <img src="/Content/welcome-dialog.png" alt="@(Resources.TourWelcomeImageAltText)" />
+        </div>
+        <div class="textDiv">
+            <p class="bold-header">@(Resources.TourMatchesHeaderText)</p>
+            <p class="regular-content">
+                @(Resources.TourMatchesBodyText)
+            </p>
+        </div>
+        <div class="footer">
+            <button class="primary-button" onclick="CloseWindow()">
+                @(Resources.DoneButtonText)
+            </button>
+            <button class="secondary-button" onclick="ShowDivOnClick('introDiv', 'matchesDiv')">
+                @(Resources.BackButtonText)
+            </button>
+        </div>
+    </div>
+</body>
+</html>

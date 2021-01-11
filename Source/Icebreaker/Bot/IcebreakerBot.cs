@@ -8,6 +8,7 @@ namespace Icebreaker.Bot
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -65,6 +66,15 @@ namespace Icebreaker.Bot
             try
             {
                 this.LogActivityTelemetry(turnContext.Activity);
+
+                // Get the current culture info to use in resource files
+                string locale = turnContext?.Activity.Entities?.FirstOrDefault(entity => entity.Type == "clientInfo")?.Properties["locale"]?.ToString();
+
+                if (!string.IsNullOrEmpty(locale))
+                {
+                    CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(locale);
+                }
+
                 await base.OnTurnAsync(turnContext, cancellationToken);
             }
             catch (Exception ex)

@@ -48,7 +48,6 @@ namespace Icebreaker.Helpers.AdaptiveCards
             }
 
             var baseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain");
-            var htmlUrl = Uri.EscapeDataString($"https://{baseDomain}/Content/tour.html?theme={{theme}}");
             var tourTitle = Resources.WelcomeTourTitle;
             var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
 
@@ -62,7 +61,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 team = teamName,
                 welcomeCardImageUrl = $"https://{baseDomain}/Content/welcome-card-image.png",
                 pauseMatchesText = Resources.PausePairingsButtonText,
-                tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}",
+                tourUrl = GetTourFullUrl(appId, GetTourUrl(baseDomain), tourTitle),
                 salutationText = Resources.SalutationTitleText,
                 tourButtonText = Resources.TakeATourButtonText
             };

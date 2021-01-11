@@ -36,6 +36,9 @@ namespace Icebreaker
             // Web API configuration and services
             config.DependencyResolver = GetDependencyResolver();
 
+            // Culture specific settings
+            config.MessageHandlers.Add(new CultureSpecificMessageHandler());
+
             // Web API routes
             config.MapHttpAttributeRoutes();
 

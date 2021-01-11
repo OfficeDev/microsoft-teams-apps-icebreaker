@@ -39,5 +39,29 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 return null;
             }
         }
+
+        /// <summary>
+        /// Get full MSTeams tour action url
+        /// </summary>
+        /// <param name="appId">app id</param>
+        /// <param name="htmlUrl">app template tour content url</param>
+        /// <param name="tourTitle">Tour title</param>
+        /// <returns>MSTeams tour action url</returns>
+        protected static string GetTourFullUrl(string appId, string htmlUrl, string tourTitle)
+        {
+            htmlUrl = Uri.EscapeDataString(htmlUrl);
+            return
+                $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}";
+        }
+
+        /// <summary>
+        /// Get app template tour content url
+        /// </summary>
+        /// <param name="baseDomain">App template base domain</param>
+        /// <returns>Tour content url</returns>
+        protected static string GetTourUrl(string baseDomain)
+        {
+            return $"https://{baseDomain}/tour?theme={{theme}}&locale={{locale}}";
+        }
     }
 }
