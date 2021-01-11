@@ -7,6 +7,7 @@
 namespace Icebreaker
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace Icebreaker
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.Azure;
+    using Microsoft.Bot.Builder.Internals.Fibers;
     using Microsoft.Bot.Connector;
     using Microsoft.Bot.Connector.Teams;
     using Newtonsoft.Json;
@@ -27,6 +29,7 @@ namespace Icebreaker
         private readonly IcebreakerBotDataProvider dataProvider;
         private readonly TelemetryClient telemetryClient;
         private readonly int maxPairUpsPerTeam;
+        private readonly int maxRecentPairUpsToPersistPerUser;
         private readonly string botDisplayName;
         private readonly string botId;
         private readonly bool isTesting;
@@ -41,6 +44,7 @@ namespace Icebreaker
             this.dataProvider = dataProvider;
             this.telemetryClient = telemetryClient;
             this.maxPairUpsPerTeam = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"));
+            this.maxRecentPairUpsToPersistPerUser = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxRecentPairUpsToPersistPerUser"));
             this.botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
             this.botId = CloudConfigurationManager.GetSetting("MicrosoftAppId");
             this.isTesting = Convert.ToBoolean(CloudConfigurationManager.GetSetting("Testing"));
@@ -414,14 +418,111 @@ namespace Icebreaker
             }
 
             this.Randomize(users);
-
+            LinkedList<ChannelAccount> queue = new LinkedList<ChannelAccount>(users);
             var pairs = new List<Tuple<ChannelAccount, ChannelAccount>>();
-            for (int i = 0; i < users.Count - 1; i += 2)
+
+            /*
+             * The idea of the following matching algorithm is as follows:
+             * Pick first user X from queue.
+             * Find in FIFO manner from the rest of the queue the first user Y such that X and Y have not been "recently paired".
+             * If no such perfect pairing is possible, match with next user in queue.
+             */
+            while (queue.Count > 0)
             {
-                pairs.Add(new Tuple<ChannelAccount, ChannelAccount>(users[i], users[i + 1]));
+                ChannelAccount pairUserOne = queue.First.Value;
+                ChannelAccount pairUserTwo = null;
+                queue.RemoveFirst();
+
+                bool foundPerfectPairing = false;
+
+                for (LinkedListNode<ChannelAccount> restOfQueue = queue.First; restOfQueue != null; restOfQueue = restOfQueue.Next)
+                {
+                    pairUserTwo = restOfQueue.Value;
+                    UserInfo pairUserOneInfo = this.dataProvider.GetUserInfoAsync(pairUserOne.AsTeamsChannelAccount().ObjectId)?.Result;
+                    UserInfo pairUserTwoInfo = this.dataProvider.GetUserInfoAsync(pairUserTwo.AsTeamsChannelAccount().ObjectId)?.Result;
+
+                    // if no recent pairups, create this list
+                    if (pairUserOneInfo?.RecentPairUps == null)
+                    {
+                        pairUserOneInfo.RecentPairUps = new List<UserInfo>();
+                    }
+
+                    if (pairUserTwoInfo?.RecentPairUps == null)
+                    {
+                        pairUserTwoInfo.RecentPairUps = new List<UserInfo>();
+                    }
+
+                    // check if userone and usertwo have already paired recently
+                    if (this.SamePairNotCreatedRecently(pairUserOneInfo, pairUserTwoInfo))
+                    {
+                        pairs.Add(new Tuple<ChannelAccount, ChannelAccount>(pairUserOne, pairUserTwo));
+                        this.UpdateUserRecentlyPairedAsync(pairUserOneInfo, pairUserTwoInfo);
+
+                        // Remove pairUserTwo since user has been paired
+                        queue.Remove(pairUserTwo);
+                        foundPerfectPairing = true;
+                        break;
+                    }
+                }
+
+                // Not possible to find a perfect pairing, so just use next.
+                if (!foundPerfectPairing)
+                {
+                    pairUserTwo = queue.First.Value;
+                    pairs.Add(new Tuple<ChannelAccount, ChannelAccount>(pairUserOne, pairUserTwo));
+                    queue.RemoveFirst();
+                }
             }
 
             return pairs;
+        }
+
+        /// <summary>
+        /// This method serves to update the pair's respective "RecentlyPaired" fields with each other.
+        /// </summary>
+        /// <param name="userOneInfo">UserInfo of the first user in pair</param>
+        /// <param name="userTwoInfo">UserInfo of the second user in pair</param>
+        private async void UpdateUserRecentlyPairedAsync(UserInfo userOneInfo, UserInfo userTwoInfo)
+        {
+            if (userOneInfo.RecentPairUps.Count == this.maxRecentPairUpsToPersistPerUser)
+            {
+                userOneInfo.RecentPairUps.RemoveAt(0);
+            }
+
+            if (userTwoInfo.RecentPairUps.Count == this.maxRecentPairUpsToPersistPerUser)
+            {
+                userTwoInfo.RecentPairUps.RemoveAt(0);
+            }
+
+            userOneInfo.RecentPairUps.Add(userTwoInfo);
+            userTwoInfo.RecentPairUps.Add(userOneInfo);
+
+            await this.dataProvider.SetUserInfoAsync(userOneInfo.TenantId, userOneInfo.UserId, userOneInfo.OptedIn, userOneInfo.ServiceUrl, userOneInfo.RecentPairUps);
+            await this.dataProvider.SetUserInfoAsync(userTwoInfo.TenantId, userTwoInfo.UserId, userTwoInfo.OptedIn, userTwoInfo.ServiceUrl, userTwoInfo.RecentPairUps);
+        }
+
+        /// <summary>
+        /// This method returns True if UserOne in pair was not 'recently matched' with UserTwo
+        /// </summary>
+        /// <param name="userOneInfo">UserInfo of the first user in pair</param>
+        /// <param name="userTwoInfo">UserInfo of the second user in pair</param>
+        /// <returns>True if users were NOT paired recently</returns>
+        private bool SamePairNotCreatedRecently(UserInfo userOneInfo, UserInfo userTwoInfo)
+        {
+            if (userOneInfo == null || userTwoInfo == null)
+            {
+                return false;
+            }
+
+            foreach (UserInfo userTwoRecentPair in userTwoInfo.RecentPairUps)
+            {
+                if (userOneInfo.RecentPairUps.Contains(userTwoRecentPair))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void Randomize<T>(IList<T> items)
