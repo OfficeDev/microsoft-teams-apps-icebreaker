@@ -35,6 +35,8 @@ namespace Icebreaker.Bot
         private readonly MicrosoftAppCredentials appCredentials;
         private readonly TelemetryClient telemetryClient;
         private readonly string botDisplayName;
+        private readonly bool disableTenantFilter;
+        private readonly HashSet<string> allowedTenantIds;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBot"/> class.
@@ -50,6 +52,12 @@ namespace Icebreaker.Bot
             this.appCredentials = appCredentials;
             this.telemetryClient = telemetryClient;
             this.botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
+            this.disableTenantFilter = Convert.ToBoolean(CloudConfigurationManager.GetSetting("DisableTenantFilter"), CultureInfo.InvariantCulture);
+            var allowedTenants = CloudConfigurationManager.GetSetting("AllowedTenants");
+            this.allowedTenantIds = allowedTenants
+                ?.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries)
+                ?.Select(p => p.Trim())
+                .ToHashSet();
         }
 
         /// <summary>
@@ -66,6 +74,12 @@ namespace Icebreaker.Bot
             try
             {
                 this.LogActivityTelemetry(turnContext.Activity);
+
+                var isAllowedTenant = this.ValidateTenant(turnContext);
+                if (!isAllowedTenant)
+                {
+                    return;
+                }
 
                 // Get the current culture info to use in resource files
                 string locale = turnContext?.Activity.Entities?.FirstOrDefault(entity => entity.Type == "clientInfo")?.Properties["locale"]?.ToString();
@@ -518,6 +532,23 @@ namespace Icebreaker.Bot
                 { "Platform", clientInfoEntity?.Properties["platform"]?.ToString() }
             };
             this.telemetryClient.TrackEvent("UserActivity", properties);
+        }
+
+        private bool ValidateTenant(ITurnContext turnContext)
+        {
+            if (this.disableTenantFilter)
+            {
+                return true;
+            }
+
+            if (this.allowedTenantIds == null || !this.allowedTenantIds.Any())
+            {
+                var exceptionMessage = "AllowedTenants setting is not set properly in the configuration file.";
+                throw new ApplicationException(exceptionMessage);
+            }
+
+            var tenantId = turnContext?.Activity?.Conversation?.TenantId;
+            return this.allowedTenantIds.Contains(tenantId);
         }
     }
 }

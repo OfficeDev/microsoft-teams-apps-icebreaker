@@ -25,6 +25,15 @@
                 "description": "The app name to use for the resources that will be provisioned."
             }
         },
+        "tenantId": {
+            "type": "string",
+            "defaultValue": "[subscription().tenantId]",
+            "minLength": 1,
+            "maxLength": 36,
+            "metadata": {
+                "description": "The ID of the tenant to which the app will be used."
+            }
+        },
         "appDescription": {
             "type": "string",
             "minLength": 1,
@@ -328,6 +337,14 @@
                         {
                             "name": "DefaultCulture",
                             "value": "[parameters('DefaultCulture')]"
+                        },
+                        {
+                        "name": "AllowedTenants",
+                        "value": "[parameters('tenantId')]"
+                        },
+                        {
+                        "name": "DisableTenantFilter",
+                        "value": "false"
                         }
                     ]
                 },
