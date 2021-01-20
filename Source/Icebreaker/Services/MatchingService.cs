@@ -82,17 +82,32 @@ namespace Icebreaker.Services
                 var dbMembersLookup = await this.dataProvider.GetAllUsersOptInStatusAsync();
                 dbMembersCount = dbMembersLookup.Count;
 
+                var pairHistory = await this.dataProvider.GetPairHistoryAsync();
+                var parsed = this.ParsePairHistory(pairHistory);
+                var pastPairs = parsed.Item1;
+                var lastIteration = parsed.Item2;
+                lastIteration++;
+
+                // dummyPair is recorded as a past pairing is to separate iteration cycles and avoid a deadlock
+                var dummyPair = new Tuple<string, string>(null, null);
+                await this.dataProvider.AddPairAsync(dummyPair, lastIteration);
+
+                // debug message
+                await this.dataProvider.AddPairAsync(dummyPair, pastPairs.Count - 1000);
+
                 foreach (var team in teams)
                 {
                     this.telemetryClient.TrackTrace($"Pairing members of team {team.Id}");
-
                     try
                     {
                         var teamName = await this.conversationHelper.GetTeamNameByIdAsync(this.botAdapter, team);
                         var optedInUsers = await this.GetOptedInUsersAsync(dbMembersLookup, team);
 
-                        foreach (var pair in this.MakePairs(optedInUsers).Take(this.maxPairUpsPerTeam))
+                        foreach (var pair in this.MakePairs(optedInUsers, pastPairs).Take(this.maxPairUpsPerTeam))
                         {
+                            var pairId = new Tuple<string, string>(pair.Item1.Id, pair.Item2.Id);
+                            await this.dataProvider.AddPairAsync(pairId, lastIteration);
+
                             usersNotifiedCount += await this.NotifyPairAsync(team, teamName, pair, default(CancellationToken));
                             pairsNotifiedCount++;
                         }
@@ -186,11 +201,50 @@ namespace Icebreaker.Services
         }
 
         /// <summary>
+        /// Parse through a list of pairing information.
+        /// </summary>
+        /// <param name="pairHistory">List of pairing information.</param>
+        /// <returns>Returns pairs from the most recent pairing phase. This can be changed to include
+        /// pairings from less recent pairing phases by changing the `latestIteration` threshold.</returns>
+        private Tuple<Dictionary<string, HashSet<string>>, int> ParsePairHistory(IList<PairInfo> pairHistory)
+        {
+            var pastPairs = new Dictionary<string, HashSet<string>>();
+            int latestIteration = 0;
+
+            foreach (var pair in pairHistory)
+            {
+                latestIteration = (latestIteration >= pair.Iteration) ? latestIteration : pair.Iteration;
+            }
+
+            foreach (var pair in pairHistory)
+            {
+                if (pair.Iteration >= latestIteration && pair.User1Id != null)
+                {
+                    if (!pastPairs.ContainsKey(pair.User1Id))
+                    {
+                        pastPairs[pair.User1Id] = new HashSet<string>();
+                    }
+
+                    if (!pastPairs.ContainsKey(pair.User2Id))
+                    {
+                        pastPairs[pair.User2Id] = new HashSet<string>();
+                    }
+
+                    pastPairs[pair.User1Id].Add(pair.User2Id);
+                    pastPairs[pair.User2Id].Add(pair.User1Id);
+                }
+            }
+
+            return new Tuple<Dictionary<string, HashSet<string>>, int>(pastPairs, latestIteration);
+        }
+
+        /// <summary>
         /// Pair list of users into groups of 2 users per group
         /// </summary>
         /// <param name="users">Users accounts</param>
+        /// <param name="pastPairs">Previously made pairings to avoid for future pairings.</param>
         /// <returns>List of pairs</returns>
-        private List<Tuple<ChannelAccount, ChannelAccount>> MakePairs(List<ChannelAccount> users)
+        private List<Tuple<ChannelAccount, ChannelAccount>> MakePairs(List<ChannelAccount> users, Dictionary<string, HashSet<string>> pastPairs)
         {
             if (users.Count > 1)
             {
@@ -204,9 +258,40 @@ namespace Icebreaker.Services
             this.Randomize(users);
 
             var pairs = new List<Tuple<ChannelAccount, ChannelAccount>>();
-            for (int i = 0; i < users.Count - 1; i += 2)
+
+            var currentPairs = new HashSet<string>();
+
+            for (int i = 0; i < users.Count - 1; i++)
             {
-                pairs.Add(new Tuple<ChannelAccount, ChannelAccount>(users[i], users[i + 1]));
+                for (int j = i + 1; j < users.Count; j++)
+                {
+                    if (currentPairs.Contains(users[i].Id) || currentPairs.Contains(users[j].Id))
+                    {
+                        continue;
+                    }
+
+                    if (!pastPairs.ContainsKey(users[i].Id) || !pastPairs[users[i].Id].Contains(users[j].Id))
+                    {
+                        // match them
+                        pairs.Add(new Tuple<ChannelAccount, ChannelAccount>(users[i], users[j]));
+
+                        if (!pastPairs.ContainsKey(users[i].Id))
+                        {
+                            pastPairs[users[i].Id] = new HashSet<string>();
+                        }
+
+                        if (!pastPairs.ContainsKey(users[j].Id))
+                        {
+                            pastPairs[users[j].Id] = new HashSet<string>();
+                        }
+
+                        pastPairs[users[i].Id].Add(users[j].Id);
+                        pastPairs[users[j].Id].Add(users[i].Id);
+                        currentPairs.Add(users[i].Id);
+                        currentPairs.Add(users[j].Id);
+                        break;
+                    }
+                }
             }
 
             return pairs;
