@@ -85,12 +85,12 @@ namespace Icebreaker.Services
                 var pairHistory = await this.dataProvider.GetPairHistoryAsync();
                 var parsed = this.ParsePairHistory(pairHistory);
                 var pastPairs = parsed.Item1;
-                var lastIteration = parsed.Item2;
-                lastIteration++;
+                var prevIteration = parsed.Item2;
+                prevIteration++;
 
                 // dummyPair is recorded as a past pairing is to separate iteration cycles and avoid a deadlock
                 var dummyPair = new Tuple<string, string>(null, null);
-                await this.dataProvider.AddPairAsync(dummyPair, lastIteration);
+                await this.dataProvider.AddPairAsync(dummyPair, prevIteration);
 
                 foreach (var team in teams)
                 {
@@ -103,7 +103,7 @@ namespace Icebreaker.Services
                         foreach (var pair in this.MakePairs(optedInUsers, pastPairs).Take(this.maxPairUpsPerTeam))
                         {
                             var pairId = new Tuple<string, string>(pair.Item1.Id, pair.Item2.Id);
-                            await this.dataProvider.AddPairAsync(pairId, lastIteration);
+                            await this.dataProvider.AddPairAsync(pairId, prevIteration);
 
                             usersNotifiedCount += await this.NotifyPairAsync(team, teamName, pair, default(CancellationToken));
                             pairsNotifiedCount++;
@@ -201,38 +201,37 @@ namespace Icebreaker.Services
         /// Parse through a list of pairing information.
         /// </summary>
         /// <param name="pairHistory">List of pairing information.</param>
-        /// <returns>Returns pairs from the most recent pairing phase. This can be changed to include
-        /// pairings from less recent pairing phases by changing the `latestIteration` threshold.</returns>
+        /// <returns>A tuple with "a dictionary mapping users' IDs to a set of other user IDs that
+        /// the respective user has paired with in the previous iteration" and "the previous iteration ID"</returns>
         private Tuple<Dictionary<string, HashSet<string>>, int> ParsePairHistory(IList<PairInfo> pairHistory)
         {
             var pastPairs = new Dictionary<string, HashSet<string>>();
-            int latestIteration = 0;
+
+            // prevIteration defaults to 0 if pairHistory is empty.
+            int prevIteration = pairHistory.Any() ? pairHistory.Select(pair => pair.Iteration).Max() : 0;
 
             foreach (var pair in pairHistory)
             {
-                latestIteration = (latestIteration >= pair.Iteration) ? latestIteration : pair.Iteration;
-            }
-
-            foreach (var pair in pairHistory)
-            {
-                if (pair.Iteration >= latestIteration && pair.User1Id != null)
+                if (pair.Iteration < prevIteration || pair.User1Id == null)
                 {
-                    if (!pastPairs.ContainsKey(pair.User1Id))
-                    {
-                        pastPairs[pair.User1Id] = new HashSet<string>();
-                    }
-
-                    if (!pastPairs.ContainsKey(pair.User2Id))
-                    {
-                        pastPairs[pair.User2Id] = new HashSet<string>();
-                    }
-
-                    pastPairs[pair.User1Id].Add(pair.User2Id);
-                    pastPairs[pair.User2Id].Add(pair.User1Id);
+                    continue;
                 }
+
+                if (!pastPairs.ContainsKey(pair.User1Id))
+                {
+                    pastPairs[pair.User1Id] = new HashSet<string>();
+                }
+
+                if (!pastPairs.ContainsKey(pair.User2Id))
+                {
+                    pastPairs[pair.User2Id] = new HashSet<string>();
+                }
+
+                pastPairs[pair.User1Id].Add(pair.User2Id);
+                pastPairs[pair.User2Id].Add(pair.User1Id);
             }
 
-            return new Tuple<Dictionary<string, HashSet<string>>, int>(pastPairs, latestIteration);
+            return new Tuple<Dictionary<string, HashSet<string>>, int>(pastPairs, prevIteration);
         }
 
         /// <summary>
@@ -258,34 +257,37 @@ namespace Icebreaker.Services
 
             var currentPairs = new HashSet<string>();
 
-            for (int i = 0; i < users.Count - 1; i++)
+            for (int a = 0; a < users.Count - 1; a++)
             {
-                for (int j = i + 1; j < users.Count; j++)
+                for (int b = a + 1; b < users.Count; b++)
                 {
-                    if (currentPairs.Contains(users[i].Id) || currentPairs.Contains(users[j].Id))
+                    var user1 = users[a];
+                    var user2 = users[b];
+
+                    if (currentPairs.Contains(user1.Id) || currentPairs.Contains(user2.Id))
                     {
                         continue;
                     }
 
-                    if (!pastPairs.ContainsKey(users[i].Id) || !pastPairs[users[i].Id].Contains(users[j].Id))
+                    if (!pastPairs.ContainsKey(user1.Id) || !pastPairs[user1.Id].Contains(user2.Id))
                     {
                         // match them
-                        pairs.Add(new Tuple<ChannelAccount, ChannelAccount>(users[i], users[j]));
+                        pairs.Add(new Tuple<ChannelAccount, ChannelAccount>(user1, user2));
 
-                        if (!pastPairs.ContainsKey(users[i].Id))
+                        if (!pastPairs.ContainsKey(user1.Id))
                         {
-                            pastPairs[users[i].Id] = new HashSet<string>();
+                            pastPairs[user1.Id] = new HashSet<string>();
                         }
 
-                        if (!pastPairs.ContainsKey(users[j].Id))
+                        if (!pastPairs.ContainsKey(user2.Id))
                         {
-                            pastPairs[users[j].Id] = new HashSet<string>();
+                            pastPairs[user2.Id] = new HashSet<string>();
                         }
 
-                        pastPairs[users[i].Id].Add(users[j].Id);
-                        pastPairs[users[j].Id].Add(users[i].Id);
-                        currentPairs.Add(users[i].Id);
-                        currentPairs.Add(users[j].Id);
+                        pastPairs[user1.Id].Add(user2.Id);
+                        pastPairs[user2.Id].Add(user1.Id);
+                        currentPairs.Add(user1.Id);
+                        currentPairs.Add(user2.Id);
                         break;
                     }
                 }

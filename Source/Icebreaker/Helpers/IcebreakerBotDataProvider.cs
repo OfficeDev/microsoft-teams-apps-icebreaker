@@ -104,9 +104,9 @@ namespace Icebreaker.Helpers
         /// Record a pairing that was made
         /// </summary>
         /// <param name="pair">A pairing.</param>
-        /// <param name="lastIteration">Value that indicates the iteration cycle when the pairing happened.</param>
+        /// <param name="iteration">Value that indicates the iteration cycle when the pairing happened.</param>
         /// <returns>Tracking task</returns>
-        public async Task AddPairAsync(Tuple<string, string> pair, int lastIteration)
+        public async Task AddPairAsync(Tuple<string, string> pair, int iteration)
         {
             await this.EnsureInitializedAsync();
 
@@ -114,10 +114,10 @@ namespace Icebreaker.Helpers
             {
                 User1Id = pair.Item1,
                 User2Id = pair.Item2,
-                Iteration = lastIteration,
+                Iteration = iteration,
             };
 
-            var response = await this.documentClient.UpsertDocumentAsync(this.pairsCollection.SelfLink, pairInfo);
+            var response = await this.documentClient.CreateDocumentAsync(this.pairsCollection.SelfLink, pairInfo);
         }
 
         /// <summary>

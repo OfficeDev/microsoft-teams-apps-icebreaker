@@ -62,8 +62,8 @@ namespace Icebreaker.Interfaces
         /// Record a pairing that was made
         /// </summary>
         /// <param name="pair">A pairing.</param>
-        /// <param name="lastIteration">Value that indicates the iteration cycle when the pairing happened.</param>
+        /// <param name="iteration">Value that indicates the iteration cycle when the pairing happened.</param>
         /// <returns>Tracking task</returns>
-        Task AddPairAsync(Tuple<string, string> pair, int lastIteration);
+        Task AddPairAsync(Tuple<string, string> pair, int iteration);
     }
 }
