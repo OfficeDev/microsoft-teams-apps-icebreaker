@@ -92,9 +92,6 @@ namespace Icebreaker.Services
                 var dummyPair = new Tuple<string, string>(null, null);
                 await this.dataProvider.AddPairAsync(dummyPair, lastIteration);
 
-                // debug message
-                await this.dataProvider.AddPairAsync(dummyPair, pastPairs.Count - 1000);
-
                 foreach (var team in teams)
                 {
                     this.telemetryClient.TrackTrace($"Pairing members of team {team.Id}");
