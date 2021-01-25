@@ -278,6 +278,10 @@
                             "value": "[variables('cosmosDbName')]"
                         },
                         {
+                            "name": "CosmosCollectionPairs",
+                            "value": "PairsHistory"
+                        },
+                        {
                             "name": "CosmosCollectionTeams",
                             "value": "TeamsInstalled"
                         },

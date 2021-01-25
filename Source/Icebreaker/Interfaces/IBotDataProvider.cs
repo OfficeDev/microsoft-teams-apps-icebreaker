@@ -4,9 +4,11 @@
 
 namespace Icebreaker.Interfaces
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Icebreaker.Helpers;
+    using Microsoft.Bot.Schema;
 
     /// <summary>
     /// Data provider routines
@@ -49,5 +51,19 @@ namespace Icebreaker.Interfaces
         /// <param name="serviceUrl">User service URL</param>
         /// <returns>Tracking task</returns>
         Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl);
+
+        /// <summary>
+        /// Get a list of past pairings
+        /// </summary>
+        /// <returns>List of past pairings.</returns>
+        Task<IList<PairInfo>> GetPairHistoryAsync();
+
+        /// <summary>
+        /// Record a pairing that was made
+        /// </summary>
+        /// <param name="pair">A pairing.</param>
+        /// <param name="iteration">Value that indicates the iteration cycle when the pairing happened.</param>
+        /// <returns>Tracking task</returns>
+        Task AddPairAsync(Tuple<string, string> pair, int iteration);
     }
 }
