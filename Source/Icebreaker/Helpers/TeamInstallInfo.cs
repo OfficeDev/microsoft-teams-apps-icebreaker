@@ -6,6 +6,7 @@
 
 namespace Icebreaker.Helpers
 {
+    using System.Collections.Generic;
     using Microsoft.Azure.Documents;
     using Newtonsoft.Json;
 
@@ -42,6 +43,12 @@ namespace Icebreaker.Helpers
         /// </summary>
         [JsonProperty("installerName")]
         public string InstallerName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the ids of the feedback for this team
+        /// </summary>
+        [JsonProperty("feedbackIds")]
+        public List<string> FeedbackIds { get; set; }
 
         /// <inheritdoc/>
         public override string ToString()

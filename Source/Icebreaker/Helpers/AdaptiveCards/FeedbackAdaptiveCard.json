@@ -1,0 +1,89 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0",
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "How was your meetup?",
+          "wrap": true
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.ShowCard",
+      "title": "Give feedback",
+      "card": {
+        "type": "AdaptiveCard",
+        "body": [
+          {
+            "type": "Container",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "Rate 1-5",
+                "wrap": true
+              },
+              {
+                "type": "Input.ChoiceSet",
+                "id": "rating",
+                "style": "compact",
+                "isMultiSelect": false,
+                "value": "5",
+                "choices": [
+                  {
+                    "title": "1",
+                    "value": "1"
+                  },
+                  {
+                    "title": "2",
+                    "value": "2"
+                  },
+                  {
+                    "title": "3",
+                    "value": "3"
+                  },
+                  {
+                    "title": "4",
+                    "value": "4"
+                  },
+                  {
+                    "title": "5",
+                    "value": "5"
+                  }
+                ]
+              },
+              {
+                "type": "TextBlock",
+                "text": "Explain",
+                "wrap": true
+              },
+              {
+                "type": "Input.Text",
+                "id": "comments",
+                "style": "compact",
+                "placeholder": "Tell us your thoughts!",
+                "maxLength": 1000,
+                "isMultiline": true
+              }
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "type": "Action.Submit",
+            "title": "Save",
+            "data": {
+              "action":  "feedback"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
