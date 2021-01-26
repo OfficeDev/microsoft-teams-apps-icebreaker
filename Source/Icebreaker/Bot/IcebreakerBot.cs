@@ -122,6 +122,8 @@ namespace Icebreaker.Bot
                 string myBotId = message.Recipient.Id;
                 string teamId = message.Conversation.Id;
                 var teamsChannelData = message.GetChannelData<TeamsChannelData>();
+                var tenantId = teamsChannelData.Tenant.Id;
+                var serviceUrl = message.ServiceUrl;
 
                 foreach (var member in membersAdded)
                 {
@@ -141,14 +143,16 @@ namespace Icebreaker.Bot
                         // Note that in some cases we cannot resolve it to a team member, because the app was installed to the team programmatically via Graph
                         var personThatAddedBot = (await this.conversationHelper.GetMemberAsync(turnContext, message.From.Id, cancellationToken))?.Name;
 
-                        await this.SaveAddedToTeam(message.ServiceUrl, teamId, teamsChannelData.Tenant.Id, personThatAddedBot);
+                        await this.SaveAddedToTeam(serviceUrl, teamId, tenantId, personThatAddedBot);
                         await this.WelcomeTeam(turnContext, personThatAddedBot, cancellationToken);
                     }
                     else
                     {
                         this.telemetryClient.TrackTrace($"New member {member.Id} added to team {teamsChannelData.Team.Id}");
 
-                        await this.WelcomeUser(turnContext, member.Id, teamsChannelData.Tenant.Id, teamsChannelData.Team.Id, cancellationToken);
+                        await this.dataProvider.AddUserTeamAsync(tenantId, member.Id, teamsChannelData.Team.Id, serviceUrl);
+
+                        await this.WelcomeUser(turnContext, member.Id, tenantId, teamsChannelData.Team.Id, cancellationToken);
                     }
                 }
             }
@@ -241,7 +245,7 @@ namespace Icebreaker.Bot
                     };
                     this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
 
-                    await this.OptOutUser(tenantId, senderAadId, activity.ServiceUrl);
+                    await this.OptUserAllAsync(tenantId, senderAadId, activity.ServiceUrl, false);
 
                     var optOutReply = activity.CreateReply();
                     optOutReply.Attachments = new List<Attachment>
@@ -276,7 +280,7 @@ namespace Icebreaker.Bot
                     };
                     this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
 
-                    await this.OptInUser(tenantId, senderAadId, activity.ServiceUrl);
+                    await this.OptUserAllAsync(tenantId, senderAadId, activity.ServiceUrl, true);
 
                     var optInReply = activity.CreateReply();
                     optInReply.Attachments = new List<Attachment>
@@ -419,27 +423,23 @@ namespace Icebreaker.Bot
         }
 
         /// <summary>
-        /// Opt out the user from further pairups
+        /// Opt the user in/out from all further pairups
         /// </summary>
         /// <param name="tenantId">The tenant id</param>
         /// <param name="userId">The user id</param>
         /// <param name="serviceUrl">The service url</param>
+        /// <param name="optStatus">Opt in or out</param>
         /// <returns>Tracking task</returns>
-        private Task OptOutUser(string tenantId, string userId, string serviceUrl)
+        private async Task<Task> OptUserAllAsync(string tenantId, string userId, string serviceUrl, bool optStatus)
         {
-            return this.dataProvider.SetUserInfoAsync(tenantId, userId, false, serviceUrl);
-        }
+            var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
+            var optedIn = userInfo.OptedIn;
+            foreach (var team in optedIn.Keys)
+            {
+                optedIn[team] = optStatus;
+            }
 
-        /// <summary>
-        /// Opt in the user to pairups
-        /// </summary>
-        /// <param name="tenantId">The tenant id</param>
-        /// <param name="userId">The user id</param>
-        /// <param name="serviceUrl">The service url</param>
-        /// <returns>Tracking task</returns>
-        private Task OptInUser(string tenantId, string userId, string serviceUrl)
-        {
-            return this.dataProvider.SetUserInfoAsync(tenantId, userId, true, serviceUrl);
+            return this.dataProvider.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl);
         }
 
         /// <summary>
