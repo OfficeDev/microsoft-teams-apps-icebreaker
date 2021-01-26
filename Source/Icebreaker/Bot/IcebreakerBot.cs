@@ -143,7 +143,7 @@ namespace Icebreaker.Bot
                         // Note that in some cases we cannot resolve it to a team member, because the app was installed to the team programmatically via Graph
                         var personThatAddedBot = (await this.conversationHelper.GetMemberAsync(turnContext, message.From.Id, cancellationToken))?.Name;
 
-                        await this.SaveAddedToTeam(serviceUrl, teamId, tenantId, personThatAddedBot);
+                        await this.SaveAddedToTeamAsync(serviceUrl, teamId, turnContext, personThatAddedBot);
                         await this.WelcomeTeam(turnContext, personThatAddedBot, cancellationToken);
                     }
                     else
@@ -194,7 +194,7 @@ namespace Icebreaker.Bot
                 this.telemetryClient.TrackEvent("AppUninstalled", properties);
 
                 // we were just removed from a team
-                await this.SaveRemoveFromTeam(teamId, teamsChannelData.Tenant.Id);
+                await this.SaveRemoveFromTeamAsync(teamId, turnContext);
             }
             else
             {
@@ -411,11 +411,22 @@ namespace Icebreaker.Bot
         /// </summary>
         /// <param name="serviceUrl">The service url</param>
         /// <param name="teamId">The team id</param>
-        /// <param name="tenantId">The tenant id</param>
+        /// <param name="turnContext">Turn context</param>
         /// <param name="botInstaller">Person that has added the bot to the team</param>
         /// <returns>Tracking task</returns>
-        private Task SaveAddedToTeam(string serviceUrl, string teamId, string tenantId, string botInstaller)
+        private async Task SaveAddedToTeamAsync(string serviceUrl, string teamId, ITurnContext turnContext, string botInstaller)
         {
+            var teamInfo = await this.GetInstalledTeam(teamId);
+            var botAdapter = turnContext.Adapter;
+            var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
+            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
+
+            foreach (var member in members)
+            {
+                var userId = member.Id;
+                await this.dataProvider.AddUserTeamAsync(tenantId, userId, teamId, serviceUrl);
+            }
+
             var teamInstallInfo = new TeamInstallInfo
             {
                 ServiceUrl = serviceUrl,
@@ -423,23 +434,34 @@ namespace Icebreaker.Bot
                 TenantId = tenantId,
                 InstallerName = botInstaller
             };
-            return this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
+            await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
         }
 
         /// <summary>
         /// Save information about the team from which the bot was removed.
         /// </summary>
         /// <param name="teamId">The team id</param>
-        /// <param name="tenantId">The tenant id</param>
+        /// <param name="turnContext">The turn context</param>
         /// <returns>Tracking task</returns>
-        private Task SaveRemoveFromTeam(string teamId, string tenantId)
+        private async Task SaveRemoveFromTeamAsync(string teamId, ITurnContext turnContext)
         {
+            var teamInfo = await this.GetInstalledTeam(teamId);
+            var botAdapter = turnContext.Adapter;
+            var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
+            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
+
+            foreach (var member in members)
+            {
+                var userId = member.Id;
+                await this.dataProvider.RemoveUserTeamAsync(userId, teamId);
+            }
+
             var teamInstallInfo = new TeamInstallInfo
             {
                 TeamId = teamId,
                 TenantId = tenantId,
             };
-            return this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, false);
+            await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, false);
         }
 
         /// <summary>
