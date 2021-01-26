@@ -196,6 +196,14 @@ namespace Icebreaker.Bot
                 // we were just removed from a team
                 await this.SaveRemoveFromTeam(teamId, teamsChannelData.Tenant.Id);
             }
+            else
+            {
+                foreach (var member in membersRemoved)
+                {
+                this.telemetryClient.TrackTrace($"New member {member.Id} added to team {teamsChannelData.Team.Id}");
+                await this.dataProvider.RemoveUserTeamAsync(member.Id, teamsChannelData.Team.Id);
+                }
+            }
 
             await base.OnMembersRemovedAsync(membersRemoved, turnContext, cancellationToken);
         }
