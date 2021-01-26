@@ -34,7 +34,6 @@ namespace Icebreaker.Bot
         private readonly MicrosoftAppCredentials appCredentials;
         private readonly TelemetryClient telemetryClient;
         private readonly string botDisplayName;
-        private readonly BotAdapter botAdapter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBot"/> class.
@@ -43,15 +42,13 @@ namespace Icebreaker.Bot
         /// <param name="conversationHelper">Conversation helper instance to notify team members</param>
         /// <param name="appCredentials">Microsoft app credentials to use.</param>
         /// <param name="telemetryClient">The telemetry client to use</param>
-        /// <param name="botAdapter">Bot adapter</param>
-        public IcebreakerBot(IBotDataProvider dataProvider, ConversationHelper conversationHelper, MicrosoftAppCredentials appCredentials, TelemetryClient telemetryClient, BotAdapter botAdapter)
+        public IcebreakerBot(IBotDataProvider dataProvider, ConversationHelper conversationHelper, MicrosoftAppCredentials appCredentials, TelemetryClient telemetryClient)
         {
             this.dataProvider = dataProvider;
             this.conversationHelper = conversationHelper;
             this.appCredentials = appCredentials;
             this.telemetryClient = telemetryClient;
             this.botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
-            this.botAdapter = botAdapter;
         }
 
         /// <summary>
@@ -384,6 +381,16 @@ namespace Icebreaker.Bot
             await this.NotifyTeamAsync(turnContext, MessageFactory.Attachment(welcomeTeamMessageCard), teamId, cancellationToken);
 
             // welcome users on team
+            var teamInfo = await this.GetInstalledTeam(teamId);
+            var botAdapter = turnContext.Adapter;
+            var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
+            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
+
+            foreach (var member in members)
+            {
+                var userId = member.Id;
+                await this.WelcomeUser(turnContext, userId, tenantId, teamId, cancellationToken);
+            }
         }
 
         /// <summary>
