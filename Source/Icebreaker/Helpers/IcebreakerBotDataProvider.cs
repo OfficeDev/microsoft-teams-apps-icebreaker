@@ -17,6 +17,7 @@ namespace Icebreaker.Helpers
     using Microsoft.Azure.Documents;
     using Microsoft.Azure.Documents.Client;
     using Microsoft.Azure.Documents.Linq;
+    using Microsoft.Bot.Schema;
 
     /// <summary>
     /// Data provider routines
@@ -31,6 +32,7 @@ namespace Icebreaker.Helpers
         private readonly ISecretsHelper secretsHelper;
         private DocumentClient documentClient;
         private Database database;
+        private DocumentCollection pairsCollection;
         private DocumentCollection teamsCollection;
         private DocumentCollection usersCollection;
         private DocumentCollection feedbackCollection;
@@ -66,6 +68,57 @@ namespace Icebreaker.Helpers
                 var documentUri = UriFactory.CreateDocumentUri(this.database.Id, this.teamsCollection.Id, team.Id);
                 var response = await this.documentClient.DeleteDocumentAsync(documentUri, new RequestOptions { PartitionKey = new PartitionKey(team.Id) });
             }
+        }
+
+        /// <summary>
+        /// Get a list of past pairings
+        /// </summary>
+        /// <returns>List of past pairings.</returns>
+        public async Task<IList<PairInfo>> GetPairHistoryAsync()
+        {
+            await this.EnsureInitializedAsync();
+
+            var pairHistory = new List<PairInfo>();
+
+            try
+            {
+                using (var lookupQuery = this.documentClient
+                    .CreateDocumentQuery<PairInfo>(this.pairsCollection.SelfLink, new FeedOptions { EnableCrossPartitionQuery = true })
+                    .AsDocumentQuery())
+                {
+                    while (lookupQuery.HasMoreResults)
+                    {
+                        var response = await lookupQuery.ExecuteNextAsync<PairInfo>();
+                        pairHistory.AddRange(response);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this.telemetryClient.TrackException(ex.InnerException);
+            }
+
+            return pairHistory;
+        }
+
+        /// <summary>
+        /// Record a pairing that was made
+        /// </summary>
+        /// <param name="pair">A pairing.</param>
+        /// <param name="iteration">Value that indicates the iteration cycle when the pairing happened.</param>
+        /// <returns>Tracking task</returns>
+        public async Task AddPairAsync(Tuple<string, string> pair, int iteration)
+        {
+            await this.EnsureInitializedAsync();
+
+            var pairInfo = new PairInfo
+            {
+                User1Id = pair.Item1,
+                User2Id = pair.Item2,
+                Iteration = iteration,
+            };
+
+            var response = await this.documentClient.CreateDocumentAsync(this.pairsCollection.SelfLink, pairInfo);
         }
 
         /// <summary>
@@ -241,6 +294,7 @@ namespace Icebreaker.Helpers
 
             var endpointUrl = CloudConfigurationManager.GetSetting("CosmosDBEndpointUrl");
             var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
+            var pairsCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionPairs");
             var teamsCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
             var usersCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
             var feedbackCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionFeedback");
@@ -269,6 +323,14 @@ namespace Icebreaker.Helpers
                     throw;
                 }
             }
+
+            // Get a reference to the Pairs collection, creating it if needed
+            var pairCollectionDefinition = new DocumentCollection
+            {
+                Id = pairsCollectionName,
+            };
+            pairCollectionDefinition.PartitionKey.Paths.Add("/id");
+            this.pairsCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, pairCollectionDefinition, useSharedOffer ? null : requestOptions);
 
             // Get a reference to the Teams collection, creating it if needed
             var teamsCollectionDefinition = new DocumentCollection

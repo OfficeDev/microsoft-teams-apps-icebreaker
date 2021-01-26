@@ -344,6 +344,7 @@
     <Compile Include="Helpers\AdaptiveCards\WelcomeTeamAdaptiveCard.cs" />
     <Compile Include="Helpers\ConversationHelper.cs" />
     <Compile Include="Helpers\IcebreakerBotDataProvider.cs" />
+    <Compile Include="Helpers\PairInfo.cs" />
     <Compile Include="Helpers\TeamInstallInfo.cs" />
     <Compile Include="Helpers\UserInfo.cs" />
     <Compile Include="Helpers\UserFeedback.cs" />

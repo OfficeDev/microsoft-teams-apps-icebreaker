@@ -6,6 +6,16 @@ All these resources are created in your Azure subscription. None are hosted dire
 
 ## Azure Cosmos DB Account
 
+### Pairs Collection
+
+The Pairs Collection stores the metadata needed to determine pairings that should be avoided to prevent frequent repetition.
+
+| Value         | Description
+| ---           | ---
+| User1Id       | The first user of the pair's ID
+| User2Id       | The second user of the pair's ID
+| Iteration     | The ID of the iteration that this match occured in
+
 ### Teams Collection
 
 The Teams Collection stores the metadata needed to determine which teams are being tracked for pairups by the bot and the metadata needed to fetch the roster and notify the users for each team.
