@@ -10,6 +10,11 @@ namespace Icebreaker.Helpers
     public enum AdaptiveCardName
     {
         /// <summary>
+        /// Represents the card sent to collect user feedback
+        /// </summary>
+        Feedback,
+
+        /// <summary>
         /// Represents the pair-up card sent after matching
         /// </summary>
         PairUpNotification,

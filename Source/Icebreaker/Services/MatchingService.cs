@@ -145,10 +145,18 @@ namespace Icebreaker.Services
             // Fill in person1's info in the card for person2
             var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2, teamsPerson1, this.botDisplayName);
 
+            // Feedback card for both users
+            var feedbackCard = FeedbackAdaptiveCard.GetCard();
+
             // Send notifications and return the number that was successful
             var notifyResults = await Task.WhenAll(
                 this.conversationHelper.NotifyUserAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, MessageFactory.Attachment(cardForPerson1), teamsPerson1, teamModel.TenantId, cancellationToken),
                 this.conversationHelper.NotifyUserAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, MessageFactory.Attachment(cardForPerson2), teamsPerson2, teamModel.TenantId, cancellationToken));
+
+            // Send feedback cards
+            await this.conversationHelper.NotifyUserAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, MessageFactory.Attachment(feedbackCard), teamsPerson1, teamModel.TenantId, cancellationToken);
+            await this.conversationHelper.NotifyUserAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, MessageFactory.Attachment(feedbackCard), teamsPerson2, teamModel.TenantId, cancellationToken);
+
             return notifyResults.Count(wasNotified => wasNotified);
         }
 

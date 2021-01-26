@@ -23,6 +23,7 @@ namespace Icebreaker.Bot
     using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Implements the core logic for Icebreaker bot
@@ -229,6 +230,14 @@ namespace Icebreaker.Bot
                 var senderAadId = activity.From.AadObjectId;
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
 
+                // Adaptive card was submitted
+                if (!string.IsNullOrEmpty(activity.ReplyToId) && (activity.Value != null) && ((JObject)activity.Value).HasValues)
+                {
+                    this.telemetryClient.TrackTrace("Adaptive card submitted");
+                    await this.OnAdaptiveCardSubmitAsync(activity, turnContext, cancellationToken).ConfigureAwait(false);
+                    return;
+                }
+
                 if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
                 {
                     // User opted out
@@ -311,6 +320,47 @@ namespace Icebreaker.Bot
             {
                 this.telemetryClient.TrackTrace($"Error while handling message activity: {ex.Message}", SeverityLevel.Warning);
                 this.telemetryClient.TrackException(ex);
+            }
+        }
+
+        /// <summary>
+        /// Handle opt in/out operations by updating user preference in data store.
+        /// </summary>
+        /// <param name="activity">Message from submitted card</param>
+        /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        private async Task OnAdaptiveCardSubmitAsync(Activity activity, ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            var cardPayload = JToken.Parse(activity.Value.ToString());
+            var cardType = cardPayload["action"].Value<string>().ToLowerInvariant();
+            var teamId = activity.Conversation.Id;
+
+            // CLEAN UP HARDCODED TEXT
+            switch (cardType)
+            {
+                case "feedback":
+
+                    // add to database
+                    this.telemetryClient.TrackTrace("Received feedback");
+                    var rating = cardPayload["rating"].Value<string>();
+                    var comments = cardPayload["comments"].Value<string>();
+
+                    await this.dataProvider.AddFeedbackAsync(rating, comments, teamId);
+
+                    // send thank you message
+                    var feedbackSubmitReply = activity.CreateReply();
+                    feedbackSubmitReply.Attachments = new List<Attachment>
+                    {
+                        new HeroCard()
+                        {
+                            Text = "Thank you :DD"
+                        }.ToAttachment(),
+                    };
+
+                    await turnContext.SendActivityAsync(feedbackSubmitReply, cancellationToken).ConfigureAwait(false);
+
+                    break;
             }
         }
 

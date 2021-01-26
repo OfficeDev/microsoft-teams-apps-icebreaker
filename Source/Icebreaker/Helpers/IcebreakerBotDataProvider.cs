@@ -33,6 +33,7 @@ namespace Icebreaker.Helpers
         private Database database;
         private DocumentCollection teamsCollection;
         private DocumentCollection usersCollection;
+        private DocumentCollection feedbackCollection;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBotDataProvider"/> class.
@@ -142,7 +143,7 @@ namespace Icebreaker.Helpers
         }
 
         /// <summary>
-        /// Get the stored information about given users
+        /// Get the stored opt-in information about given users
         /// </summary>
         /// <returns>User information</returns>
         public async Task<Dictionary<string, bool>> GetAllUsersOptInStatusAsync()
@@ -211,6 +212,26 @@ namespace Icebreaker.Helpers
         }
 
         /// <summary>
+        /// Adds feedback
+        /// </summary>
+        /// <param name="feedbackRating">User numerical rating</param>
+        /// <param name="feedbackText">Text of user comment</param>
+        /// <param name="teamId">Team id</param>
+        /// <returns>Tracking task</returns>
+        public async Task AddFeedbackAsync(string feedbackRating, string feedbackText, string teamId)
+        {
+            await this.EnsureInitializedAsync();
+
+            var userFeedback = new UserFeedback
+            {
+                FeedbackRating = feedbackRating,
+                FeedbackText = feedbackText,
+                TeamId = teamId
+            };
+            await this.documentClient.UpsertDocumentAsync(this.feedbackCollection.SelfLink, userFeedback);
+        }
+
+        /// <summary>
         /// Initializes the database connection.
         /// </summary>
         /// <returns>Tracking task</returns>
@@ -222,6 +243,7 @@ namespace Icebreaker.Helpers
             var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
             var teamsCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
             var usersCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
+            var feedbackCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionFeedback");
 
             this.documentClient = new DocumentClient(new Uri(endpointUrl), this.secretsHelper.CosmosDBKey);
 
@@ -263,6 +285,14 @@ namespace Icebreaker.Helpers
             };
             usersCollectionDefinition.PartitionKey.Paths.Add("/id");
             this.usersCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, usersCollectionDefinition, useSharedOffer ? null : requestOptions);
+
+            // Get a reference to the Feedback collection, creating it if needed
+            var feedbackCollectionDefinition = new DocumentCollection
+            {
+                Id = feedbackCollectionName
+            };
+            feedbackCollectionDefinition.PartitionKey.Paths.Add("/id");
+            this.feedbackCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, feedbackCollectionDefinition, useSharedOffer ? null : requestOptions);
 
             this.telemetryClient.TrackTrace("Data store initialized");
         }
