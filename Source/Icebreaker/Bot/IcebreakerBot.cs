@@ -414,7 +414,7 @@ namespace Icebreaker.Bot
         /// <param name="turnContext">Turn context</param>
         /// <param name="botInstaller">Person that has added the bot to the team</param>
         /// <returns>Tracking task</returns>
-        private async Task<Task> SaveAddedToTeamAsync(string serviceUrl, string teamId, ITurnContext turnContext, string botInstaller)
+        private async Task SaveAddedToTeamAsync(string serviceUrl, string teamId, ITurnContext turnContext, string botInstaller)
         {
             var teamInfo = await this.GetInstalledTeam(teamId);
             var botAdapter = (BotFrameworkAdapter)turnContext.Adapter;
@@ -434,7 +434,7 @@ namespace Icebreaker.Bot
                 TenantId = tenantId,
                 InstallerName = botInstaller
             };
-            return this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
+            await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
         }
 
         /// <summary>
@@ -443,7 +443,7 @@ namespace Icebreaker.Bot
         /// <param name="teamId">The team id</param>
         /// <param name="turnContext">The turn context</param>
         /// <returns>Tracking task</returns>
-        private async Task<Task> SaveRemoveFromTeamAsync(string teamId, ITurnContext turnContext)
+        private async Task SaveRemoveFromTeamAsync(string teamId, ITurnContext turnContext)
         {
             var teamInfo = await this.GetInstalledTeam(teamId);
             var botAdapter = (BotFrameworkAdapter)turnContext.Adapter;
@@ -461,7 +461,7 @@ namespace Icebreaker.Bot
                 TeamId = teamId,
                 TenantId = tenantId,
             };
-            return this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, false);
+            await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, false);
         }
 
         /// <summary>
