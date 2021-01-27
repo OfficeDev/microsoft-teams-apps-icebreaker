@@ -421,12 +421,6 @@ namespace Icebreaker.Bot
             var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
             var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
 
-            foreach (var member in members)
-            {
-                var userId = member.Id;
-                await this.dataProvider.AddUserTeamAsync(tenantId, userId, teamId, serviceUrl);
-            }
-
             var teamInstallInfo = new TeamInstallInfo
             {
                 ServiceUrl = serviceUrl,
@@ -435,6 +429,12 @@ namespace Icebreaker.Bot
                 InstallerName = botInstaller
             };
             await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
+
+            foreach (var member in members)
+            {
+                var userId = member.Id;
+                await this.dataProvider.AddUserTeamAsync(tenantId, userId, teamId, serviceUrl);
+            }
         }
 
         /// <summary>
@@ -450,18 +450,18 @@ namespace Icebreaker.Bot
             var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
             var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
 
-            foreach (var member in members)
-            {
-                var userId = member.Id;
-                await this.dataProvider.RemoveUserTeamAsync(userId, teamId);
-            }
-
             var teamInstallInfo = new TeamInstallInfo
             {
                 TeamId = teamId,
                 TenantId = tenantId,
             };
             await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, false);
+
+            foreach (var member in members)
+            {
+                var userId = member.Id;
+                await this.dataProvider.RemoveUserTeamAsync(userId, teamId);
+            }
         }
 
         /// <summary>
