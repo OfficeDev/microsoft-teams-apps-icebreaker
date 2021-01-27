@@ -143,14 +143,14 @@ namespace Icebreaker.Bot
                         // Note that in some cases we cannot resolve it to a team member, because the app was installed to the team programmatically via Graph
                         var personThatAddedBot = (await this.conversationHelper.GetMemberAsync(turnContext, message.From.Id, cancellationToken))?.Name;
 
-                        await this.SaveAddedToTeamAsync(serviceUrl, teamId, turnContext, personThatAddedBot);
+                        // await this.SaveAddedToTeamAsync(serviceUrl, teamId, turnContext, personThatAddedBot);
                         await this.WelcomeTeam(turnContext, personThatAddedBot, cancellationToken);
                     }
                     else
                     {
                         this.telemetryClient.TrackTrace($"New member {member.Id} added to team {teamsChannelData.Team.Id}");
 
-                        await this.dataProvider.AddUserTeamAsync(tenantId, member.Id, teamsChannelData.Team.Id, serviceUrl);
+                        // await this.dataProvider.AddUserTeamAsync(tenantId, member.Id, teamsChannelData.Team.Id, serviceUrl);
 
                         await this.WelcomeUser(turnContext, member.Id, tenantId, teamsChannelData.Team.Id, cancellationToken);
                     }
