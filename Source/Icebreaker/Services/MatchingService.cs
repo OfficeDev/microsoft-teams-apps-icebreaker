@@ -175,14 +175,14 @@ namespace Icebreaker.Services
             // Pull the roster of specified team and then remove everyone who has opted out explicitly
             var members = await this.conversationHelper.GetTeamMembers(this.botAdapter, teamInfo);
 
-            this.telemetryClient.TrackTrace($"Found {members.Count} in team {teamInfo.TeamId}");
+            this.telemetryClient.TrackTrace($"Found {members.Count} in team {teamInfo.Id}");
 
             return members
                 .Where(member => member != null)
                 .Where(member =>
                 {
                     var memberObjectId = this.GetChannelUserObjectId(member);
-                    return !dbMembersLookup.ContainsKey(memberObjectId) || dbMembersLookup[memberObjectId][teamInfo.TeamId];
+                    return !dbMembersLookup.ContainsKey(memberObjectId) || dbMembersLookup[memberObjectId][teamInfo.Id];
                 })
                 .ToList();
         }

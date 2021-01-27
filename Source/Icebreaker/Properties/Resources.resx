@@ -182,7 +182,7 @@
     <comment>The confirmation reply that is sent when the user resumes the matches</comment>
   </data>
   <data name="OptOutConfirmation" xml:space="preserve">
-    <value>All set. I've paused your matches. You can turn them back on whenever you like.</value>
+    <value>All set. I've paused your matches. You will be missed, but you can turn them back on whenever you like.</value>
     <comment>The confirmation reply that is sent when the user pauses all matches</comment>
   </data>
   <data name="PausePairingsButtonText" xml:space="preserve">
