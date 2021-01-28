@@ -66,6 +66,11 @@
           "text": "optout"
         }
       }
+    },
+    {
+      "type": "Action.ShowCard",
+      "title": "View my teams",
+      "card": { welcomeNewMember }
     }
   ],
   "version": "1.0"
