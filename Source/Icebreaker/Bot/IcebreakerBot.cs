@@ -417,7 +417,7 @@ namespace Icebreaker.Bot
         private async Task SaveAddedToTeamAsync(string serviceUrl, string teamId, ITurnContext turnContext, string botInstaller)
         {
             var teamInfo = await this.GetInstalledTeam(teamId);
-            var botAdapter = (BotFrameworkAdapter)turnContext.Adapter;
+            var botAdapter = turnContext.Adapter;
             var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
             var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
 
@@ -446,7 +446,7 @@ namespace Icebreaker.Bot
         private async Task SaveRemoveFromTeamAsync(string teamId, ITurnContext turnContext)
         {
             var teamInfo = await this.GetInstalledTeam(teamId);
-            var botAdapter = (BotFrameworkAdapter)turnContext.Adapter;
+            var botAdapter = turnContext.Adapter;
             var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
             var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
 
