@@ -58,6 +58,17 @@
           "text": "optout"
         }
       }
+    },
+    {
+      "type": "Action.Submit",
+      "title": "Pause this team",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "Pause this team",
+          "text": "pauseteam${teamId}"
+        }
+      }
     }
   ],
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",

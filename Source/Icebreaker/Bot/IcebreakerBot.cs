@@ -311,6 +311,66 @@ namespace Icebreaker.Bot
 
                     await turnContext.SendActivityAsync(optInReply, cancellationToken).ConfigureAwait(false);
                 }
+                else if (activity.Text.StartsWith("pauseteam"))
+                {
+                    // User opted out of specific team
+                    var teamId = activity.Text.Substring(9);
+                    var teamInfo = await this.GetInstalledTeam(teamId);
+                    var botAdapter = turnContext.Adapter;
+                    var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
+                    this.telemetryClient.TrackTrace($"User {senderAadId} opted out of team {teamId}");
+
+                    await this.OptUserTeamAsync(tenantId, senderAadId, teamId, activity.ServiceUrl, false);
+
+                    var optOutReply = activity.CreateReply();
+                    optOutReply.Attachments = new List<Attachment>
+                    {
+                        new HeroCard()
+                        {
+                            Text = $"You've paused matches for {teamName}. We'll miss you!",
+                            Buttons = new List<CardAction>()
+                            {
+                                new CardAction()
+                                {
+                                    Title = "Resume this team",
+                                    DisplayText = "Resume this team",
+                                    Type = ActionTypes.MessageBack,
+                                    Text = $"resumeteam{teamId}"
+                                }
+                            }
+                        }.ToAttachment(),
+                    };
+                }
+                else if (activity.Text.StartsWith("resumeteam"))
+                {
+                    // User opted out of specific team
+                    var teamId = activity.Text.Substring(10);
+                    var teamInfo = await this.GetInstalledTeam(teamId);
+                    var botAdapter = turnContext.Adapter;
+                    var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
+                    this.telemetryClient.TrackTrace($"User {senderAadId} opted into team {teamId}");
+
+                    await this.OptUserTeamAsync(tenantId, senderAadId, teamId, activity.ServiceUrl, true);
+
+                    var optOutReply = activity.CreateReply();
+                    optOutReply.Attachments = new List<Attachment>
+                    {
+                        new HeroCard()
+                        {
+                            Text = $"You've resumed matches for {teamName}. Yay :D",
+                            Buttons = new List<CardAction>()
+                            {
+                                new CardAction()
+                                {
+                                    Title = "Pause this team",
+                                    DisplayText = "Pause this team",
+                                    Type = ActionTypes.MessageBack,
+                                    Text = $"pauseteam{teamId}"
+                                }
+                            }
+                        }.ToAttachment(),
+                    };
+                }
                 else
                 {
                     // Unknown input
@@ -355,7 +415,7 @@ namespace Icebreaker.Bot
 
             if (userThatJustJoined != null)
             {
-                var welcomeMessageCard = WelcomeNewMemberAdaptiveCard.GetCard(teamName, userThatJustJoined.Name, this.botDisplayName, installedTeam.InstallerName);
+                var welcomeMessageCard = WelcomeNewMemberAdaptiveCard.GetCard(teamName, teamId, userThatJustJoined.Name, this.botDisplayName, installedTeam.InstallerName);
                 await this.conversationHelper.NotifyUserAsync(turnContext, MessageFactory.Attachment(welcomeMessageCard), userThatJustJoined, tenantId, cancellationToken);
             }
             else
@@ -485,6 +545,24 @@ namespace Icebreaker.Bot
             {
                 optedIn[team] = optStatus;
             }
+
+            return this.dataProvider.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl);
+        }
+
+        /// <summary>
+        /// Opt the user in/out from a team's pairups
+        /// </summary>
+        /// <param name="tenantId">The tenant id</param>
+        /// <param name="userId">The user id</param>
+        /// <param name="teamId">The team id</param>
+        /// <param name="serviceUrl">The service url</param>
+        /// <param name="optStatus">Opt in or out</param>
+        /// <returns>Tracking task</returns>
+        private async Task<Task> OptUserTeamAsync(string tenantId, string userId, string teamId, string serviceUrl, bool optStatus)
+        {
+            var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
+            var optedIn = userInfo.OptedIn;
+            optedIn[teamId] = optStatus;
 
             return this.dataProvider.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl);
         }
