@@ -311,6 +311,7 @@ namespace Icebreaker.Bot
 
                     await turnContext.SendActivityAsync(optInReply, cancellationToken).ConfigureAwait(false);
                 }
+                /*
                 else if (activity.Text.StartsWith("pauseteam"))
                 {
                     // User opted out of specific team
@@ -375,6 +376,7 @@ namespace Icebreaker.Bot
 
                     await turnContext.SendActivityAsync(optInReply, cancellationToken).ConfigureAwait(false);
                 }
+                */
                 else
                 {
                     // Unknown input
