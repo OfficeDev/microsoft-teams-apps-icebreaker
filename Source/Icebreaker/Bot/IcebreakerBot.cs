@@ -453,18 +453,20 @@ namespace Icebreaker.Bot
             var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
             var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
 
+            // remove team from user docs
+            foreach (var member in members)
+            {
+                var userId = member.Id;
+                await this.dataProvider.RemoveUserTeamAsync(userId, teamId);
+            }
+
+            // remove team from database
             var teamInstallInfo = new TeamInstallInfo
             {
                 TeamId = teamId,
                 TenantId = tenantId,
             };
             await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, false);
-
-            foreach (var member in members)
-            {
-                var userId = member.Id;
-                await this.dataProvider.RemoveUserTeamAsync(userId, teamId);
-            }
         }
 
         /// <summary>
