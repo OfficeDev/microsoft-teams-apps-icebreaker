@@ -253,8 +253,8 @@ namespace Icebreaker.Bot
                     };
                     this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
 
-/*                    await this.OptUserAllAsync(tenantId, senderAadId, activity.ServiceUrl, false);
-*/
+                    await this.OptUserAllAsync(tenantId, senderAadId, activity.ServiceUrl, false);
+
                     var optOutReply = activity.CreateReply();
                     optOutReply.Attachments = new List<Attachment>
                     {
@@ -547,12 +547,14 @@ namespace Icebreaker.Bot
         {
             var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
             var optedIn = userInfo.OptedIn;
+            var TenantId = userInfo.TenantId;
+            var ServiceUrl = userInfo.ServiceUrl;
             foreach (var team in optedIn.Keys)
             {
                 optedIn[team] = optStatus;
             }
 
-            await this.dataProvider.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl);
+            await this.dataProvider.SetUserInfoAsync(TenantId, userId, optedIn, ServiceUrl);
         }
 
         /// <summary>
