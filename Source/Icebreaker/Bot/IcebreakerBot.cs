@@ -340,6 +340,8 @@ namespace Icebreaker.Bot
                             }
                         }.ToAttachment(),
                     };
+
+                    await turnContext.SendActivityAsync(optOutReply, cancellationToken).ConfigureAwait(false);
                 }
                 else if (activity.Text.StartsWith("resumeteam"))
                 {
@@ -352,8 +354,8 @@ namespace Icebreaker.Bot
 
                     await this.OptUserTeamAsync(tenantId, senderAadId, teamId, activity.ServiceUrl, true);
 
-                    var optOutReply = activity.CreateReply();
-                    optOutReply.Attachments = new List<Attachment>
+                    var optInReply = activity.CreateReply();
+                    optInReply.Attachments = new List<Attachment>
                     {
                         new HeroCard()
                         {
@@ -370,6 +372,8 @@ namespace Icebreaker.Bot
                             }
                         }.ToAttachment(),
                     };
+
+                    await turnContext.SendActivityAsync(optInReply, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
