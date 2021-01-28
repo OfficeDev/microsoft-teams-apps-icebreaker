@@ -18,7 +18,6 @@ namespace Icebreaker.Helpers
     using Microsoft.Azure.Documents.Client;
     using Microsoft.Azure.Documents.Linq;
     using Microsoft.Bot.Schema;
-    using Microsoft.Bot.Schema.Teams;
 
     /// <summary>
     /// Data provider routines
@@ -279,7 +278,7 @@ namespace Icebreaker.Helpers
             // create document if user info doesn't exist yet, otherwise update existing document
             var userInfo = await this.GetUserInfoAsync(userId);
             var optedIn = userInfo?.OptedIn ?? new Dictionary<string, bool>();
-            optedIn[teamId] = true;
+            optedIn.Add(teamId, true);
 
             await this.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl);
         }
