@@ -547,14 +547,12 @@ namespace Icebreaker.Bot
         {
             var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
             var optedIn = userInfo.OptedIn;
-            var TenantId = userInfo.TenantId;
-            var ServiceUrl = userInfo.ServiceUrl;
             foreach (var team in optedIn.Keys)
             {
-                optedIn[team] = optStatus;
+                optedIn.Add(team, optStatus);
             }
 
-            await this.dataProvider.SetUserInfoAsync(TenantId, userId, optedIn, ServiceUrl);
+            await this.dataProvider.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl);
         }
 
         /// <summary>
