@@ -239,7 +239,6 @@ namespace Icebreaker.Bot
             {
                 var activity = turnContext.Activity;
                 var senderAadId = activity.From.AadObjectId;
-                var userId = activity.From.Id;
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
 
                 if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
@@ -254,8 +253,8 @@ namespace Icebreaker.Bot
                     };
                     this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
 
-                    await this.OptUserAllAsync(tenantId, userId, activity.ServiceUrl, false);
-
+/*                    await this.OptUserAllAsync(tenantId, senderAadId, activity.ServiceUrl, false);
+*/
                     var optOutReply = activity.CreateReply();
                     optOutReply.Attachments = new List<Attachment>
                     {
