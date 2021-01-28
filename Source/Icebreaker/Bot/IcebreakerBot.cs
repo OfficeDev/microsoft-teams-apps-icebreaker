@@ -416,10 +416,7 @@ namespace Icebreaker.Bot
         /// <returns>Tracking task</returns>
         private async Task SaveAddedToTeamAsync(string serviceUrl, string teamId, ITurnContext turnContext, string botInstaller)
         {
-            var teamInfo = await this.GetInstalledTeam(teamId);
-            var botAdapter = turnContext.Adapter;
             var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
-            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
 
             var teamInstallInfo = new TeamInstallInfo
             {
@@ -429,6 +426,12 @@ namespace Icebreaker.Bot
                 InstallerName = botInstaller
             };
             await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
+
+            // add users in team
+
+            var teamInfo = await this.GetInstalledTeam(teamId);
+            var botAdapter = turnContext.Adapter;
+            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
 
             foreach (var member in members)
             {
