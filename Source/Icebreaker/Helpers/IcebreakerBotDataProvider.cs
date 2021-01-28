@@ -278,8 +278,7 @@ namespace Icebreaker.Helpers
             // create document if user info doesn't exist yet, otherwise update existing document
             var userInfo = await this.GetUserInfoAsync(userId);
             var optedIn = userInfo?.OptedIn ?? new Dictionary<string, bool>();
-            /*optedIn.Add(teamId, true);*/
-            optedIn[teamId] = true;
+            optedIn.Add(teamId, true);
 
             await this.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl);
         }
