@@ -543,7 +543,7 @@ namespace Icebreaker.Bot
         /// <param name="serviceUrl">The service url</param>
         /// <param name="optStatus">Opt in or out</param>
         /// <returns>Tracking task</returns>
-        private async Task<Task> OptUserAllAsync(string tenantId, string userId, string serviceUrl, bool optStatus)
+        private async Task OptUserAllAsync(string tenantId, string userId, string serviceUrl, bool optStatus)
         {
             var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
             var optedIn = userInfo.OptedIn;
@@ -552,7 +552,7 @@ namespace Icebreaker.Bot
                 optedIn[team] = optStatus;
             }
 
-            return this.dataProvider.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl);
+            await this.dataProvider.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl);
         }
 
         /// <summary>
@@ -564,13 +564,13 @@ namespace Icebreaker.Bot
         /// <param name="serviceUrl">The service url</param>
         /// <param name="optStatus">Opt in or out</param>
         /// <returns>Tracking task</returns>
-        private async Task<Task> OptUserTeamAsync(string tenantId, string userId, string teamId, string serviceUrl, bool optStatus)
+        private async Task OptUserTeamAsync(string tenantId, string userId, string teamId, string serviceUrl, bool optStatus)
         {
             var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
             var optedIn = userInfo.OptedIn;
             optedIn[teamId] = optStatus;
 
-            return this.dataProvider.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl);
+            await this.dataProvider.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl);
         }
 
         /// <summary>
