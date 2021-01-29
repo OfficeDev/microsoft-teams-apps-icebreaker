@@ -243,6 +243,16 @@ namespace Icebreaker.Bot
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
                 var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
 
+                // TESTING: DELETE THIS
+                var test = activity.CreateReply();
+                test.Attachments = new List<Attachment>
+                {
+                    new HeroCard()
+                    {
+                        Text = $"userInfo: {userInfo.Id}"
+                    }.ToAttachment(),
+                };
+
                 if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
                 {
                     // User opted out
