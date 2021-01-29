@@ -23,6 +23,7 @@ namespace Icebreaker.Bot
     using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Implements the core logic for Icebreaker bot
@@ -143,6 +144,12 @@ namespace Icebreaker.Bot
 
                         await this.SaveAddedToTeam(message.ServiceUrl, teamId, teamsChannelData.Tenant.Id, personThatAddedBot);
                         await this.WelcomeTeam(turnContext, personThatAddedBot, cancellationToken);
+
+                        var users = await ((BotFrameworkAdapter)turnContext.Adapter).GetConversationMembersAsync(turnContext, cancellationToken);
+                        foreach (var user in users)
+                        {
+                            await this.WelcomeUser(turnContext, user.Id, teamsChannelData.Tenant.Id, teamsChannelData.Team.Id, cancellationToken);
+                        }
                     }
                     else
                     {
@@ -226,22 +233,26 @@ namespace Icebreaker.Bot
             try
             {
                 var activity = turnContext.Activity;
-                var senderAadId = activity.From.AadObjectId;
+                var senderId = activity.From.Id;
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
 
-                if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
+                if (!string.IsNullOrEmpty(activity.ReplyToId) && (activity.Value != null) && ((JObject)activity.Value).HasValues)
+                {
+                    await this.OnProfileSaveAsync(activity, turnContext, cancellationToken).ConfigureAwait(false);
+                }
+                else if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
                 {
                     // User opted out
-                    this.telemetryClient.TrackTrace($"User {senderAadId} opted out");
+                    this.telemetryClient.TrackTrace($"User {senderId} opted out");
 
                     var properties = new Dictionary<string, string>
                     {
-                        { "UserAadId", senderAadId },
+                        { "UserAadId", senderId },
                         { "OptInStatus", "false" },
                     };
                     this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
 
-                    await this.OptOutUser(tenantId, senderAadId, activity.ServiceUrl);
+                    await this.OptOutUser(tenantId, senderId, activity.ServiceUrl);
 
                     var optOutReply = activity.CreateReply();
                     optOutReply.Attachments = new List<Attachment>
@@ -267,16 +278,16 @@ namespace Icebreaker.Bot
                 else if (string.Equals(activity.Text, MatchingActions.OptIn, StringComparison.InvariantCultureIgnoreCase))
                 {
                     // User opted in
-                    this.telemetryClient.TrackTrace($"User {senderAadId} opted in");
+                    this.telemetryClient.TrackTrace($"User {senderId} opted in");
 
                     var properties = new Dictionary<string, string>
                     {
-                        { "UserAadId", senderAadId },
+                        { "UserAadId", senderId },
                         { "OptInStatus", "true" },
                     };
                     this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
 
-                    await this.OptInUser(tenantId, senderAadId, activity.ServiceUrl);
+                    await this.OptInUser(tenantId, senderId, activity.ServiceUrl);
 
                     var optInReply = activity.CreateReply();
                     optInReply.Attachments = new List<Attachment>
@@ -311,6 +322,42 @@ namespace Icebreaker.Bot
             {
                 this.telemetryClient.TrackTrace($"Error while handling message activity: {ex.Message}", SeverityLevel.Warning);
                 this.telemetryClient.TrackException(ex);
+            }
+        }
+
+         /// <summary>
+        /// Handle profile updates from users.
+        /// </summary>
+        /// <param name="activity">Message from submitted card</param>
+        /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
+        /// <returns>Tracking Task</returns>
+        private async Task OnProfileSaveAsync(Activity activity, ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            var cardPayload = JToken.Parse(activity.Value.ToString());
+            var cardType = cardPayload["action"].Value<string>().ToLowerInvariant();
+
+            switch (cardType)
+            {
+                case "update":
+
+                    var profile = cardPayload["profile"].Value<string>();
+
+                    await this.dataProvider.SetUserProfileAsync(activity.From.Id, profile);
+
+                    // Confirmation message
+                    var reply = activity.CreateReply();
+                    reply.Attachments = new List<Attachment>
+                    {
+                        new HeroCard()
+                        {
+                            Text = "Your profile has been updated!"
+                        }.ToAttachment(),
+                    };
+
+                    await turnContext.SendActivityAsync(reply, cancellationToken).ConfigureAwait(false);
+
+                    break;
             }
         }
 
