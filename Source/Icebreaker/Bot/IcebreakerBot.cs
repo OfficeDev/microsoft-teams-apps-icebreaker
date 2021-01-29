@@ -313,7 +313,7 @@ namespace Icebreaker.Bot
 
                     await turnContext.SendActivityAsync(optInReply, cancellationToken).ConfigureAwait(false);
                 }
-                else if (activity.Text.StartsWith("pauseteam"))
+                else if (string.Equals(activity.Text.Substring(0, 9), "pauseteam", StringComparison.InvariantCultureIgnoreCase))
                 {
                     // User opted out of specific team
                     var teamId = activity.Text.Substring(9);
