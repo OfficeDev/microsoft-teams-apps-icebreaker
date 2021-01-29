@@ -240,6 +240,7 @@ namespace Icebreaker.Bot
                 var activity = turnContext.Activity;
                 var senderAadId = activity.From.AadObjectId;
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
+                var userInfo = await this.dataProvider.GetUserInfoAsync(senderAadId);
 
                 if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -253,7 +254,7 @@ namespace Icebreaker.Bot
                     };
                     this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
 
-                    await this.OptUserAllAsync(tenantId, senderAadId, activity.ServiceUrl, false);
+                    await this.OptUserAll(userInfo, false);
 
                     var optOutReply = activity.CreateReply();
                     optOutReply.Attachments = new List<Attachment>
@@ -288,7 +289,7 @@ namespace Icebreaker.Bot
                     };
                     this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
 
-                    await this.OptUserAllAsync(tenantId, senderAadId, activity.ServiceUrl, true);
+                    await this.OptUserAll(userInfo, true);
 
                     var optInReply = activity.CreateReply();
                     optInReply.Attachments = new List<Attachment>
@@ -535,7 +536,7 @@ namespace Icebreaker.Bot
             await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, false);
         }
 
-        /// <summary>
+        /*/// <summary>
         /// Opt the user in/out from all further pairups
         /// </summary>
         /// <param name="tenantId">The tenant id</param>
@@ -549,10 +550,27 @@ namespace Icebreaker.Bot
             var optedIn = userInfo.OptedIn;
             foreach (var team in optedIn.Keys)
             {
-                optedIn.Add(team, optStatus);
+                optedIn[team] = optStatus;
             }
 
             await this.dataProvider.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl);
+        }*/
+
+        /// <summary>
+        /// Opt the user in/out from all further pairups
+        /// </summary>
+        /// <param name="userInfo">User info</param>
+        /// <param name="optStatus">Opt in or out</param>
+        /// <returns>Tracking task</returns>
+        private Task OptUserAll(UserInfo userInfo, bool optStatus)
+        {
+            var optedIn = userInfo.OptedIn;
+            foreach (var team in optedIn.Keys)
+            {
+                optedIn[team] = optStatus;
+            }
+
+            return this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userInfo.Id, optedIn, userInfo.ServiceUrl);
         }
 
         /// <summary>
