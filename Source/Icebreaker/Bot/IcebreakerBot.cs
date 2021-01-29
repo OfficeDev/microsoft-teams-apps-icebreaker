@@ -243,9 +243,10 @@ namespace Icebreaker.Bot
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
                 var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
 
-                var viewing = activity.CreateReply();
+                // DEBUG: DELETE
+/*                var viewing = activity.CreateReply();
                 viewing.Text = $"message: {activity.Text}";
-                await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);
+                await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);*/
 
                 if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -392,10 +393,10 @@ namespace Icebreaker.Bot
                         var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
                         allTeamNamesList.Add(teamName);
                     }
-                    var teamNames = $"Here are your teams: {allTeamNamesList[0]}";
-                    for (int i = 1; i < allTeamNamesList.Count(); i++)
+                    var teamNames = $"Here are your teams:";
+                    for (int i = 0; i < allTeamNamesList.Count(); i++)
                     {
-                        teamNames += $", {allTeamNamesList[i]}";
+                        teamNames += $"/n{allTeamNamesList[i]}";
                     }
 
                     var teamsReply = activity.CreateReply();
@@ -403,7 +404,7 @@ namespace Icebreaker.Bot
                     {
                         new HeroCard()
                         {
-                            Text = $"Here are your teams: {allTeamNamesList}"
+                            Text = teamNames
                         }.ToAttachment(),
                     };
                     await turnContext.SendActivityAsync(teamsReply, cancellationToken).ConfigureAwait(false);
