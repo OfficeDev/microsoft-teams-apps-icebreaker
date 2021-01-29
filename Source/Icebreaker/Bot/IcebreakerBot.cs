@@ -243,17 +243,6 @@ namespace Icebreaker.Bot
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
                 var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
 
-/*                // DEBUGGING: DELETE THIS
-                var test = activity.CreateReply();
-                test.Attachments = new List<Attachment>
-                {
-                    new HeroCard()
-                    {
-                        Text = $"userInfo: {userInfo.Id}"
-                    }.ToAttachment(),
-                };
-                await turnContext.SendActivityAsync(test, cancellationToken).ConfigureAwait(false);*/
-
                 if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
                 {
                     // User opted out
@@ -333,8 +322,6 @@ namespace Icebreaker.Bot
                     var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
                     this.telemetryClient.TrackTrace($"User {senderAadId} opted out of team {teamId}");
 
-                    await this.OptUserTeam(userInfo, teamId, false);
-
                     var optOutReply = activity.CreateReply();
                     optOutReply.Attachments = new List<Attachment>
                     {
@@ -355,6 +342,8 @@ namespace Icebreaker.Bot
                     };
 
                     await turnContext.SendActivityAsync(optOutReply, cancellationToken).ConfigureAwait(false);
+
+                    await this.OptUserTeam(userInfo, teamId, false);
                 }
                 else if (activity.Text.StartsWith("resumeteam"))
                 {
@@ -422,6 +411,17 @@ namespace Icebreaker.Bot
             {
                 this.telemetryClient.TrackTrace($"Error while handling message activity: {ex.Message}", SeverityLevel.Warning);
                 this.telemetryClient.TrackException(ex);
+
+                // DEBUGGING: DELETE THIS
+                var test = turnContext.Activity.CreateReply();
+                test.Attachments = new List<Attachment>
+                {
+                    new HeroCard()
+                    {
+                        Text = $"yikes"
+                    }.ToAttachment(),
+                };
+                await turnContext.SendActivityAsync(test, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -442,7 +442,7 @@ namespace Icebreaker.Bot
         /// <returns>The team that the bot has been installed to</returns>
         private List<string> GetUserTeams(UserInfo userInfo)
         {
-            var teamsList = new List<string>(userInfo.OptedIn.Keys);
+            var teamsList = userInfo.OptedIn.Keys.ToList();
             return teamsList;
         }
 
