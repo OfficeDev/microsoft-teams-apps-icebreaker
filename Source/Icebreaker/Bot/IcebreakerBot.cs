@@ -243,7 +243,7 @@ namespace Icebreaker.Bot
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
                 var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
 
-                // TESTING: DELETE THIS
+                // DEBUGGING: DELETE THIS
                 var test = activity.CreateReply();
                 test.Attachments = new List<Attachment>
                 {
@@ -257,14 +257,14 @@ namespace Icebreaker.Bot
                 if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
                 {
                     // User opted out
-                    this.telemetryClient.TrackTrace($"User {senderAadId} opted out");
+/*                    this.telemetryClient.TrackTrace($"User {senderAadId} opted out");
 
                     var properties = new Dictionary<string, string>
                     {
                         { "UserAadId", senderAadId },
                         { "OptInStatus", "false" },
                     };
-                    this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
+                    this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);*/
 
                     await this.OptUserAll(userInfo, false);
 
@@ -607,8 +607,9 @@ namespace Icebreaker.Bot
         /// <returns>Tracking task</returns>
         private Task OptUserAll(UserInfo userInfo, bool optStatus)
         {
+            
             var optedIn = userInfo.OptedIn;
-            foreach (var team in optedIn.Keys)
+            foreach (var team in optedIn.Keys.ToList())
             {
                 optedIn[team] = optStatus;
             }
