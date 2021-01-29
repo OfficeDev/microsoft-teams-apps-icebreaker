@@ -241,6 +241,7 @@ namespace Icebreaker.Bot
                 var senderAadId = activity.From.AadObjectId;
                 var userId = activity.From.Id;
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
+                var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
 
                 // TESTING: DELETE THIS
                 var test = activity.CreateReply();
@@ -248,10 +249,10 @@ namespace Icebreaker.Bot
                 {
                     new HeroCard()
                     {
-                        Text = "yeet"
+                        Text = $"userInfo: {userInfo.Id}"
                     }.ToAttachment(),
                 };
-                var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
+                await turnContext.SendActivityAsync(test, cancellationToken).ConfigureAwait(false);
 
                 if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
                 {
