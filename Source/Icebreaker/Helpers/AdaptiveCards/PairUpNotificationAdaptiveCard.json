@@ -66,6 +66,28 @@
           "text": "optout"
         }
       }
+    },
+    {
+      "type": "Action.Submit",
+      "title": "Pause this team",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "Pause this team",
+          "text": "${pauseMessage}"
+        }
+      }
+    },
+    {
+      "type": "Action.Submit",
+      "title": "View my teams",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "View my teams",
+          "text": "viewteams"
+        }
+      }
     }
   ],
   "version": "1.0"
