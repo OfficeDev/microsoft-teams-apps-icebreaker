@@ -243,7 +243,7 @@ namespace Icebreaker.Bot
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
                 var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
 
-                // DEBUGGING: DELETE THIS
+/*                // DEBUGGING: DELETE THIS
                 var test = activity.CreateReply();
                 test.Attachments = new List<Attachment>
                 {
@@ -252,19 +252,19 @@ namespace Icebreaker.Bot
                         Text = $"userInfo: {userInfo.Id}"
                     }.ToAttachment(),
                 };
-                await turnContext.SendActivityAsync(test, cancellationToken).ConfigureAwait(false);
+                await turnContext.SendActivityAsync(test, cancellationToken).ConfigureAwait(false);*/
 
                 if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
                 {
                     // User opted out
-/*                    this.telemetryClient.TrackTrace($"User {senderAadId} opted out");
+                    this.telemetryClient.TrackTrace($"User {senderAadId} opted out");
 
                     var properties = new Dictionary<string, string>
                     {
                         { "UserAadId", senderAadId },
                         { "OptInStatus", "false" },
                     };
-                    this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);*/
+                    this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
 
                     await this.OptUserAll(userInfo, false);
 
@@ -579,26 +579,6 @@ namespace Icebreaker.Bot
             await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, false);
         }
 
-        /*/// <summary>
-        /// Opt the user in/out from all further pairups
-        /// </summary>
-        /// <param name="tenantId">The tenant id</param>
-        /// <param name="userId">The user id</param>
-        /// <param name="serviceUrl">The service url</param>
-        /// <param name="optStatus">Opt in or out</param>
-        /// <returns>Tracking task</returns>
-        private async Task OptUserAllAsync(string tenantId, string userId, string serviceUrl, bool optStatus)
-        {
-            var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
-            var optedIn = userInfo.OptedIn;
-            foreach (var team in optedIn.Keys)
-            {
-                optedIn[team] = optStatus;
-            }
-
-            await this.dataProvider.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl);
-        }*/
-
         /// <summary>
         /// Opt the user in/out from all further pairups
         /// </summary>
@@ -607,7 +587,6 @@ namespace Icebreaker.Bot
         /// <returns>Tracking task</returns>
         private Task OptUserAll(UserInfo userInfo, bool optStatus)
         {
-            
             var optedIn = userInfo.OptedIn;
             foreach (var team in optedIn.Keys.ToList())
             {
