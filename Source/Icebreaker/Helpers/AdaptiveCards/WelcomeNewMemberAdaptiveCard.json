@@ -69,6 +69,17 @@
           "text": "${pauseMessage}"
         }
       }
+    },
+    {
+      "type": "Action.Submit",
+      "title": "View my teams",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "View my teams",
+          "text": "viewteams"
+        }
+      }
     }
   ],
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",

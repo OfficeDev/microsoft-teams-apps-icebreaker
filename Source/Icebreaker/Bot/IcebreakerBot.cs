@@ -377,6 +377,27 @@ namespace Icebreaker.Bot
 
                     await turnContext.SendActivityAsync(optInReply, cancellationToken).ConfigureAwait(false);
                 }
+                else if (string.Equals(activity.Text, "viewteams", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var allTeams = this.GetUserTeams(userInfo);
+                    var allTeamNames = new List<string>();
+                    var botAdapter = turnContext.Adapter;
+                    foreach (var teamId in allTeams)
+                    {
+                        var teamInfo = await this.GetInstalledTeam(teamId);
+                        var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
+                        allTeamNames.Add(teamName);
+                    }
+
+                    var teamsReply = activity.CreateReply();
+                    teamsReply.Attachments = new List<Attachment>
+                    {
+                        new HeroCard()
+                        {
+                            Text = $"Here are your teams: {allTeams}"
+                        }.ToAttachment(),
+                    };
+                }
                 else
                 {
                     // Unknown input
@@ -400,6 +421,17 @@ namespace Icebreaker.Bot
         private Task<TeamInstallInfo> GetInstalledTeam(string teamId)
         {
             return this.dataProvider.GetInstalledTeamAsync(teamId);
+        }
+
+        /// <summary>
+        /// Gets teams user is in
+        /// </summary>
+        /// <param name="userInfo">User info</param>
+        /// <returns>The team that the bot has been installed to</returns>
+        private List<string> GetUserTeams(UserInfo userInfo)
+        {
+            var teamsList = new List<string>(userInfo.OptedIn.Keys);
+            return teamsList;
         }
 
         /// <summary>
