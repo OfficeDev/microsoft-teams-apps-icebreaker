@@ -379,17 +379,11 @@ namespace Icebreaker.Bot
                 }
                 else if (string.Equals(activity.Text, "viewteams", StringComparison.InvariantCultureIgnoreCase))
                 {
+/*                    var viewing = activity.CreateReply();
+                    viewing.Text = "viewing teams";
+*/
+
                     var allTeams = this.GetUserTeams(userInfo);
-
-                    var teamsReply = activity.CreateReply();
-                    teamsReply.Attachments = new List<Attachment>
-                    {
-                        new HeroCard()
-                        {
-                            Text = $"Here are your teams: {allTeams}"
-                        }.ToAttachment(),
-                    };
-
                     var allTeamNames = new List<string>();
                     var botAdapter = turnContext.Adapter;
                     foreach (var teamId in allTeams)
@@ -398,6 +392,16 @@ namespace Icebreaker.Bot
                         var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
                         allTeamNames.Add(teamName);
                     }
+
+                    var teamsReply = activity.CreateReply();
+                    teamsReply.Attachments = new List<Attachment>
+                    {
+                        new HeroCard()
+                        {
+                            Text = $"Here are your teams: {allTeamNames}"
+                        }.ToAttachment(),
+                    };
+                    await turnContext.SendActivityAsync(teamsReply, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
