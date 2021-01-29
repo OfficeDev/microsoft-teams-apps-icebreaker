@@ -565,7 +565,7 @@ namespace Icebreaker.Bot
         /// <returns>Tracking task</returns>
         private Task OptUserAll(UserInfo userInfo, bool optStatus)
         {
-            var optedIn = userInfo.OptedIn;
+            var optedIn = userInfo?.OptedIn ?? new Dictionary<string, bool>();
             foreach (var team in optedIn.Keys)
             {
                 optedIn[team] = optStatus;
