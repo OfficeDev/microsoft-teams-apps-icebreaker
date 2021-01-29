@@ -243,6 +243,10 @@ namespace Icebreaker.Bot
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
                 var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
 
+                var viewing = activity.CreateReply();
+                viewing.Text = $"message: {activity.Text}";
+                await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);
+
                 if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
                 {
                     // User opted out
@@ -379,18 +383,19 @@ namespace Icebreaker.Bot
                 }
                 else if (string.Equals(activity.Text, "viewteams", StringComparison.InvariantCultureIgnoreCase))
                 {
-/*                    var viewing = activity.CreateReply();
-                    viewing.Text = "viewing teams";
-*/
-
                     var allTeams = this.GetUserTeams(userInfo);
-                    var allTeamNames = new List<string>();
+                    var allTeamNamesList = new List<string>();
                     var botAdapter = turnContext.Adapter;
                     foreach (var teamId in allTeams)
                     {
                         var teamInfo = await this.GetInstalledTeam(teamId);
                         var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
-                        allTeamNames.Add(teamName);
+                        allTeamNamesList.Add(teamName);
+                    }
+                    var teamNames = $"Here are your teams: {allTeamNamesList[0]}";
+                    for (int i = 1; i < allTeamNamesList.Count(); i++)
+                    {
+                        teamNames += $", {allTeamNamesList[i]}";
                     }
 
                     var teamsReply = activity.CreateReply();
@@ -398,7 +403,7 @@ namespace Icebreaker.Bot
                     {
                         new HeroCard()
                         {
-                            Text = $"Here are your teams: {allTeamNames}"
+                            Text = $"Here are your teams: {allTeamNamesList}"
                         }.ToAttachment(),
                     };
                     await turnContext.SendActivityAsync(teamsReply, cancellationToken).ConfigureAwait(false);
