@@ -393,10 +393,10 @@ namespace Icebreaker.Bot
                         var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
                         allTeamNamesList.Add(teamName);
                     }
-                    var teamNames = $"Here are your teams:";
-                    for (int i = 0; i < allTeamNamesList.Count(); i++)
+                    var teamNames = $"Here are your teams: {allTeamNamesList[0]}";
+                    for (int i = 1; i < allTeamNamesList.Count(); i++)
                     {
-                        teamNames += $"/n{allTeamNamesList[i]}";
+                        teamNames += $", {allTeamNamesList[i]}";
                     }
 
                     var teamsReply = activity.CreateReply();
