@@ -313,7 +313,6 @@ namespace Icebreaker.Bot
 
                     await turnContext.SendActivityAsync(optInReply, cancellationToken).ConfigureAwait(false);
                 }
-                /*
                 else if (activity.Text.StartsWith("pauseteam"))
                 {
                     // User opted out of specific team
@@ -323,7 +322,7 @@ namespace Icebreaker.Bot
                     var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
                     this.telemetryClient.TrackTrace($"User {senderAadId} opted out of team {teamId}");
 
-                    await this.OptUserTeamAsync(tenantId, senderAadId, teamId, activity.ServiceUrl, false);
+                    await this.OptUserTeam(userInfo, teamId, false);
 
                     var optOutReply = activity.CreateReply();
                     optOutReply.Attachments = new List<Attachment>
@@ -355,7 +354,7 @@ namespace Icebreaker.Bot
                     var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
                     this.telemetryClient.TrackTrace($"User {senderAadId} opted into team {teamId}");
 
-                    await this.OptUserTeamAsync(tenantId, senderAadId, teamId, activity.ServiceUrl, true);
+                    await this.OptUserTeam(userInfo, teamId, true);
 
                     var optInReply = activity.CreateReply();
                     optInReply.Attachments = new List<Attachment>
@@ -378,7 +377,6 @@ namespace Icebreaker.Bot
 
                     await turnContext.SendActivityAsync(optInReply, cancellationToken).ConfigureAwait(false);
                 }
-                */
                 else
                 {
                     // Unknown input
@@ -565,7 +563,7 @@ namespace Icebreaker.Bot
         /// <returns>Tracking task</returns>
         private Task OptUserAll(UserInfo userInfo, bool optStatus)
         {
-            var optedIn = userInfo?.OptedIn ?? new Dictionary<string, bool>();
+            var optedIn = userInfo.OptedIn;
             foreach (var team in optedIn.Keys)
             {
                 optedIn[team] = optStatus;
@@ -577,19 +575,16 @@ namespace Icebreaker.Bot
         /// <summary>
         /// Opt the user in/out from a team's pairups
         /// </summary>
-        /// <param name="tenantId">The tenant id</param>
-        /// <param name="userId">The user id</param>
-        /// <param name="teamId">The team id</param>
-        /// <param name="serviceUrl">The service url</param>
+        /// <param name="userInfo">User info</param>
+        /// <param name="teamId">Team id</param>
         /// <param name="optStatus">Opt in or out</param>
         /// <returns>Tracking task</returns>
-        private async Task OptUserTeamAsync(string tenantId, string userId, string teamId, string serviceUrl, bool optStatus)
+        private Task OptUserTeam(UserInfo userInfo, string teamId, bool optStatus)
         {
-            var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
             var optedIn = userInfo.OptedIn;
             optedIn[teamId] = optStatus;
 
-            await this.dataProvider.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl);
+            return this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userInfo.Id, optedIn, userInfo.ServiceUrl);
         }
 
         /// <summary>
