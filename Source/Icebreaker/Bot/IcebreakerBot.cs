@@ -431,10 +431,10 @@ namespace Icebreaker.Bot
                     var response = await turnContext.SendActivityAsync(teamsViewCard, cancellationToken);
                     this.teamsViewCardId = response.Id;
 
-                    // DEBUG: DELETE
+/*                    // DEBUG: DELETE
                     var viewing = activity.CreateReply();
                     viewing.Text = $"message: {this.teamsViewCardId}";
-                    await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);
+                    await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);*/
                 }
                 else
                 {
@@ -534,10 +534,10 @@ namespace Icebreaker.Bot
                         }.ToAttachment(),
                     };
 
-                    // DEBUG: DELETE
+/*                    // DEBUG: DELETE
                     var viewing = activity.CreateReply();
                     viewing.Text = $"message: {this.teamsViewCardId}";
-                    await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);
+                    await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);*/
 
                     await turnContext.DeleteActivityAsync(this.teamsViewCardId, cancellationToken);
                     await turnContext.SendActivityAsync(saveOptSubmitReply, cancellationToken).ConfigureAwait(false);
