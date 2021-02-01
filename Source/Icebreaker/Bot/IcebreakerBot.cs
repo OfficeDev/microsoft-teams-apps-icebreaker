@@ -24,6 +24,7 @@ namespace Icebreaker.Bot
     using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Implements the core logic for Icebreaker bot
@@ -244,10 +245,18 @@ namespace Icebreaker.Bot
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
                 var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
 
+                // Adaptive card was submitted
+                if (!string.IsNullOrEmpty(activity.ReplyToId) && (activity.Value != null) && ((JObject)activity.Value).HasValues)
+                {
+                    this.telemetryClient.TrackTrace("Adaptive card submitted");
+                    await this.OnAdaptiveCardSubmitAsync(activity, turnContext, cancellationToken).ConfigureAwait(false);
+                    return;
+                }
+
                 // DEBUG: DELETE
-/*                var viewing = activity.CreateReply();
-                viewing.Text = $"message: {activity.Text}";
-                await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);*/
+                /*                var viewing = activity.CreateReply();
+                                viewing.Text = $"message: {activity.Text}";
+                                await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);*/
 
                 if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -437,6 +446,83 @@ namespace Icebreaker.Bot
                     }.ToAttachment(),
                 };
                 await turnContext.SendActivityAsync(test, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Handle opt in/out operations by updating user preference in data store.
+        /// </summary>
+        /// <param name="activity">Message from submitted card</param>
+        /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        private async Task OnAdaptiveCardSubmitAsync(Activity activity, ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            var cardPayload = JToken.Parse(activity.Value.ToString());
+            var cardType = cardPayload["action"].Value<string>().ToLowerInvariant();
+            var teamId = activity.Conversation.Id;
+            var userId = activity.From.Id;
+            var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
+
+            // CLEAN UP HARDCODED TEXT
+            switch (cardType)
+            {
+                // updated pause preferences
+                case "saveopt":
+
+                    // update database
+                    this.telemetryClient.TrackTrace("Received pause preferences");
+                    var optedIn = new Dictionary<string, bool>();
+                    var activeTeams = new Dictionary<string, string>();
+                    var botAdapter = turnContext.Adapter;
+
+                    foreach (var team in userInfo.OptedIn.Keys.ToList())
+                    {
+                        if (cardPayload[team] != null)
+                        {
+                            var teamStatus = cardPayload[team].Value<bool>();
+                            optedIn.Add(team, teamStatus);
+                            if (teamStatus)
+                            {
+                                // update active teams
+                                var teamInfo = await this.GetInstalledTeam(team);
+                                var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
+                                activeTeams.Add(team, teamName);
+                            }
+                        }
+                    }
+
+                    await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userId, optedIn, userInfo.ServiceUrl);
+
+                    // send active teams
+                    var activeTeamsList = activeTeams.Keys.ToList();
+                    var saveOptSubmitReply = activity.CreateReply();
+                    saveOptSubmitReply.Attachments = new List<Attachment>
+                    {
+                        new HeroCard()
+                        {
+                            Text = $"Your preferences have been updated :) You're now matching for: {activeTeams[activeTeamsList[0]]}",
+                            Buttons = new List<CardAction>()
+                            {
+                                new CardAction()
+                                {
+                                    Title = "Edit active teams",
+                                    DisplayText = "Edit active teams",
+                                    Type = ActionTypes.MessageBack,
+                                    Text = "viewteams"
+                                }
+                            }
+                        }.ToAttachment(),
+                    };
+
+                    for (var i = 0; i < activeTeamsList.Count; i++)
+                    {
+                        saveOptSubmitReply.Text += $", {activeTeams[activeTeamsList[i]]}";
+                    }
+
+                    await turnContext.SendActivityAsync(saveOptSubmitReply, cancellationToken).ConfigureAwait(false);
+
+                    break;
             }
         }
 

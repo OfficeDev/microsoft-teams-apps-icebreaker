@@ -49,7 +49,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
                         Title = "Save",
                         Data = new
                         {
-                            Msteams = JsonConvert.SerializeObject(new { ActionType = "saveopt" })
+                            Action = "saveopt"
                         },
                     },
                 },

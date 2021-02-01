@@ -205,7 +205,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to All set. I&apos;ve paused your matches. You will be missed, but you can turn them back on whenever you like..
+        ///   Looks up a localized string similar to All set. I&apos;ve paused your matches. You can turn them back on whenever you like..
         /// </summary>
         internal static string OptOutConfirmation {
             get {
