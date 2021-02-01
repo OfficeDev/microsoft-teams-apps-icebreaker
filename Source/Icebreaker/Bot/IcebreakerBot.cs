@@ -465,7 +465,7 @@ namespace Icebreaker.Bot
         private async Task OnAdaptiveCardSubmitAsync(Activity activity, ITurnContext turnContext, CancellationToken cancellationToken)
         {
             var cardPayload = JToken.Parse(activity.Value.ToString());
-            var cardType = cardPayload["action"].Value<string>().ToLowerInvariant();
+            var cardType = cardPayload["ActionType"].Value<string>().ToLowerInvariant();
             var teamId = activity.Conversation.Id;
             var userId = activity.From.Id;
             var userInfo = await this.dataProvider.GetUserInfoAsync(userId);

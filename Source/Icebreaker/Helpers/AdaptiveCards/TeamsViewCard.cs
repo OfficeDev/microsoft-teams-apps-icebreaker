@@ -49,7 +49,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
                         Title = "Save",
                         Data = new
                         {
-                            Action = "saveopt"
+                            ActionType = "saveopt"
                         },
                     },
                 },
