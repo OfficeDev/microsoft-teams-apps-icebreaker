@@ -502,12 +502,18 @@ namespace Icebreaker.Bot
 
                     // send active teams
                     var activeTeamsList = activeTeams.Keys.ToList();
+                    var activeTeamsString = $"{activeTeams[activeTeamsList[0]]}";
+                    for (var i = 1; i < activeTeamsList.Count; i++)
+                    {
+                        activeTeamsString += $", {activeTeams[activeTeamsList[i]]}";
+                    }
+
                     var saveOptSubmitReply = activity.CreateReply();
                     saveOptSubmitReply.Attachments = new List<Attachment>
                     {
                         new HeroCard()
                         {
-                            Text = $"Your preferences have been updated :) You're now matching for: {activeTeams[activeTeamsList[0]]}",
+                            Text = $"Your preferences have been updated :) You're now matching for: {activeTeamsString}",
                             Buttons = new List<CardAction>()
                             {
                                 new CardAction()
@@ -520,11 +526,6 @@ namespace Icebreaker.Bot
                             }
                         }.ToAttachment(),
                     };
-
-                    for (var i = 0; i < activeTeamsList.Count; i++)
-                    {
-                        saveOptSubmitReply.Text += $", {activeTeams[activeTeamsList[i]]}";
-                    }
 
                     await turnContext.SendActivityAsync(saveOptSubmitReply, cancellationToken).ConfigureAwait(false);
 
