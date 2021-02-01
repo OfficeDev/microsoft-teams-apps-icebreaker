@@ -36,6 +36,7 @@ namespace Icebreaker.Bot
         private readonly MicrosoftAppCredentials appCredentials;
         private readonly TelemetryClient telemetryClient;
         private readonly string botDisplayName;
+        private string teamsViewCardId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBot"/> class.
@@ -427,6 +428,7 @@ namespace Icebreaker.Bot
 
                     var teamNameLookup = await this.GetTeamNamesAsync(userInfo, turnContext.Adapter);
                     var teamsViewCard = MessageFactory.Attachment(TeamsViewCard.GetTeamsViewCard(userInfo, teamNameLookup));
+                    this.teamsViewCardId = teamsViewCard.Id;
                     await turnContext.SendActivityAsync(teamsViewCard, cancellationToken);
                 }
                 else
@@ -527,7 +529,7 @@ namespace Icebreaker.Bot
                         }.ToAttachment(),
                     };
 
-                    await turnContext.DeleteActivityAsync(activity.GetConversationReference(), cancellationToken);
+                    await turnContext.DeleteActivityAsync(this.teamsViewCardId, cancellationToken);
                     await turnContext.SendActivityAsync(saveOptSubmitReply, cancellationToken).ConfigureAwait(false);
 
                     break;
