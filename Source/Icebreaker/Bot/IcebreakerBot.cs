@@ -527,6 +527,7 @@ namespace Icebreaker.Bot
                         }.ToAttachment(),
                     };
 
+                    await turnContext.DeleteActivityAsync(activity.GetConversationReference(), cancellationToken);
                     await turnContext.SendActivityAsync(saveOptSubmitReply, cancellationToken).ConfigureAwait(false);
 
                     break;
