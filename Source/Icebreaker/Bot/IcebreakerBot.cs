@@ -428,12 +428,13 @@ namespace Icebreaker.Bot
 
                     var teamNameLookup = await this.GetTeamNamesAsync(userInfo, turnContext.Adapter);
                     var teamsViewCard = MessageFactory.Attachment(TeamsViewCard.GetTeamsViewCard(userInfo, teamNameLookup));
-                    this.teamsViewCardId = teamsViewCard.Id;
+                    var response = await turnContext.SendActivityAsync(teamsViewCard, cancellationToken);
+                    this.teamsViewCardId = response.Id;
+
                     // DEBUG: DELETE
                     var viewing = activity.CreateReply();
                     viewing.Text = $"message: {this.teamsViewCardId}";
                     await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);
-                    await turnContext.SendActivityAsync(teamsViewCard, cancellationToken);
                 }
                 else
                 {
