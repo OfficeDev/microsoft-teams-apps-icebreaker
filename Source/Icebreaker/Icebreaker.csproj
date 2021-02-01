@@ -327,6 +327,7 @@
     <Compile Include="Controllers\ProcessNowController.cs" />
     <Compile Include="Helpers\AdaptiveCard.cs" />
     <Compile Include="Helpers\AdaptiveCards\AdaptiveCardBase.cs" />
+    <Compile Include="Helpers\AdaptiveCards\TeamsViewCard.cs" />
     <Compile Include="Helpers\CardTemplateHelper.cs" />
     <Compile Include="Helpers\MatchingActions.cs" />
     <Compile Include="Helpers\SecretsHelper.cs" />

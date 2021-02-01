@@ -9,6 +9,7 @@ namespace Icebreaker.Bot
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
     using Helpers;
@@ -384,7 +385,7 @@ namespace Icebreaker.Bot
                 }
                 else if (string.Equals(activity.Text, "viewteams", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    var allTeams = this.GetUserTeams(userInfo);
+                    /*var allTeams = this.GetUserTeams(userInfo);
                     var allTeamNamesList = new List<string>();
                     var botAdapter = turnContext.Adapter;
                     foreach (var teamId in allTeams)
@@ -407,7 +408,11 @@ namespace Icebreaker.Bot
                             Text = teamNames
                         }.ToAttachment(),
                     };
-                    await turnContext.SendActivityAsync(teamsReply, cancellationToken).ConfigureAwait(false);
+                    await turnContext.SendActivityAsync(teamsReply, cancellationToken).ConfigureAwait(false);*/
+
+                    var teamNameLookup = await this.GetTeamNamesAsync(userInfo, turnContext.Adapter);
+                    var teamsViewCard = MessageFactory.Attachment(TeamsViewCard.GetTeamsViewCard(userInfo, teamNameLookup));
+                    await turnContext.SendActivityAsync(teamsViewCard, cancellationToken);
                 }
                 else
                 {
@@ -454,6 +459,26 @@ namespace Icebreaker.Bot
         {
             var teamsList = userInfo.OptedIn.Keys.ToList();
             return teamsList;
+        }
+
+        /// <summary>
+        /// Maps user's teams' ids to team names
+        /// </summary>
+        /// <param name="userInfo">User info</param>
+        /// <param name="botAdapter">Bot adapter</param>
+        /// <returns>The team that the bot has been installed to</returns>
+        private async Task<Dictionary<string, string>> GetTeamNamesAsync(UserInfo userInfo, BotAdapter botAdapter)
+        {
+            var teamsList = userInfo.OptedIn.Keys.ToList();
+            var teamNameLookup = new Dictionary<string, string>();
+            foreach (var teamId in teamsList)
+            {
+                var teamInfo = await this.GetInstalledTeam(teamId);
+                var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
+                teamNameLookup.Add(teamId, teamName);
+            }
+
+            return teamNameLookup;
         }
 
         /// <summary>
