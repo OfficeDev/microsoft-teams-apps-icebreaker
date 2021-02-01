@@ -60,9 +60,9 @@ namespace Icebreaker.Helpers.AdaptiveCards
             {
                 teamsViewCard.Body.Add(new AdaptiveToggleInput
                 {
-                    Title = optedIn[teamId].ToString(),
+                    Title = teamNameLookup[teamId],
                     Id = teamId,
-                    Value = optedIn[teamId].ToString(),
+                    Value = optedIn[teamId].ToString().ToLower(),
                     ValueOff = "true",
                     ValueOn = "false"
                 });
