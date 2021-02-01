@@ -26,18 +26,20 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <summary>
         /// Gets the teams view card
         /// <param name="userInfo">User info.</param>
+        /// <param name="teamNameLookup">Team id to name</param>
         /// </summary>
         /// <returns>Returns an attachment of teams view card.</returns>
         public static Attachment GetTeamsViewCard(UserInfo userInfo, Dictionary<string, string> teamNameLookup)
         {
-            AdaptiveCard teamsViewCard = new AdaptiveCard("1.0")
+            AdaptiveCard teamsViewCard = new AdaptiveCard("1.2")
             {
                 Body = new List<AdaptiveElement>
                 {
                     new AdaptiveTextBlock
                     {
                         HorizontalAlignment = AdaptiveHorizontalAlignment.Left,
-                        Text = "Here are your teams! Select the teams that you would like to pause matches for."
+                        Text = "Here are your teams! Select the teams that you would like to pause matches for.",
+                        Wrap = true
                     },
                 },
                 Actions = new List<AdaptiveAction>
@@ -58,11 +60,11 @@ namespace Icebreaker.Helpers.AdaptiveCards
             {
                 teamsViewCard.Body.Add(new AdaptiveToggleInput
                 {
-                    Title = teamNameLookup[teamId],
+                    Title = optedIn[teamId].ToString(),
                     Id = teamId,
+                    Value = optedIn[teamId].ToString(),
                     ValueOff = "true",
-                    ValueOn = "false",
-                    Value = optedIn[teamId].ToString()
+                    ValueOn = "false"
                 });
             }
 
