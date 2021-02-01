@@ -245,18 +245,24 @@ namespace Icebreaker.Bot
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
                 var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
 
+                // DEBUG: DELETE
+                var viewing = activity.CreateReply();
+                viewing.Text = $"message: {activity.Text}";
+                await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);
+
                 // Adaptive card was submitted
                 if (!string.IsNullOrEmpty(activity.ReplyToId) && (activity.Value != null) && ((JObject)activity.Value).HasValues)
                 {
                     this.telemetryClient.TrackTrace("Adaptive card submitted");
+
+                    // DEBUG: DELETE
+                    var submitted = activity.CreateReply();
+                    submitted.Text = $"message: {activity.Value}";
+                    await turnContext.SendActivityAsync(submitted, cancellationToken).ConfigureAwait(false);
+
                     await this.OnAdaptiveCardSubmitAsync(activity, turnContext, cancellationToken).ConfigureAwait(false);
                     return;
                 }
-
-                // DEBUG: DELETE
-                /*                var viewing = activity.CreateReply();
-                                viewing.Text = $"message: {activity.Text}";
-                                await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);*/
 
                 if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
                 {
