@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ActiveTeamsText" xml:space="preserve">
-    <value>Your preferences have been updated. Here are the teams you're currently matching for.</value>
+    <value>Your preferences have been updated. Here are the teams you're currently matching for:</value>
     <comment>Text on the card showing a user's currently matching teams</comment>
   </data>
   <data name="ChatWithMatchButtonText" xml:space="preserve">
@@ -184,6 +184,10 @@
   <data name="MeetupTitle" xml:space="preserve">
     <value>{0} / {1} Meet up</value>
     <comment>The title for the Meetup - {0} is the name of the first person that user has been matched with and {1} is the name of the user</comment>
+  </data>
+  <data name="NoActiveTeamsMessage" xml:space="preserve">
+    <value>You are not currently matching for any teams.</value>
+    <comment>Text that is displayed on the active teams card if the user has no active teams</comment>
   </data>
   <data name="OptInConfirmation" xml:space="preserve">
     <value>Welcome back! You've been missed. I've restarted your matches. Have fun!</value>

@@ -507,6 +507,17 @@ namespace Icebreaker.Bot
                             });
                     }
 
+                    if (activeTeams.Count == 0)
+                    {
+                        activeTeamsCard.Body.Add(
+                            new AdaptiveTextBlock
+                            {
+                                HorizontalAlignment = AdaptiveHorizontalAlignment.Left,
+                                Text = Resources.NoActiveTeamsMessage,
+                                Wrap = true
+                            });
+                    }
+
                     var saveOptSubmitReply = activity.CreateReply();
                     saveOptSubmitReply.Attachments = new List<Attachment>
                     {

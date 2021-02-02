@@ -61,7 +61,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Your preferences have been updated. Here are the teams you&apos;re currently matching for..
+        ///   Looks up a localized string similar to Your preferences have been updated. Here are the teams you&apos;re currently matching for:.
         /// </summary>
         internal static string ActiveTeamsText {
             get {
@@ -210,6 +210,15 @@ namespace Icebreaker.Properties {
         internal static string MeetupTitle {
             get {
                 return ResourceManager.GetString("MeetupTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are not currently matching for any teams..
+        /// </summary>
+        internal static string NoActiveTeamsMessage {
+            get {
+                return ResourceManager.GetString("NoActiveTeamsMessage", resourceCulture);
             }
         }
         
