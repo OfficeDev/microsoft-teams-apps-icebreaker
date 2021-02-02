@@ -198,7 +198,7 @@ namespace Icebreaker.Helpers
         /// Get the stored information about given users
         /// </summary>
         /// <returns>User information</returns>
-        public async Task<Dictionary<string, Dictionary<string, bool>>> GetAllUsersOptInStatusAsync()
+        public async Task<Dictionary<string, IDictionary<string, bool>>> GetAllUsersOptInStatusAsync()
         {
             await this.EnsureInitializedAsync();
 
@@ -221,7 +221,7 @@ namespace Icebreaker.Helpers
 #pragma warning restore SA1118 // Parameter must not span multiple lines
                     .Select(u => new UserInfo { Id = u.Id, OptedIn = u.OptedIn })
                     .AsDocumentQuery();
-                var usersOptInStatusLookup = new Dictionary<string, Dictionary<string, bool>>();
+                var usersOptInStatusLookup = new Dictionary<string, IDictionary<string, bool>>();
                 while (query.HasMoreResults)
                 {
                     // Note that ExecuteNextAsync can return many records in each call
@@ -249,7 +249,7 @@ namespace Icebreaker.Helpers
         /// <param name="optedIn">User opt-in status for each team user is in</param>
         /// <param name="serviceUrl">User service URL</param>
         /// <returns>Tracking task</returns>
-        public async Task SetUserInfoAsync(string tenantId, string userId, Dictionary<string, bool> optedIn, string serviceUrl)
+        public async Task SetUserInfoAsync(string tenantId, string userId, IDictionary<string, bool> optedIn, string serviceUrl)
         {
             await this.EnsureInitializedAsync();
 

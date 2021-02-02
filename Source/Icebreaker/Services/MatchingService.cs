@@ -170,7 +170,7 @@ namespace Icebreaker.Services
         /// <param name="dbMembersLookup">Lookup of DB users opt-in status</param>
         /// <param name="teamInfo">The team that the bot has been installed to</param>
         /// <returns>Opted in users' channels</returns>
-        private async Task<List<ChannelAccount>> GetOptedInUsersAsync(Dictionary<string, Dictionary<string, bool>> dbMembersLookup, TeamInstallInfo teamInfo)
+        private async Task<List<ChannelAccount>> GetOptedInUsersAsync(Dictionary<string, IDictionary<string, bool>> dbMembersLookup, TeamInstallInfo teamInfo)
         {
             // Pull the roster of specified team and then remove everyone who has opted out explicitly
             var members = await this.conversationHelper.GetTeamMembers(this.botAdapter, teamInfo);

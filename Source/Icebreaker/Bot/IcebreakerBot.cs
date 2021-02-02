@@ -9,7 +9,6 @@ namespace Icebreaker.Bot
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
     using AdaptiveCards;
@@ -204,8 +203,8 @@ namespace Icebreaker.Bot
             {
                 foreach (var member in membersRemoved)
                 {
-                this.telemetryClient.TrackTrace($"New member {member.Id} added to team {teamsChannelData.Team.Id}");
-                await this.dataProvider.RemoveUserTeamAsync(member.Id, teamsChannelData.Team.Id);
+                    this.telemetryClient.TrackTrace($"New member {member.Id} removed from {teamsChannelData.Team.Id}");
+                    await this.dataProvider.RemoveUserTeamAsync(member.Id, teamsChannelData.Team.Id);
                 }
             }
 
@@ -375,7 +374,6 @@ namespace Icebreaker.Bot
             var userId = activity.From.Id;
             var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
 
-            // CLEAN UP HARDCODED TEXT
             switch (cardType)
             {
                 // updated pause preferences
@@ -389,17 +387,19 @@ namespace Icebreaker.Bot
 
                     foreach (var team in userInfo.OptedIn.Keys.ToList())
                     {
-                        if (cardPayload[team] != null)
+                        if (cardPayload[team] == null)
                         {
-                            var teamStatus = cardPayload[team].Value<bool>();
-                            optedIn.Add(team, teamStatus);
-                            if (teamStatus)
-                            {
-                                // update active teams
-                                var teamInfo = await this.GetInstalledTeam(team);
-                                var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
-                                activeTeams.Add(team, teamName);
-                            }
+                            continue;
+                        }
+
+                        var teamStatus = cardPayload[team].Value<bool>();
+                        optedIn.Add(team, teamStatus);
+                        if (teamStatus)
+                        {
+                            // update active teams
+                            var teamInfo = await this.GetInstalledTeam(team);
+                            var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
+                            activeTeams.Add(team, teamName);
                         }
                     }
 
@@ -653,21 +653,6 @@ namespace Icebreaker.Bot
             {
                 optedIn[team] = optStatus;
             }
-
-            return this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userInfo.Id, optedIn, userInfo.ServiceUrl);
-        }
-
-        /// <summary>
-        /// Opt the user in/out from a team's pairups
-        /// </summary>
-        /// <param name="userInfo">User info</param>
-        /// <param name="teamId">Team id</param>
-        /// <param name="optStatus">Opt in or out</param>
-        /// <returns>Tracking task</returns>
-        private Task OptUserTeam(UserInfo userInfo, string teamId, bool optStatus)
-        {
-            var optedIn = userInfo.OptedIn;
-            optedIn[teamId] = optStatus;
 
             return this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userInfo.Id, optedIn, userInfo.ServiceUrl);
         }
