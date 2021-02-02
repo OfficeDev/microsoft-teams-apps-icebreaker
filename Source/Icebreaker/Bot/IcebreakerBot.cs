@@ -257,10 +257,10 @@ namespace Icebreaker.Bot
                 {
                     this.telemetryClient.TrackTrace("Adaptive card submitted");
 
-                    /*// DEBUG: DELETE
+                    // DEBUG: DELETE
                     var submitted = activity.CreateReply();
                     submitted.Text = $"message: {activity.Value}";
-                    await turnContext.SendActivityAsync(submitted, cancellationToken).ConfigureAwait(false);*/
+                    await turnContext.SendActivityAsync(submitted, cancellationToken).ConfigureAwait(false);
 
                     await this.OnAdaptiveCardSubmitAsync(activity, turnContext, cancellationToken).ConfigureAwait(false);
                     return;
@@ -402,35 +402,7 @@ namespace Icebreaker.Bot
                 }
                 else if (string.Equals(activity.Text, "viewteams", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    /*var allTeams = this.GetUserTeams(userInfo);
-                    var allTeamNamesList = new List<string>();
-                    var botAdapter = turnContext.Adapter;
-                    foreach (var teamId in allTeams)
-                    {
-                        var teamInfo = await this.GetInstalledTeam(teamId);
-                        var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
-                        allTeamNamesList.Add(teamName);
-                    }
-                    var teamNames = $"Here are your teams: {allTeamNamesList[0]}";
-                    for (int i = 1; i < allTeamNamesList.Count(); i++)
-                    {
-                        teamNames += $", {allTeamNamesList[i]}";
-                    }
-
-                    var teamsReply = activity.CreateReply();
-                    teamsReply.Attachments = new List<Attachment>
-                    {
-                        new HeroCard()
-                        {
-                            Text = teamNames
-                        }.ToAttachment(),
-                    };
-                    await turnContext.SendActivityAsync(teamsReply, cancellationToken).ConfigureAwait(false);*/
-
-                    var teamNameLookup = await this.GetTeamNamesAsync(userInfo, turnContext.Adapter);
-                    var teamsViewCard = MessageFactory.Attachment(TeamsViewCard.GetTeamsViewCard(userInfo, teamNameLookup));
-                    var response = await turnContext.SendActivityAsync(teamsViewCard, cancellationToken);
-                    this.teamsViewCardId = response.Id;
+                    await this.SendViewTeamsCardAsync(turnContext, userInfo, cancellationToken);
 
                     // DEBUG: DELETE
                     var viewing = activity.CreateReply();
@@ -464,7 +436,22 @@ namespace Icebreaker.Bot
         }
 
         /// <summary>
-        /// Handle opt in/out operations by updating user preference in data store.
+        /// Send view teams card
+        /// </summary>
+        /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
+        /// <param name="userInfo">User info</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        private async Task SendViewTeamsCardAsync(ITurnContext turnContext, UserInfo userInfo, CancellationToken cancellationToken)
+        {
+            var teamNameLookup = await this.GetTeamNamesAsync(userInfo, turnContext.Adapter);
+            var teamsViewCard = MessageFactory.Attachment(TeamsViewCard.GetTeamsViewCard(userInfo, teamNameLookup));
+            var response = await turnContext.SendActivityAsync(teamsViewCard, cancellationToken);
+            this.teamsViewCardId = response.Id;
+        }
+
+        /// <summary>
+        /// Handle adaptive card submits
         /// </summary>
         /// <param name="activity">Message from submitted card</param>
         /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
@@ -532,44 +519,13 @@ namespace Icebreaker.Bot
                         {
                             new AdaptiveSubmitAction()
                             {
-                                Title = "Edit active teams",
+                                Title = Resources.EditActiveTeamsButtonText,
                                 Data = new
                                 {
-                                    DisplayText = "Edit active teams",
-                                    Type = ActionTypes.MessageBack,
-                                    Text = "viewteams"
-                                }
+                                    ActionType = "viewteams"
+                                },
                             }
                         }
-
-                        /*                        Actions = new List<AdaptiveAction>
-                                                {
-                                                    new AdaptiveSubmitAction
-                                                    {
-                                                        Title = Resources.EditActiveTeamsButtonText,
-                                                        Data = new
-                                                        {
-                                                            Msteams = new
-                                                            {
-                                                                Type = ActionTypes.MessageBack,
-                                                                DisplayText = Resources.EditActiveTeamsButtonText,
-                                                                Text = "viewteams"
-                                                            }
-                                                        },
-                                                    },
-                                                },*/
-
-                        /*Text = $"Your preferences have been updated :) You're now matching for: {activeTeamsString}",
-                        Buttons = new List<CardAction>()
-                        {
-                            new CardAction()
-                            {
-                                Title = "Edit active teams",
-                                DisplayText = "Edit active teams",
-                                Type = ActionTypes.MessageBack,
-                                Text = "viewteams"
-                            }
-                        }*/
                     };
 
                     var saveOptSubmitReply = activity.CreateReply();
@@ -585,6 +541,12 @@ namespace Icebreaker.Bot
                     await turnContext.DeleteActivityAsync(this.teamsViewCardId, cancellationToken);
                     await turnContext.SendActivityAsync(saveOptSubmitReply, cancellationToken).ConfigureAwait(false);
 
+                    break;
+
+                case "viewteams":
+
+                    // send view teams card
+                    await this.SendViewTeamsCardAsync(turnContext, userInfo, cancellationToken);
                     break;
             }
         }
