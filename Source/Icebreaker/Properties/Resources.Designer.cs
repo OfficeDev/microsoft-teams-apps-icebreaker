@@ -61,6 +61,15 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your preferences have been updated. Here are the teams you&apos;re currently matching for..
+        /// </summary>
+        internal static string ActiveTeamsText {
+            get {
+                return ResourceManager.GetString("ActiveTeamsText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Chat with {0}.
         /// </summary>
         internal static string ChatWithMatchButtonText {
@@ -75,6 +84,15 @@ namespace Icebreaker.Properties {
         internal static string ChatWithMessageGreeting {
             get {
                 return ResourceManager.GetString("ChatWithMessageGreeting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit active teams.
+        /// </summary>
+        internal static string EditActiveTeamsButtonText {
+            get {
+                return ResourceManager.GetString("EditActiveTeamsButtonText", resourceCulture);
             }
         }
         
@@ -250,6 +268,15 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        internal static string SaveButtonText {
+            get {
+                return ResourceManager.GetString("SaveButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Take a tour.
         /// </summary>
         internal static string TakeATourButtonText {
@@ -264,6 +291,15 @@ namespace Icebreaker.Properties {
         internal static string UnrecognizedInput {
             get {
                 return ResourceManager.GetString("UnrecognizedInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Here are your teams! Select the teams that you would like to pause matches for..
+        /// </summary>
+        internal static string ViewTeamsText {
+            get {
+                return ResourceManager.GetString("ViewTeamsText", resourceCulture);
             }
         }
         

@@ -247,10 +247,10 @@ namespace Icebreaker.Bot
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
                 var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
 
-/*                // DEBUG: DELETE
-                var viewing = activity.CreateReply();
-                viewing.Text = $"message: {activity.Text}";
-                await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);*/
+                // DEBUG: DELETE
+                var message = activity.CreateReply();
+                message.Text = $"message: {activity.Text}";
+                await turnContext.SendActivityAsync(message, cancellationToken).ConfigureAwait(false);
 
                 // Adaptive card was submitted
                 if (!string.IsNullOrEmpty(activity.ReplyToId) && (activity.Value != null) && ((JObject)activity.Value).HasValues)
@@ -432,10 +432,10 @@ namespace Icebreaker.Bot
                     var response = await turnContext.SendActivityAsync(teamsViewCard, cancellationToken);
                     this.teamsViewCardId = response.Id;
 
-/*                    // DEBUG: DELETE
+                    // DEBUG: DELETE
                     var viewing = activity.CreateReply();
-                    viewing.Text = $"message: {this.teamsViewCardId}";
-                    await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);*/
+                    viewing.Text = $"cardId: {this.teamsViewCardId}";
+                    await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
@@ -523,7 +523,7 @@ namespace Icebreaker.Bot
                             new AdaptiveTextBlock
                             {
                                 HorizontalAlignment = AdaptiveHorizontalAlignment.Left,
-                                Text = $"Your preferences have been updated :) You're now matching for: {activeTeamsString}",
+                                Text = Resources.ActiveTeamsText,
                                 Wrap = true
                             },
                         },
@@ -532,13 +532,13 @@ namespace Icebreaker.Bot
                         {
                             new AdaptiveSubmitAction
                             {
-                                Title = "Edit active teams",
+                                Title = Resources.EditActiveTeamsButtonText,
                                 Data = new
                                 {
                                     Msteams = new
                                     {
                                         Type = ActionTypes.MessageBack,
-                                        DisplayText = "Edit active teams",
+                                        DisplayText = Resources.EditActiveTeamsButtonText,
                                         Text = "viewteams"
                                     }
                                 },
