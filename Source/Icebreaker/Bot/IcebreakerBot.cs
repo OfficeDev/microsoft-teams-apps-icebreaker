@@ -12,6 +12,7 @@ namespace Icebreaker.Bot
     using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
+    using AdaptiveCards;
     using Helpers;
     using Helpers.AdaptiveCards;
     using Icebreaker.Interfaces;
@@ -515,29 +516,57 @@ namespace Icebreaker.Bot
                         activeTeamsString += $", {activeTeams[activeTeamsList[i]]}";
                     }
 
+                    AdaptiveCard activeTeamsCard = new AdaptiveCard("1.2")
+                    {
+                        Body = new List<AdaptiveElement>
+                        {
+                            new AdaptiveTextBlock
+                            {
+                                HorizontalAlignment = AdaptiveHorizontalAlignment.Left,
+                                Text = $"Your preferences have been updated :) You're now matching for: {activeTeamsString}",
+                                Wrap = true
+                            },
+                        },
+
+                        Actions = new List<AdaptiveAction>
+                        {
+                            new AdaptiveSubmitAction
+                            {
+                                Title = "Edit active teams",
+                                Data = new
+                                {
+                                    Msteams = new
+                                    {
+                                        Type = ActionTypes.MessageBack,
+                                        DisplayText = "Edit active teams",
+                                        Text = "viewteams"
+                                    }
+                                },
+                            },
+                        },
+
+                        /*Text = $"Your preferences have been updated :) You're now matching for: {activeTeamsString}",
+                        Buttons = new List<CardAction>()
+                        {
+                            new CardAction()
+                            {
+                                Title = "Edit active teams",
+                                DisplayText = "Edit active teams",
+                                Type = ActionTypes.MessageBack,
+                                Text = "viewteams"
+                            }
+                        }*/
+                    };
+
                     var saveOptSubmitReply = activity.CreateReply();
                     saveOptSubmitReply.Attachments = new List<Attachment>
                     {
-                        new HeroCard()
+                        new Attachment
                         {
-                            Text = $"Your preferences have been updated :) You're now matching for: {activeTeamsString}",
-                            Buttons = new List<CardAction>()
-                            {
-                                new CardAction()
-                                {
-                                    Title = "Edit active teams",
-                                    DisplayText = "Edit active teams",
-                                    Type = ActionTypes.MessageBack,
-                                    Text = "viewteams"
-                                }
-                            }
-                        }.ToAttachment(),
+                            ContentType = AdaptiveCard.ContentType,
+                            Content = activeTeamsCard
+                        }
                     };
-
-/*                    // DEBUG: DELETE
-                    var viewing = activity.CreateReply();
-                    viewing.Text = $"message: {this.teamsViewCardId}";
-                    await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);*/
 
                     await turnContext.DeleteActivityAsync(this.teamsViewCardId, cancellationToken);
                     await turnContext.SendActivityAsync(saveOptSubmitReply, cancellationToken).ConfigureAwait(false);
