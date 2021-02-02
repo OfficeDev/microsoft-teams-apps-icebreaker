@@ -541,17 +541,6 @@ namespace Icebreaker.Bot
         }
 
         /// <summary>
-        /// Gets teams user is in
-        /// </summary>
-        /// <param name="userInfo">User info</param>
-        /// <returns>The team that the bot has been installed to</returns>
-        private List<string> GetUserTeams(UserInfo userInfo)
-        {
-            var teamsList = userInfo.OptedIn.Keys.ToList();
-            return teamsList;
-        }
-
-        /// <summary>
         /// Maps user's teams' ids to team names
         /// </summary>
         /// <param name="userInfo">User info</param>
