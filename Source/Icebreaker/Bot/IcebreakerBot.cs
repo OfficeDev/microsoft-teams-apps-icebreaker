@@ -35,6 +35,7 @@ namespace Icebreaker.Bot
         private readonly MicrosoftAppCredentials appCredentials;
         private readonly TelemetryClient telemetryClient;
         private readonly string botDisplayName;
+        private List<ConversationReference> conversationReferences = new List<ConversationReference>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBot"/> class.
@@ -50,6 +51,15 @@ namespace Icebreaker.Bot
             this.appCredentials = appCredentials;
             this.telemetryClient = telemetryClient;
             this.botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
+        }
+
+        /// <summary>
+        /// Method that will set the conversation references to delete
+        /// </summary>
+        /// <param name="conversationRefList">List of conversation references</param>
+        public void SetConversationReference(List<ConversationReference> conversationRefList)
+        {
+            this.conversationReferences.AddRange(conversationRefList);
         }
 
         /// <summary>
@@ -356,6 +366,11 @@ namespace Icebreaker.Bot
                             Text = Resources.ThankYouMessage
                         }.ToAttachment(),
                     };
+
+                    foreach (var conversationReference in this.conversationReferences)
+                    {
+                        await turnContext.DeleteActivityAsync(conversationReference, cancellationToken).ConfigureAwait(false);
+                    }
 
                     await turnContext.SendActivityAsync(feedbackSubmitReply, cancellationToken).ConfigureAwait(false);
 

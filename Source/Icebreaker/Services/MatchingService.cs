@@ -13,6 +13,7 @@ namespace Icebreaker.Services
     using System.Threading.Tasks;
     using Helpers;
     using Helpers.AdaptiveCards;
+    using Icebreaker.Bot;
     using Icebreaker.Interfaces;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;
@@ -29,6 +30,7 @@ namespace Icebreaker.Services
     {
         private readonly IBotDataProvider dataProvider;
         private readonly ConversationHelper conversationHelper;
+        private readonly IcebreakerBot icebreakerBot;
         private readonly TelemetryClient telemetryClient;
         private readonly BotAdapter botAdapter;
         private readonly int maxPairUpsPerTeam;
@@ -166,8 +168,10 @@ namespace Icebreaker.Services
                 this.conversationHelper.NotifyUserAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, MessageFactory.Attachment(cardForPerson2), teamsPerson2, teamModel.TenantId, cancellationToken));
 
             // Send feedback cards
-            await this.conversationHelper.NotifyUserAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, MessageFactory.Attachment(feedbackCard), teamsPerson1, teamModel.TenantId, cancellationToken);
-            await this.conversationHelper.NotifyUserAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, MessageFactory.Attachment(feedbackCard), teamsPerson2, teamModel.TenantId, cancellationToken);
+            var conversationRefs = await Task.WhenAll(
+                this.conversationHelper.NotifyGetRefAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, MessageFactory.Attachment(feedbackCard), teamsPerson1, teamModel.TenantId, cancellationToken),
+                this.conversationHelper.NotifyGetRefAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, MessageFactory.Attachment(feedbackCard), teamsPerson2, teamModel.TenantId, cancellationToken));
+            this.icebreakerBot.SetConversationReference(conversationRefs.ToList());
 
             return notifyResults.Count(wasNotified => wasNotified);
         }

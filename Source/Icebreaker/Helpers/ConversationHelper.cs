@@ -122,6 +122,70 @@ namespace Icebreaker.Helpers
         }
 
         /// <summary>
+        /// Send a card to a user in direct conversation
+        /// </summary>
+        /// <param name="botFrameworkAdapter">Bot adapter</param>
+        /// <param name="serviceUrl">Service url</param>
+        /// <param name="teamsChannelId">Team channel id where the bot is installed</param>
+        /// <param name="cardToSend">The actual welcome card (for the team)</param>
+        /// <param name="user">User channel account</param>
+        /// <param name="tenantId">Tenant id</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
+        /// <returns>True/False operation status</returns>
+        public async Task<ConversationReference> NotifyGetRefAsync(BotAdapter botFrameworkAdapter, string serviceUrl, string teamsChannelId, IMessageActivity cardToSend, ChannelAccount user, string tenantId, CancellationToken cancellationToken)
+        {
+            this.telemetryClient.TrackTrace($"Sending notification to user {user.Id}");
+            var conversationReference = new ConversationReference();
+
+            try
+            {
+                // conversation parameters
+                var conversationParameters = new ConversationParameters
+                {
+                    Bot = new ChannelAccount { Id = this.botId },
+                    Members = new[] { user },
+                    ChannelData = new TeamsChannelData
+                    {
+                        Tenant = new TenantInfo(tenantId),
+                    }
+                };
+
+                if (!this.isTesting)
+                {
+                    // shoot the activity over
+                    await ((BotFrameworkAdapter)botFrameworkAdapter).CreateConversationAsync(
+                        teamsChannelId,
+                        serviceUrl,
+                        this.appCredentials,
+                        conversationParameters,
+                        async (newTurnContext, newCancellationToken) =>
+                        {
+                            // Get the conversationReference
+                            conversationReference = newTurnContext.Activity.GetConversationReference();
+
+                            await botFrameworkAdapter.ContinueConversationAsync(
+                                this.appCredentials.MicrosoftAppId,
+                                conversationReference,
+                                async (conversationTurnContext, conversationCancellationToken) =>
+                                {
+                                    await conversationTurnContext.SendActivityAsync(cardToSend, conversationCancellationToken);
+                                },
+                                cancellationToken);
+                        },
+                        cancellationToken).ConfigureAwait(false);
+                }
+
+                return conversationReference;
+            }
+            catch (Exception ex)
+            {
+                this.telemetryClient.TrackTrace($"Error sending notification to user: {ex.Message}", SeverityLevel.Warning);
+                this.telemetryClient.TrackException(ex);
+                return conversationReference;
+            }
+        }
+
+        /// <summary>
         /// Gets the account of a single conversation member.
         /// This works in one-on-one, group, and teams scoped conversations.
         /// </summary>
