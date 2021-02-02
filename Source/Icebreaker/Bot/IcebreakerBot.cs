@@ -496,13 +496,6 @@ namespace Icebreaker.Bot
                     await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userId, optedIn, userInfo.ServiceUrl);
 
                     // send active teams
-                    var activeTeamsList = activeTeams.Keys.ToList();
-                    var activeTeamsString = $"{activeTeams[activeTeamsList[0]]}";
-                    for (var i = 1; i < activeTeamsList.Count; i++)
-                    {
-                        activeTeamsString += $", {activeTeams[activeTeamsList[i]]}";
-                    }
-
                     AdaptiveCard activeTeamsCard = new AdaptiveCard("1.2")
                     {
                         Body = new List<AdaptiveElement>
@@ -527,6 +520,18 @@ namespace Icebreaker.Bot
                             }
                         }
                     };
+
+                    var activeTeamsList = activeTeams.Keys.ToList();
+                    foreach (var team in activeTeamsList)
+                    {
+                        activeTeamsCard.Body.Add(
+                            new AdaptiveTextBlock
+                            {
+                                HorizontalAlignment = AdaptiveHorizontalAlignment.Left,
+                                Text = activeTeams[team],
+                                Wrap = true
+                            });
+                    }
 
                     var saveOptSubmitReply = activity.CreateReply();
                     saveOptSubmitReply.Attachments = new List<Attachment>
