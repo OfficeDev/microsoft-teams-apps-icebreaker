@@ -326,70 +326,6 @@ namespace Icebreaker.Bot
 
                     await turnContext.SendActivityAsync(optInReply, cancellationToken).ConfigureAwait(false);
                 }
-                else if (string.Equals(activity.Text.Substring(0, 9), "pauseteam", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    // User opted out of specific team
-                    var teamId = activity.Text.Substring(9);
-                    var teamInfo = await this.GetInstalledTeam(teamId);
-                    var botAdapter = turnContext.Adapter;
-                    var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
-                    this.telemetryClient.TrackTrace($"User {senderAadId} opted out of team {teamId}");
-
-                    var optOutReply = activity.CreateReply();
-                    optOutReply.Attachments = new List<Attachment>
-                    {
-                        new HeroCard()
-                        {
-                            Text = $"You've paused matches for {teamName}. We'll miss you!",
-                            Buttons = new List<CardAction>()
-                            {
-                                new CardAction()
-                                {
-                                    Title = "Resume this team",
-                                    DisplayText = "Resume this team",
-                                    Type = ActionTypes.MessageBack,
-                                    Text = $"resumeteam{teamId}"
-                                }
-                            }
-                        }.ToAttachment(),
-                    };
-
-                    await turnContext.SendActivityAsync(optOutReply, cancellationToken).ConfigureAwait(false);
-
-                    await this.OptUserTeam(userInfo, teamId, false);
-                }
-                else if (activity.Text.StartsWith("resumeteam"))
-                {
-                    // User opted out of specific team
-                    var teamId = activity.Text.Substring(10);
-                    var teamInfo = await this.GetInstalledTeam(teamId);
-                    var botAdapter = turnContext.Adapter;
-                    var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
-                    this.telemetryClient.TrackTrace($"User {senderAadId} opted into team {teamId}");
-
-                    await this.OptUserTeam(userInfo, teamId, true);
-
-                    var optInReply = activity.CreateReply();
-                    optInReply.Attachments = new List<Attachment>
-                    {
-                        new HeroCard()
-                        {
-                            Text = $"You've resumed matches for {teamName}. Yay :D",
-                            Buttons = new List<CardAction>()
-                            {
-                                new CardAction()
-                                {
-                                    Title = "Pause this team",
-                                    DisplayText = "Pause this team",
-                                    Type = ActionTypes.MessageBack,
-                                    Text = $"pauseteam{teamId}"
-                                }
-                            }
-                        }.ToAttachment(),
-                    };
-
-                    await turnContext.SendActivityAsync(optInReply, cancellationToken).ConfigureAwait(false);
-                }
                 else if (string.Equals(activity.Text, "viewteams", StringComparison.InvariantCultureIgnoreCase))
                 {
                     await this.SendViewTeamsCardAsync(turnContext, userInfo, cancellationToken);
@@ -590,7 +526,7 @@ namespace Icebreaker.Bot
 
             if (userThatJustJoined != null)
             {
-                var welcomeMessageCard = WelcomeNewMemberAdaptiveCard.GetCard(teamName, teamId, userThatJustJoined.Name, this.botDisplayName, installedTeam.InstallerName);
+                var welcomeMessageCard = WelcomeNewMemberAdaptiveCard.GetCard(teamName, userThatJustJoined.Name, this.botDisplayName, installedTeam.InstallerName);
                 await this.conversationHelper.NotifyUserAsync(turnContext, MessageFactory.Attachment(welcomeMessageCard), userThatJustJoined, tenantId, cancellationToken);
             }
             else

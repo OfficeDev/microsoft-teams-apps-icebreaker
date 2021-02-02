@@ -28,13 +28,12 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <summary>
         /// Creates the pairup notification card.
         /// </summary>
-        /// <param name="teamId">The team id.</param>
         /// <param name="teamName">The team name.</param>
         /// <param name="sender">The user who will be sending this card.</param>
         /// <param name="recipient">The user who will be receiving this card.</param>
         /// <param name="botDisplayName">The bot display name.</param>
         /// <returns>Pairup notification card</returns>
-        public static Attachment GetCard(string teamId, string teamName, TeamsChannelAccount sender, TeamsChannelAccount recipient, string botDisplayName)
+        public static Attachment GetCard(string teamName, TeamsChannelAccount sender, TeamsChannelAccount recipient, string botDisplayName)
         {
             // Guest users may not have their given name specified in AAD, so fall back to the full name if needed
             var senderGivenName = string.IsNullOrEmpty(sender.GivenName) ? sender.Name : sender.GivenName;
@@ -58,7 +57,6 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 pauseMatchesButtonText = Resources.PausePairingsButtonText,
                 proposeMeetupButtonText = Resources.ProposeMeetupButtonText,
                 personUpn = recipientUpn,
-                pauseMessage = $"pauseteam{teamId}",
                 meetingLink,
             };
 

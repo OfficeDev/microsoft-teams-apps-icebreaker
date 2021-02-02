@@ -24,12 +24,11 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// Creates the welcome new member card.
         /// </summary>
         /// <param name="teamName">The team name</param>
-        /// <param name="teamId">The team id</param>
         /// <param name="personFirstName">The first name of the new member</param>
         /// <param name="botDisplayName">The bot name</param>
         /// <param name="botInstaller">The person that installed the bot to the team</param>
         /// <returns>The welcome new member card</returns>
-        public static Attachment GetCard(string teamName, string teamId, string personFirstName, string botDisplayName, string botInstaller)
+        public static Attachment GetCard(string teamName, string personFirstName, string botDisplayName, string botInstaller)
         {
             string introMessagePart1;
             string introMessagePart2;
@@ -61,7 +60,6 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 introMessagePart2,
                 introMessagePart3,
                 team = teamName,
-                pauseMessage = $"pauseteam{teamId}",
                 welcomeCardImageUrl = $"https://{baseDomain}/Content/welcome-card-image.png",
                 pauseMatchesText = Resources.PausePairingsButtonText,
                 tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}",
