@@ -333,10 +333,9 @@ namespace Icebreaker.Bot
         private async Task OnAdaptiveCardSubmitAsync(Activity activity, ITurnContext turnContext, CancellationToken cancellationToken)
         {
             var cardPayload = JToken.Parse(activity.Value.ToString());
-            var cardType = cardPayload["action"].Value<string>().ToLowerInvariant();
+            var cardType = cardPayload["ActionType"].Value<string>().ToLowerInvariant();
             var teamId = activity.Conversation.Id;
 
-            // CLEAN UP HARDCODED TEXT
             switch (cardType)
             {
                 case "feedback":
@@ -354,7 +353,7 @@ namespace Icebreaker.Bot
                     {
                         new HeroCard()
                         {
-                            Text = "Thank you :DD"
+                            Text = Resources.ThankYouMessage
                         }.ToAttachment(),
                     };
 

@@ -229,6 +229,10 @@
     <value>Take a tour</value>
     <comment>The text for the button which launches a tour when clicked</comment>
   </data>
+  <data name="ThankYouMessage" xml:space="preserve">
+    <value>Thank you, your feedback is appreciated!</value>
+    <comment>The thank you message sent when feedback is submitted</comment>
+  </data>
   <data name="UnrecognizedInput" xml:space="preserve">
     <value>I'm sorry, but I can't process the incoming message. You can take a tour, though, to learn more about my functionality.</value>
     <comment>The text for the unrecognized input scenario</comment>

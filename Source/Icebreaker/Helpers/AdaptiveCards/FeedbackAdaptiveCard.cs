@@ -26,7 +26,6 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <returns>Pairup notification card</returns>
         public static Attachment GetCard()
         {
-            // CLEAN UP HARD CODED TEXT IN JSON
             var cardData = new
             {
                 promptFeedback = Resources.PromptFeedbackText,
