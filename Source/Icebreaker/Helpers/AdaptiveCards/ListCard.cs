@@ -7,7 +7,6 @@
 namespace Icebreaker.Helpers.AdaptiveCards
 {
     using System.Collections.Generic;
-    using global::AdaptiveCards;
     using Microsoft.Bot.Schema;
     using Newtonsoft.Json;
 
@@ -32,6 +31,6 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// Gets buttons for the goal list card.
         /// </summary>
         [JsonProperty("Buttons")]
-        public List<AdaptiveAction> Buttons { get; } = new List<AdaptiveAction>();
+        public List<CardAction> Buttons { get; } = new List<CardAction>();
     }
 }

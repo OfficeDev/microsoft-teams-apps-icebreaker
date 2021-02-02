@@ -501,14 +501,15 @@ namespace Icebreaker.Bot
                         Title = Resources.ActiveTeamsText,
                     };
 
-                    AdaptiveAction viewTeamsButton = new AdaptiveSubmitAction
-                    {
-                        Title = Resources.EditActiveTeamsButtonText,
-                        Data = new
+                    CardAction viewTeamsButton = new TaskModuleAction(
+                        Resources.EditActiveTeamsButtonText,
+                        new AdaptiveSubmitAction
                         {
-                            ActionType = "viewteams"
-                        },
-                    };
+                            Data = new
+                            {
+                                ActionType = "viewteams"
+                            },
+                        });
                     activeTeamsCard.Buttons.Add(viewTeamsButton);
 
                     var activeTeamsList = activeTeams.Keys.ToList();
