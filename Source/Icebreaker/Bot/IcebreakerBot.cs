@@ -12,6 +12,7 @@ namespace Icebreaker.Bot
     using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
+    using System.Web.UI.WebControls;
     using AdaptiveCards;
     using Helpers;
     using Helpers.AdaptiveCards;
@@ -247,20 +248,10 @@ namespace Icebreaker.Bot
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
                 var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
 
-                // DEBUG: DELETE
-                var message = activity.CreateReply();
-                message.Text = $"message: {activity.Text}";
-                await turnContext.SendActivityAsync(message, cancellationToken).ConfigureAwait(false);
-
                 // Adaptive card was submitted
                 if (!string.IsNullOrEmpty(activity.ReplyToId) && (activity.Value != null) && ((JObject)activity.Value).HasValues)
                 {
                     this.telemetryClient.TrackTrace("Adaptive card submitted");
-
-                    // DEBUG: DELETE
-                    var submitted = activity.CreateReply();
-                    submitted.Text = $"message: {activity.Value}";
-                    await turnContext.SendActivityAsync(submitted, cancellationToken).ConfigureAwait(false);
 
                     await this.OnAdaptiveCardSubmitAsync(activity, turnContext, cancellationToken).ConfigureAwait(false);
                     return;
@@ -403,11 +394,6 @@ namespace Icebreaker.Bot
                 else if (string.Equals(activity.Text, "viewteams", StringComparison.InvariantCultureIgnoreCase))
                 {
                     await this.SendViewTeamsCardAsync(turnContext, userInfo, cancellationToken);
-
-                    // DEBUG: DELETE
-                    var viewing = activity.CreateReply();
-                    viewing.Text = $"cardId: {this.teamsViewCardId}";
-                    await turnContext.SendActivityAsync(viewing, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
@@ -421,17 +407,6 @@ namespace Icebreaker.Bot
             {
                 this.telemetryClient.TrackTrace($"Error while handling message activity: {ex.Message}", SeverityLevel.Warning);
                 this.telemetryClient.TrackException(ex);
-
-                // DEBUGGING: DELETE THIS
-                var test = turnContext.Activity.CreateReply();
-                test.Attachments = new List<Attachment>
-                {
-                    new HeroCard()
-                    {
-                        Text = $"yikes"
-                    }.ToAttachment(),
-                };
-                await turnContext.SendActivityAsync(test, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -496,7 +471,7 @@ namespace Icebreaker.Bot
                     await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userId, optedIn, userInfo.ServiceUrl);
 
                     // send active teams
-                    AdaptiveCard activeTeamsCard = new AdaptiveCard("1.2")
+                    /*AdaptiveCard activeTeamsCard = new AdaptiveCard("1.2")
                     {
                         Body = new List<AdaptiveElement>
                         {
@@ -519,17 +494,30 @@ namespace Icebreaker.Bot
                                 },
                             }
                         }
+                    };*/
+
+                    ListCard activeTeamsCard = new ListCard
+                    {
+                        Title = Resources.ActiveTeamsText,
                     };
+
+                    AdaptiveAction viewTeamsButton = new AdaptiveSubmitAction
+                    {
+                        Title = Resources.EditActiveTeamsButtonText,
+                        Data = new
+                        {
+                            ActionType = "viewteams"
+                        },
+                    };
+                    activeTeamsCard.Buttons.Add(viewTeamsButton);
 
                     var activeTeamsList = activeTeams.Keys.ToList();
                     foreach (var team in activeTeamsList)
                     {
-                        activeTeamsCard.Body.Add(
-                            new AdaptiveTextBlock
+                        activeTeamsCard.Items.Add(
+                            new Helpers.AdaptiveCards.ListItem
                             {
-                                HorizontalAlignment = AdaptiveHorizontalAlignment.Left,
-                                Text = activeTeams[team],
-                                Wrap = true
+                                Title = activeTeams[team]
                             });
                     }
 
@@ -538,7 +526,7 @@ namespace Icebreaker.Bot
                     {
                         new Attachment
                         {
-                            ContentType = AdaptiveCard.ContentType,
+                            ContentType = "application/vnd.microsoft.teams.card.list",
                             Content = activeTeamsCard
                         }
                     };
