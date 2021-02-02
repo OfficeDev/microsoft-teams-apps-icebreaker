@@ -12,7 +12,6 @@ namespace Icebreaker.Bot
     using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Web.UI.WebControls;
     using AdaptiveCards;
     using Helpers;
     using Helpers.AdaptiveCards;
@@ -471,7 +470,7 @@ namespace Icebreaker.Bot
                     await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userId, optedIn, userInfo.ServiceUrl);
 
                     // send active teams
-                    /*AdaptiveCard activeTeamsCard = new AdaptiveCard("1.2")
+                    AdaptiveCard activeTeamsCard = new AdaptiveCard("1.2")
                     {
                         Body = new List<AdaptiveElement>
                         {
@@ -494,31 +493,17 @@ namespace Icebreaker.Bot
                                 },
                             }
                         }
-                    };*/
-
-                    ListCard activeTeamsCard = new ListCard
-                    {
-                        Title = Resources.ActiveTeamsText,
                     };
-
-                    CardAction viewTeamsButton = new TaskModuleAction(
-                        Resources.EditActiveTeamsButtonText,
-                        new AdaptiveSubmitAction
-                        {
-                            Data = new
-                            {
-                                ActionType = "viewteams"
-                            },
-                        });
-                    activeTeamsCard.Buttons.Add(viewTeamsButton);
 
                     var activeTeamsList = activeTeams.Keys.ToList();
                     foreach (var team in activeTeamsList)
                     {
-                        activeTeamsCard.Items.Add(
-                            new Helpers.AdaptiveCards.ListItem
+                        activeTeamsCard.Body.Add(
+                            new AdaptiveTextBlock
                             {
-                                Title = activeTeams[team]
+                                HorizontalAlignment = AdaptiveHorizontalAlignment.Left,
+                                Text = activeTeams[team],
+                                Wrap = true
                             });
                     }
 
@@ -527,7 +512,7 @@ namespace Icebreaker.Bot
                     {
                         new Attachment
                         {
-                            ContentType = "application/vnd.microsoft.teams.card.list",
+                            ContentType = AdaptiveCard.ContentType,
                             Content = activeTeamsCard
                         }
                     };
