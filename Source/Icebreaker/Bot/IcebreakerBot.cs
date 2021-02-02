@@ -145,11 +145,17 @@ namespace Icebreaker.Bot
                         await this.SaveAddedToTeam(message.ServiceUrl, teamId, teamsChannelData.Tenant.Id, personThatAddedBot);
                         await this.WelcomeTeam(turnContext, personThatAddedBot, cancellationToken);
 
+                        var watch = new System.Diagnostics.Stopwatch();
+                        watch.Start();
+
                         var users = await ((BotFrameworkAdapter)turnContext.Adapter).GetConversationMembersAsync(turnContext, cancellationToken);
                         foreach (var user in users)
                         {
                             await this.WelcomeUser(turnContext, user.Id, teamsChannelData.Tenant.Id, teamsChannelData.Team.Id, cancellationToken);
                         }
+
+                        watch.Stop();
+                        this.telemetryClient.TrackTrace($"Time to notify all users: {watch.ElapsedMilliseconds} ms");
                     }
                     else
                     {
@@ -247,7 +253,7 @@ namespace Icebreaker.Bot
 
                     var properties = new Dictionary<string, string>
                     {
-                        { "UserAadId", senderId },
+                        { "UserId", senderId },
                         { "OptInStatus", "false" },
                     };
                     this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
@@ -335,9 +341,9 @@ namespace Icebreaker.Bot
         private async Task OnProfileSaveAsync(Activity activity, ITurnContext turnContext, CancellationToken cancellationToken)
         {
             var cardPayload = JToken.Parse(activity.Value.ToString());
-            var cardType = cardPayload["action"].Value<string>().ToLowerInvariant();
+            var cardAction = cardPayload["action"].Value<string>().ToLowerInvariant();
 
-            switch (cardType)
+            switch (cardAction)
             {
                 case "update":
 
@@ -356,7 +362,9 @@ namespace Icebreaker.Bot
                     };
 
                     await turnContext.SendActivityAsync(reply, cancellationToken).ConfigureAwait(false);
-
+                    break;
+                default:
+                    this.telemetryClient.TrackTrace($"Unknown action taken: {cardAction}");
                     break;
             }
         }
