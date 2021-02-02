@@ -168,10 +168,10 @@ namespace Icebreaker.Services
                 this.conversationHelper.NotifyUserAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, MessageFactory.Attachment(cardForPerson2), teamsPerson2, teamModel.TenantId, cancellationToken));
 
             // Send feedback cards
-            var conversationRefs = await Task.WhenAll(
+            var activityIds = await Task.WhenAll(
                 this.conversationHelper.NotifyGetRefAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, MessageFactory.Attachment(feedbackCard), teamsPerson1, teamModel.TenantId, cancellationToken),
                 this.conversationHelper.NotifyGetRefAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, MessageFactory.Attachment(feedbackCard), teamsPerson2, teamModel.TenantId, cancellationToken));
-            this.icebreakerBot.SetConversationReference(conversationRefs.ToList());
+            this.icebreakerBot.SetActivityIds(activityIds.ToList());
 
             return notifyResults.Count(wasNotified => wasNotified);
         }

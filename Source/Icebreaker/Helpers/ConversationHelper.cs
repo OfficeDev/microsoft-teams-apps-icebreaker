@@ -132,10 +132,10 @@ namespace Icebreaker.Helpers
         /// <param name="tenantId">Tenant id</param>
         /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
         /// <returns>True/False operation status</returns>
-        public async Task<ConversationReference> NotifyGetRefAsync(BotAdapter botFrameworkAdapter, string serviceUrl, string teamsChannelId, IMessageActivity cardToSend, ChannelAccount user, string tenantId, CancellationToken cancellationToken)
+        public async Task<string> NotifyGetRefAsync(BotAdapter botFrameworkAdapter, string serviceUrl, string teamsChannelId, IMessageActivity cardToSend, ChannelAccount user, string tenantId, CancellationToken cancellationToken)
         {
             this.telemetryClient.TrackTrace($"Sending notification to user {user.Id}");
-            var conversationReference = new ConversationReference();
+            var activityId = string.Empty;
 
             try
             {
@@ -161,27 +161,28 @@ namespace Icebreaker.Helpers
                         async (newTurnContext, newCancellationToken) =>
                         {
                             // Get the conversationReference
-                            conversationReference = newTurnContext.Activity.GetConversationReference();
+                            var conversationReference = newTurnContext.Activity.GetConversationReference();
 
                             await botFrameworkAdapter.ContinueConversationAsync(
                                 this.appCredentials.MicrosoftAppId,
                                 conversationReference,
                                 async (conversationTurnContext, conversationCancellationToken) =>
                                 {
-                                    await conversationTurnContext.SendActivityAsync(cardToSend, conversationCancellationToken);
+                                    var response = await conversationTurnContext.SendActivityAsync(cardToSend, conversationCancellationToken);
+                                    activityId = response.Id;
                                 },
                                 cancellationToken);
                         },
                         cancellationToken).ConfigureAwait(false);
                 }
 
-                return conversationReference;
+                return activityId;
             }
             catch (Exception ex)
             {
                 this.telemetryClient.TrackTrace($"Error sending notification to user: {ex.Message}", SeverityLevel.Warning);
                 this.telemetryClient.TrackException(ex);
-                return conversationReference;
+                return activityId;
             }
         }
 
