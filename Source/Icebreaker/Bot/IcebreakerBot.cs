@@ -528,22 +528,36 @@ namespace Icebreaker.Bot
                             },
                         },
 
-                        Actions = new List<AdaptiveAction>
+                        Actions = new List<AdaptiveAction>()
                         {
-                            new AdaptiveSubmitAction
+                            new AdaptiveSubmitAction()
                             {
-                                Title = Resources.EditActiveTeamsButtonText,
+                                Title = "Edit active teams",
                                 Data = new
                                 {
-                                    Msteams = new
-                                    {
-                                        Type = ActionTypes.MessageBack,
-                                        DisplayText = Resources.EditActiveTeamsButtonText,
-                                        Text = "viewteams"
-                                    }
-                                },
-                            },
-                        },
+                                    DisplayText = "Edit active teams",
+                                    Type = ActionTypes.MessageBack,
+                                    Text = "viewteams"
+                                }
+                            }
+                        }
+
+                        /*                        Actions = new List<AdaptiveAction>
+                                                {
+                                                    new AdaptiveSubmitAction
+                                                    {
+                                                        Title = Resources.EditActiveTeamsButtonText,
+                                                        Data = new
+                                                        {
+                                                            Msteams = new
+                                                            {
+                                                                Type = ActionTypes.MessageBack,
+                                                                DisplayText = Resources.EditActiveTeamsButtonText,
+                                                                Text = "viewteams"
+                                                            }
+                                                        },
+                                                    },
+                                                },*/
 
                         /*Text = $"Your preferences have been updated :) You're now matching for: {activeTeamsString}",
                         Buttons = new List<CardAction>()
