@@ -29,8 +29,12 @@ namespace Icebreaker.Helpers.AdaptiveCards
             // CLEAN UP HARD CODED TEXT IN JSON
             var cardData = new
             {
-                messageContent = Resources.UnrecognizedInput,
-                tourButtonText = Resources.TakeATourButtonText
+                promptFeedback = Resources.PromptFeedbackText,
+                giveFeedback = Resources.GiveFeedbackButtonText,
+                saveButton = Resources.SaveButtonText,
+                ratingText = Resources.RatingText,
+                promptComment = Resources.PromptCommentText,
+                commentPlaceholder = Resources.CommentPlaceholderText
             };
 
             return GetCard(AdaptiveCardTemplate.Value, cardData);

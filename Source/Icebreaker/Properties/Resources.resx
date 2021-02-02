@@ -125,9 +125,17 @@
     <value>Hi%20there%20</value>
     <comment>This is the greeting of the chat with matched member message</comment>
   </data>
+  <data name="CommentPlaceholderText" xml:space="preserve">
+    <value>Tell us your thoughts!</value>
+    <comment>Placeholder text in comments box on feedback card</comment>
+  </data>
   <data name="ErrorOccured" xml:space="preserve">
     <value>There was an error while processing request. Retry?</value>
     <comment>A generic message that is sent when there is an error occurring</comment>
+  </data>
+  <data name="GiveFeedbackButtonText" xml:space="preserve">
+    <value>Give feedback</value>
+    <comment>Button text to give feedback</comment>
   </data>
   <data name="InstallMessageKnownInstallerPart1" xml:space="preserve">
     <value>If you're reading this, it's most likely because {0} added me to the **{1} Team.**</value>
@@ -189,9 +197,21 @@
     <value>Pause all matches</value>
     <comment>Button text to pause pairings</comment>
   </data>
+  <data name="PromptCommentText" xml:space="preserve">
+    <value>Explain your rating or let us know any thoughts you have about Icebreaker.</value>
+    <comment>Text above comments box on feedback card</comment>
+  </data>
+  <data name="PromptFeedbackText" xml:space="preserve">
+    <value>How is your experience with Icebreaker?</value>
+    <comment>The text on the card to prompt user feedback</comment>
+  </data>
   <data name="ProposeMeetupButtonText" xml:space="preserve">
     <value>Propose meetup</value>
     <comment>Button text to propose the meetup with the match of the user</comment>
+  </data>
+  <data name="RatingText" xml:space="preserve">
+    <value>Rate your experience with Icebreaker.</value>
+    <comment>Text above rating dropdown on feedback card</comment>
   </data>
   <data name="ResumePairingsButtonText" xml:space="preserve">
     <value>Resume matches</value>
@@ -200,6 +220,10 @@
   <data name="SalutationTitleText" xml:space="preserve">
     <value>Hi there!</value>
     <comment>This is the text for the salutation in the adaptive cards when the bot is installed to a team and also when new users are added to the team</comment>
+  </data>
+  <data name="SaveButtonText" xml:space="preserve">
+    <value>Save</value>
+    <comment>Button text to save preferences</comment>
   </data>
   <data name="TakeATourButtonText" xml:space="preserve">
     <value>Take a tour</value>

@@ -19,7 +19,7 @@ namespace Icebreaker.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -79,11 +79,29 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tell us your thoughts!.
+        /// </summary>
+        internal static string CommentPlaceholderText {
+            get {
+                return ResourceManager.GetString("CommentPlaceholderText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error while processing request. Retry?.
         /// </summary>
         internal static string ErrorOccured {
             get {
                 return ResourceManager.GetString("ErrorOccured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Give feedback.
+        /// </summary>
+        internal static string GiveFeedbackButtonText {
+            get {
+                return ResourceManager.GetString("GiveFeedbackButtonText", resourceCulture);
             }
         }
         
@@ -142,7 +160,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hi there again, I&apos;m {0} in {1}. A bot that pairs you with a new coworker to meet each week. This week your match is {2}..
+        ///   Looks up a localized string similar to Hi there again, I&apos;m {0} in {1}. A bot that pairs you with a new coworker to meet each week. How fun and exciting!! This week your match is {2}..
         /// </summary>
         internal static string MatchUpCardContentPart1 {
             get {
@@ -160,7 +178,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You&apos;ve been matched with {0}..
+        ///   Looks up a localized string similar to You&apos;ve been matched with {0}. Congrats!!.
         /// </summary>
         internal static string MatchUpCardMatchedText {
             get {
@@ -223,11 +241,38 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Explain your rating or let us know any thoughts you have about Icebreaker..
+        /// </summary>
+        internal static string PromptCommentText {
+            get {
+                return ResourceManager.GetString("PromptCommentText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How is your experience with Icebreaker?.
+        /// </summary>
+        internal static string PromptFeedbackText {
+            get {
+                return ResourceManager.GetString("PromptFeedbackText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Propose meetup.
         /// </summary>
         internal static string ProposeMeetupButtonText {
             get {
                 return ResourceManager.GetString("ProposeMeetupButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rate your experience with Icebreaker..
+        /// </summary>
+        internal static string RatingText {
+            get {
+                return ResourceManager.GetString("RatingText", resourceCulture);
             }
         }
         
@@ -246,6 +291,15 @@ namespace Icebreaker.Properties {
         internal static string SalutationTitleText {
             get {
                 return ResourceManager.GetString("SalutationTitleText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        internal static string SaveButtonText {
+            get {
+                return ResourceManager.GetString("SaveButtonText", resourceCulture);
             }
         }
         
