@@ -57,7 +57,7 @@ namespace Icebreaker.Bot
         /// Method that will set the conversation references to delete
         /// </summary>
         /// <param name="activityIdList">List of conversation references</param>
-        public void SetConversationReference(List<string> activityIdList)
+        public void SetActivityIds(List<string> activityIdList)
         {
             this.activityIds.AddRange(activityIdList);
         }
