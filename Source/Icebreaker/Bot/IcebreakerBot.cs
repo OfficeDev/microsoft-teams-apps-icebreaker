@@ -151,11 +151,13 @@ namespace Icebreaker.Bot
                     }
                     else
                     {
-                        this.telemetryClient.TrackTrace($"New member {member.Id} added to team {teamsChannelData.Team.Id}");
+                        this.telemetryClient.TrackTrace($"New member {member.Id} added to team {teamId}");
 
-                        await this.dataProvider.AddUserTeamAsync(tenantId, member.Id, teamsChannelData.Team.Id, serviceUrl);
+                        var teamInfo = await this.GetInstalledTeam(teamId);
+                        await this.dataProvider.AddUserTeamAsync(tenantId, member.Id, teamId, serviceUrl);
+                        teamInfo.UserIds.Add(member.Id);
 
-                        await this.WelcomeUser(turnContext, member.Id, tenantId, teamsChannelData.Team.Id, cancellationToken);
+                        await this.WelcomeUser(turnContext, member.Id, tenantId, teamId, cancellationToken);
                     }
                 }
             }
@@ -183,6 +185,7 @@ namespace Icebreaker.Bot
             var message = turnContext.Activity;
             string myBotId = message.Recipient.Id;
             string teamId = message.Conversation.Id;
+            var teamInfo = await this.GetInstalledTeam(teamId);
             var teamsChannelData = message.GetChannelData<TeamsChannelData>();
             if (message.MembersRemoved?.Any(x => x.Id == myBotId) == true)
             {
@@ -197,7 +200,7 @@ namespace Icebreaker.Bot
                 this.telemetryClient.TrackEvent("AppUninstalled", properties);
 
                 // we were just removed from a team
-                await this.SaveRemoveFromTeamAsync(teamId, turnContext);
+                await this.SaveRemoveFromTeamAsync(teamInfo);
             }
             else
             {
@@ -205,6 +208,8 @@ namespace Icebreaker.Bot
                 {
                     this.telemetryClient.TrackTrace($"New member {member.Id} removed from {teamsChannelData.Team.Id}");
                     await this.dataProvider.RemoveUserTeamAsync(member.Id, teamsChannelData.Team.Id);
+                    teamInfo.UserIds.Remove(member.Id);
+                    await this.dataProvider.UpdateTeamInstallStatusAsync(teamInfo, true);
                 }
             }
 
@@ -596,48 +601,40 @@ namespace Icebreaker.Bot
                 TenantId = tenantId,
                 InstallerName = botInstaller
             };
-            await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
 
             // add users in team
-
-            var teamInfo = await this.GetInstalledTeam(teamId);
             var botAdapter = turnContext.Adapter;
-            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
+            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInstallInfo);
+            var userIds = new HashSet<string>();
 
             foreach (var member in members)
             {
                 var userId = member.Id;
+                userIds.Add(userId);
                 await this.dataProvider.AddUserTeamAsync(tenantId, userId, teamId, serviceUrl);
             }
+
+            teamInstallInfo.UserIds = userIds;
+            await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
         }
 
         /// <summary>
         /// Save information about the team from which the bot was removed.
         /// </summary>
-        /// <param name="teamId">The team id</param>
-        /// <param name="turnContext">The turn context</param>
+        /// <param name="teamInfo">The team install info</param>
         /// <returns>Tracking task</returns>
-        private async Task SaveRemoveFromTeamAsync(string teamId, ITurnContext turnContext)
+        private async Task SaveRemoveFromTeamAsync(TeamInstallInfo teamInfo)
         {
-            var teamInfo = await this.GetInstalledTeam(teamId);
-            var botAdapter = turnContext.Adapter;
-            var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
-            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
+            var members = teamInfo.UserIds;
 
             // remove team from user docs
             foreach (var member in members)
             {
-                var userId = member.Id;
-                await this.dataProvider.RemoveUserTeamAsync(userId, teamId);
+                await this.dataProvider.RemoveUserTeamAsync(member, teamInfo.Id);
             }
 
             // remove team from database
-            var teamInstallInfo = new TeamInstallInfo
-            {
-                TeamId = teamId,
-                TenantId = tenantId,
-            };
-            await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, false);
+            await this.dataProvider.UpdateTeamInstallStatusAsync(teamInfo, false);
         }
 
         /// <summary>
