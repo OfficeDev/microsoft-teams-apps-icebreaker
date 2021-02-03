@@ -370,9 +370,8 @@ namespace Icebreaker.Helpers
             var userInfo = await this.GetUserInfoAsync(userId);
             var optedIn = userInfo.OptedIn;
             optedIn.Remove(teamId);
-            var profile = userInfo.Profile ?? null;
 
-            await this.SetUserInfoAsync(userInfo.TenantId, userId, optedIn, userInfo.ServiceUrl, profile);
+            await this.SetUserInfoAsync(userInfo.TenantId, userId, optedIn, userInfo.ServiceUrl, userInfo.Profile);
         }
 
         /// <summary>
