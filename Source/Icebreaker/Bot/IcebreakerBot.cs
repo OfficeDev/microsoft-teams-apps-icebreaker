@@ -647,7 +647,7 @@ namespace Icebreaker.Bot
         private Task OptUserAll(UserInfo userInfo, bool optStatus)
         {
             var optedIn = userInfo.OptedIn;
-            foreach (var team in optedIn.Keys.ToList())
+            foreach (var team in optedIn.Keys)
             {
                 optedIn[team] = optStatus;
             }
