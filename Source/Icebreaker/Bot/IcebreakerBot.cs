@@ -209,12 +209,7 @@ namespace Icebreaker.Bot
                 {
                     this.telemetryClient.TrackTrace($"New member {member.Id} removed from {teamsChannelData.Team.Id}");
                     await this.dataProvider.RemoveUserTeamAsync(member.Id, teamsChannelData.Team.Id);
-
-                    if (teamInfo.UserIds.Contains(member.Id))
-                    {
-                        teamInfo.UserIds.Remove(member.Id);
-                    }
-
+                    teamInfo.UserIds.Remove(member.Id);
                     await this.dataProvider.UpdateTeamInstallStatusAsync(teamInfo, true);
                 }
             }
