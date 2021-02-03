@@ -698,8 +698,8 @@ namespace Icebreaker.Bot
             foreach (var member in members)
             {
                 var userId = member.Id;
-                await this.dataProvider.RemoveUserTeamAsync(userId, teamId);
-            }
+/*                await this.dataProvider.RemoveUserTeamAsync(userId, teamId);
+*/            }
 
             // remove team from database
             var teamInstallInfo = new TeamInstallInfo
