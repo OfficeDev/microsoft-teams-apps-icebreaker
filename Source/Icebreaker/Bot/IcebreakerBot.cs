@@ -658,39 +658,12 @@ namespace Icebreaker.Bot
             /*            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
             */
 
-            var test = turnContext.Activity.CreateReply();
-            test.Attachments = new List<Attachment>();
-            var testCard = new HeroCard()
-            {
-                Text = "getting members"
-            }.ToAttachment();
-            test.Attachments.Add(testCard);
-            await this.NotifyTeamAsync(turnContext, test, teamId, cancellationToken);
-
             var members = await ((BotFrameworkAdapter)turnContext.Adapter).GetConversationMembersAsync(turnContext, cancellationToken);
-
-            var test2 = turnContext.Activity.CreateReply();
-            test2.Attachments = new List<Attachment>();
-            var testCard2 = new HeroCard()
-            {
-                Text = "got members"
-            }.ToAttachment();
-            test2.Attachments.Add(testCard2);
-            await this.NotifyTeamAsync(turnContext, test2, teamId, cancellationToken);
 
             foreach (var member in members)
             {
                 await this.dataProvider.RemoveUserTeamAsync(member.Id, teamId);
             }
-
-            
-
-            /*            // remove team from user docs
-                        foreach (var member in members)
-                        {
-                            var userId = member.Id;
-                            await this.dataProvider.RemoveUserTeamAsync(userId, teamId);
-                        }*/
 
             // remove team from database
             var teamInstallInfo = new TeamInstallInfo
