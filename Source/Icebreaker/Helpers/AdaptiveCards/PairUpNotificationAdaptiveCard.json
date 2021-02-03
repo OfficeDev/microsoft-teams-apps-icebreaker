@@ -69,11 +69,11 @@
     },
     {
       "type": "Action.Submit",
-      "title": "View my teams",
+      "title": "${viewTeamsButton}",
       "data": {
         "msteams": {
           "type": "messageBack",
-          "displayText": "View my teams",
+          "displayText": "${viewTeamsButton}",
           "text": "viewteams"
         }
       }
