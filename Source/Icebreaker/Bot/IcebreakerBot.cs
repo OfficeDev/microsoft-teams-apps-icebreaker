@@ -156,6 +156,7 @@ namespace Icebreaker.Bot
                         var teamInfo = await this.GetInstalledTeam(teamId);
                         await this.dataProvider.AddUserTeamAsync(tenantId, member.Id, teamId, serviceUrl);
                         teamInfo.UserIds.Add(member.Id);
+                        await this.dataProvider.UpdateTeamInstallStatusAsync(teamInfo, true);
 
                         await this.WelcomeUser(turnContext, member.Id, tenantId, teamId, cancellationToken);
                     }
@@ -208,7 +209,12 @@ namespace Icebreaker.Bot
                 {
                     this.telemetryClient.TrackTrace($"New member {member.Id} removed from {teamsChannelData.Team.Id}");
                     await this.dataProvider.RemoveUserTeamAsync(member.Id, teamsChannelData.Team.Id);
-                    teamInfo.UserIds.Remove(member.Id);
+
+                    if (teamInfo.UserIds.Contains(member.Id))
+                    {
+                        teamInfo.UserIds.Remove(member.Id);
+                    }
+
                     await this.dataProvider.UpdateTeamInstallStatusAsync(teamInfo, true);
                 }
             }
