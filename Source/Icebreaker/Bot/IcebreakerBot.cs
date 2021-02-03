@@ -618,6 +618,14 @@ namespace Icebreaker.Bot
             var teamId = turnContext.Activity.Conversation.Id;
             this.telemetryClient.TrackTrace($"Sending welcome message for team {teamId}");
 
+            // DEBUG
+            var testCard = new HeroCard()
+            {
+                Text = "welcometeam"
+            }.ToAttachment();
+
+            await this.NotifyTeamAsync(turnContext, MessageFactory.Attachment(testCard), teamId, cancellationToken);
+
             var teamName = turnContext.Activity.TeamsGetTeamInfo().Name;
             var welcomeTeamMessageCard = WelcomeTeamAdaptiveCard.GetCard(teamName, botInstaller);
             await this.NotifyTeamAsync(turnContext, MessageFactory.Attachment(welcomeTeamMessageCard), teamId, cancellationToken);
@@ -679,6 +687,10 @@ namespace Icebreaker.Bot
             {
                 var userId = member.Id;
                 await this.dataProvider.AddUserTeamAsync(tenantId, userId, teamId, serviceUrl);
+
+                var message = turnContext.Activity.CreateReply();
+                message.Text = "added team";
+                await turnContext.SendActivityAsync(message);
             }
         }
 
