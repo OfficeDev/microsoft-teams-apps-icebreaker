@@ -39,7 +39,7 @@ namespace Icebreaker.Helpers
         public string ServiceUrl { get; set; }
 
         /// <summary>
-        /// Gets or sets dictionary mapping team channel id to true/false
+        /// Gets or sets dictionary mapping team channel id to user's opt-in status for that team
         /// </summary>
         [JsonProperty("optedIn")]
         public IDictionary<string, bool> OptedIn { get; set; }
