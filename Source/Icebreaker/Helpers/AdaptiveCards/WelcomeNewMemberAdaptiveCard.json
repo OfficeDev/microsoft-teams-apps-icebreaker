@@ -58,6 +58,36 @@
           "text": "optout"
         }
       }
+    },
+    {
+      "type": "Action.ShowCard",
+      "title": "Set up profile",
+      "card": {
+          "type": "AdaptiveCard",
+          "body": [
+              {
+                  "type": "Container",
+                  "items": [
+                      {
+                          "type": "Input.Text",
+                          "id": "profile",
+                          "placeholder": "Share something about yourself with future matches!",
+                          "maxLength": 1000,
+                          "isMultiline": true
+                      }
+                  ]
+              }
+          ],
+          "actions": [
+              {
+                  "type": "Action.Submit",
+                  "title": "Save",
+                  "data": {
+                      "action": "update"
+                  }
+              }
+          ]
+      }
     }
   ],
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",

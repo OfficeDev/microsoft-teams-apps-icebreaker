@@ -157,6 +157,10 @@
     <value>Hi there again, I'm {0} in {1}. A bot that pairs you with a new coworker to meet each week. This week your match is {2}.</value>
     <comment>First part of the match up card main content</comment>
   </data>
+  <data name="MatchUpCardContentPart1b" xml:space="preserve">
+    <value>Hi there again, I'm {0} in {1}. A bot that pairs you with a new coworker to meet each week. This week your match is {2}. Here is something they wanted to let you know about them: {3}</value>
+    <comment>First part of the match up card main content for users that have a profile</comment>
+  </data>
   <data name="MatchUpCardContentPart2" xml:space="preserve">
     <value>If you've got the inclination, set something up. See, meeting people *is* easy!</value>
     <comment>Second part of the match up card main content</comment>
