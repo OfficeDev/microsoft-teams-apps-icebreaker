@@ -541,7 +541,7 @@ namespace Icebreaker.Bot
 
                     await turnContext.SendActivityAsync(reply, cancellationToken).ConfigureAwait(false);
                     break;
-                    
+
                 default:
                     this.telemetryClient.TrackTrace($"Unknown action taken: {cardType}");
                     break;
@@ -678,7 +678,6 @@ namespace Icebreaker.Bot
             await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
 
             // add users in team
-
             var teamInfo = await this.GetInstalledTeam(teamId);
             var botAdapter = turnContext.Adapter;
             var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);

@@ -353,7 +353,7 @@ namespace Icebreaker.Helpers
             var optedIn = userInfo?.OptedIn ?? new Dictionary<string, bool>();
             optedIn.Add(teamId, true);
 
-            await this.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl, userInfo.Profile);
+            await this.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl, userInfo?.Profile);
         }
 
         /// <summary>
