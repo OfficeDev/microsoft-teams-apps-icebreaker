@@ -689,17 +689,17 @@ namespace Icebreaker.Bot
         /// <returns>Tracking task</returns>
         private async Task SaveRemoveFromTeamAsync(string teamId, ITurnContext turnContext)
         {
-            var teamInfo = await this.GetInstalledTeam(teamId);
-            var botAdapter = turnContext.Adapter;
+/*            var teamInfo = await this.GetInstalledTeam(teamId);
+            var botAdapter = turnContext.Adapter;*/
             var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
-            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
+/*            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
 
             // remove team from user docs
             foreach (var member in members)
             {
                 var userId = member.Id;
                 await this.dataProvider.RemoveUserTeamAsync(userId, teamId);
-            }
+            }*/
 
             // remove team from database
             var teamInstallInfo = new TeamInstallInfo
