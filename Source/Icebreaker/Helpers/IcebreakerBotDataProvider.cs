@@ -352,8 +352,9 @@ namespace Icebreaker.Helpers
             var userInfo = await this.GetUserInfoAsync(userId);
             var optedIn = userInfo?.OptedIn ?? new Dictionary<string, bool>();
             optedIn.Add(teamId, true);
+            var profile = userInfo?.Profile ?? string.Empty;
 
-            await this.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl, userInfo?.Profile);
+            await this.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl, profile);
         }
 
         /// <summary>
