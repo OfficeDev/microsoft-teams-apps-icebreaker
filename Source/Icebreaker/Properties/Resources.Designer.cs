@@ -167,6 +167,15 @@ namespace Icebreaker.Properties {
                 return ResourceManager.GetString("MatchUpCardContentPart1", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Hi there again, I&apos;m {0} in {1}. A bot that pairs you with a new coworker to meet each week. This week your match is {2}. Here is something they wanted to let you know about them: {3}..
+        /// </summary>
+        internal static string MatchUpCardContentPart1b {
+            get {
+                return ResourceManager.GetString("MatchUpCardContentPart1b", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to If you&apos;ve got the inclination, set something up. See, meeting people *is* easy!.

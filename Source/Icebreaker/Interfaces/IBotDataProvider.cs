@@ -28,6 +28,12 @@ namespace Icebreaker.Interfaces
         Task<Dictionary<string, IDictionary<string, bool>>> GetAllUsersOptInStatusAsync();
 
         /// <summary>
+        /// Get the stored profiles of given users
+        /// </summary>
+        /// <returns>User's custom profiles</returns>
+        Task<Dictionary<string, string>> GetAllUsersProfileAsync();
+
+        /// <summary>
         /// Returns the team that the bot has been installed to
         /// </summary>
         /// <param name="teamId">The team id</param>
@@ -56,8 +62,9 @@ namespace Icebreaker.Interfaces
         /// <param name="userId">User id</param>
         /// <param name="optedIn">User opt-in status for each team user is in</param>
         /// <param name="serviceUrl">User service URL</param>
+        /// <param name="profile">User profile</param>
         /// <returns>Tracking task</returns>
-        Task SetUserInfoAsync(string tenantId, string userId, IDictionary<string, bool> optedIn, string serviceUrl);
+        Task SetUserInfoAsync(string tenantId, string userId, IDictionary<string, bool> optedIn, string serviceUrl, string profile);
 
         /// <summary>
         /// Add team to user's teams

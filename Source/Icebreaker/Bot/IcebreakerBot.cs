@@ -148,6 +148,18 @@ namespace Icebreaker.Bot
 
                         await this.SaveAddedToTeamAsync(serviceUrl, teamId, turnContext, personThatAddedBot);
                         await this.WelcomeTeam(turnContext, personThatAddedBot, cancellationToken);
+
+                        var watch = new System.Diagnostics.Stopwatch();
+                        watch.Start();
+
+                        var users = await ((BotFrameworkAdapter)turnContext.Adapter).GetConversationMembersAsync(turnContext, cancellationToken);
+                        foreach (var user in users)
+                        {
+                            await this.WelcomeUser(turnContext, user.Id, teamsChannelData.Tenant.Id, teamsChannelData.Team.Id, cancellationToken);
+                        }
+
+                        watch.Stop();
+                        this.telemetryClient.TrackTrace($"Time to notify all users: {watch.ElapsedMilliseconds} ms");
                     }
                     else
                     {
@@ -241,10 +253,9 @@ namespace Icebreaker.Bot
             try
             {
                 var activity = turnContext.Activity;
-                var senderAadId = activity.From.AadObjectId;
-                var userId = activity.From.Id;
+                var senderId = activity.From.Id;
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
-                var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
+                var userInfo = await this.dataProvider.GetUserInfoAsync(senderId);
 
                 // Adaptive card was submitted
                 if (!string.IsNullOrEmpty(activity.ReplyToId) && (activity.Value != null) && ((JObject)activity.Value).HasValues)
@@ -254,15 +265,14 @@ namespace Icebreaker.Bot
                     await this.OnAdaptiveCardSubmitAsync(activity, turnContext, cancellationToken).ConfigureAwait(false);
                     return;
                 }
-
-                if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
+                else if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
                 {
                     // User opted out
-                    this.telemetryClient.TrackTrace($"User {senderAadId} opted out");
+                    this.telemetryClient.TrackTrace($"User {senderId} opted out");
 
                     var properties = new Dictionary<string, string>
                     {
-                        { "UserAadId", senderAadId },
+                        { "UserId", senderId },
                         { "OptInStatus", "false" },
                     };
                     this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
@@ -293,11 +303,11 @@ namespace Icebreaker.Bot
                 else if (string.Equals(activity.Text, MatchingActions.OptIn, StringComparison.InvariantCultureIgnoreCase))
                 {
                     // User opted in
-                    this.telemetryClient.TrackTrace($"User {senderAadId} opted in");
+                    this.telemetryClient.TrackTrace($"User {senderId} opted in");
 
                     var properties = new Dictionary<string, string>
                     {
-                        { "UserAadId", senderAadId },
+                        { "UserAadId", senderId },
                         { "OptInStatus", "true" },
                     };
                     this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
@@ -343,6 +353,44 @@ namespace Icebreaker.Bot
                 this.telemetryClient.TrackException(ex);
             }
         }
+
+        //  /// <summary>
+        // /// Handle profile updates from users.
+        // /// </summary>
+        // /// <param name="activity">Message from submitted card</param>
+        // /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
+        // /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
+        // /// <returns>Tracking Task</returns>
+        // private async Task OnProfileSaveAsync(Activity activity, ITurnContext turnContext, CancellationToken cancellationToken)
+        // {
+        //     var cardPayload = JToken.Parse(activity.Value.ToString());
+        //     var cardAction = cardPayload["action"].Value<string>().ToLowerInvariant();
+
+        //     switch (cardAction)
+        //     {
+        //         case "update":
+
+        //             var profile = cardPayload["profile"].Value<string>();
+
+        //             await this.dataProvider.SetUserProfileAsync(activity.From.Id, profile);
+
+        //             // Confirmation message
+        //             var reply = activity.CreateReply();
+        //             reply.Attachments = new List<Attachment>
+        //             {
+        //                 new HeroCard()
+        //                 {
+        //                     Text = "Your profile has been updated!"
+        //                 }.ToAttachment(),
+        //             };
+
+        //             await turnContext.SendActivityAsync(reply, cancellationToken).ConfigureAwait(false);
+        //             break;
+        //         default:
+        //             this.telemetryClient.TrackTrace($"Unknown action taken: {cardAction}");
+        //             break;
+        //     }
+        // }
 
         /// <summary>
         /// Send view teams card
@@ -403,7 +451,7 @@ namespace Icebreaker.Bot
                         }
                     }
 
-                    await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userId, optedIn, userInfo.ServiceUrl);
+                    await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userId, optedIn, userInfo.ServiceUrl, userInfo.Profile);
 
                     // send active teams
                     AdaptiveCard activeTeamsCard = new AdaptiveCard("1.2")
@@ -473,6 +521,29 @@ namespace Icebreaker.Bot
 
                     // send view teams card
                     await this.SendViewTeamsCardAsync(turnContext, userInfo, cancellationToken);
+                    break;
+
+                case "update":
+
+                    var profile = cardPayload["profile"].Value<string>();
+
+                    await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userId, userInfo.OptedIn, userInfo.ServiceUrl, profile);
+
+                    // Confirmation message
+                    var reply = activity.CreateReply();
+                    reply.Attachments = new List<Attachment>
+                    {
+                        new HeroCard()
+                        {
+                            Text = "Your profile has been updated!"
+                        }.ToAttachment(),
+                    };
+
+                    await turnContext.SendActivityAsync(reply, cancellationToken).ConfigureAwait(false);
+                    break;
+                    
+                default:
+                    this.telemetryClient.TrackTrace($"Unknown action taken: {cardType}");
                     break;
             }
         }
@@ -654,7 +725,7 @@ namespace Icebreaker.Bot
                 optedIn[team] = optStatus;
             }
 
-            return this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userInfo.Id, optedIn, userInfo.ServiceUrl);
+            return this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userInfo.Id, optedIn, userInfo.ServiceUrl, userInfo.Profile);
         }
 
         /// <summary>
