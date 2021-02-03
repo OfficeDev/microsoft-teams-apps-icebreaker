@@ -209,7 +209,7 @@ namespace Icebreaker.Bot
                 this.telemetryClient.TrackEvent("AppUninstalled", properties);
 
                 // we were just removed from a team
-                await this.SaveRemoveFromTeamAsync(teamId, turnContext);
+                await this.SaveRemoveFromTeamAsync(teamId, turnContext, cancellationToken);
             }
             else
             {
@@ -353,44 +353,6 @@ namespace Icebreaker.Bot
                 this.telemetryClient.TrackException(ex);
             }
         }
-
-        //  /// <summary>
-        // /// Handle profile updates from users.
-        // /// </summary>
-        // /// <param name="activity">Message from submitted card</param>
-        // /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
-        // /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
-        // /// <returns>Tracking Task</returns>
-        // private async Task OnProfileSaveAsync(Activity activity, ITurnContext turnContext, CancellationToken cancellationToken)
-        // {
-        //     var cardPayload = JToken.Parse(activity.Value.ToString());
-        //     var cardAction = cardPayload["action"].Value<string>().ToLowerInvariant();
-
-        //     switch (cardAction)
-        //     {
-        //         case "update":
-
-        //             var profile = cardPayload["profile"].Value<string>();
-
-        //             await this.dataProvider.SetUserProfileAsync(activity.From.Id, profile);
-
-        //             // Confirmation message
-        //             var reply = activity.CreateReply();
-        //             reply.Attachments = new List<Attachment>
-        //             {
-        //                 new HeroCard()
-        //                 {
-        //                     Text = "Your profile has been updated!"
-        //                 }.ToAttachment(),
-        //             };
-
-        //             await turnContext.SendActivityAsync(reply, cancellationToken).ConfigureAwait(false);
-        //             break;
-        //         default:
-        //             this.telemetryClient.TrackTrace($"Unknown action taken: {cardAction}");
-        //             break;
-        //     }
-        // }
 
         /// <summary>
         /// Send view teams card
@@ -686,15 +648,23 @@ namespace Icebreaker.Bot
         /// </summary>
         /// <param name="teamId">The team id</param>
         /// <param name="turnContext">The turn context</param>
+        /// <param name="cancellationToken">The cancellation token</param>
         /// <returns>Tracking task</returns>
-        private async Task SaveRemoveFromTeamAsync(string teamId, ITurnContext turnContext)
+        private async Task SaveRemoveFromTeamAsync(string teamId, ITurnContext turnContext, CancellationToken cancellationToken)
         {
-/*            var teamInfo = await this.GetInstalledTeam(teamId);
-            var botAdapter = turnContext.Adapter;*/
+            var teamInfo = await this.GetInstalledTeam(teamId);
+            var botAdapter = turnContext.Adapter;
             var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
 /*            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
+*/
 
-            // remove team from user docs
+            var members = await ((BotFrameworkAdapter)turnContext.Adapter).GetConversationMembersAsync(turnContext, cancellationToken);
+            foreach (var member in members)
+            {
+                await this.dataProvider.RemoveUserTeamAsync(member.Id, teamId);
+            }
+
+/*            // remove team from user docs
             foreach (var member in members)
             {
                 var userId = member.Id;
