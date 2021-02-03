@@ -678,7 +678,7 @@ namespace Icebreaker.Bot
             await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
 
             // add users in team
-            var teamInfo = await this.GetInstalledTeam(teamId);
+/*            var teamInfo = await this.GetInstalledTeam(teamId);
             var botAdapter = turnContext.Adapter;
             var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
 
@@ -686,11 +686,7 @@ namespace Icebreaker.Bot
             {
                 var userId = member.Id;
                 await this.dataProvider.AddUserTeamAsync(tenantId, userId, teamId, serviceUrl);
-
-                var message = turnContext.Activity.CreateReply();
-                message.Text = "added team";
-                await turnContext.SendActivityAsync(message);
-            }
+            }*/
         }
 
         /// <summary>
