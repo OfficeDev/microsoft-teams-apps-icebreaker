@@ -618,14 +618,6 @@ namespace Icebreaker.Bot
             var teamId = turnContext.Activity.Conversation.Id;
             this.telemetryClient.TrackTrace($"Sending welcome message for team {teamId}");
 
-            // DEBUG
-            var testCard = new HeroCard()
-            {
-                Text = "welcometeam"
-            }.ToAttachment();
-
-            await this.NotifyTeamAsync(turnContext, MessageFactory.Attachment(testCard), teamId, cancellationToken);
-
             var teamName = turnContext.Activity.TeamsGetTeamInfo().Name;
             var welcomeTeamMessageCard = WelcomeTeamAdaptiveCard.GetCard(teamName, botInstaller);
             await this.NotifyTeamAsync(turnContext, MessageFactory.Attachment(welcomeTeamMessageCard), teamId, cancellationToken);
@@ -697,17 +689,17 @@ namespace Icebreaker.Bot
         /// <returns>Tracking task</returns>
         private async Task SaveRemoveFromTeamAsync(string teamId, ITurnContext turnContext)
         {
-/*            var teamInfo = await this.GetInstalledTeam(teamId);
-            var botAdapter = turnContext.Adapter;*/
+            var teamInfo = await this.GetInstalledTeam(teamId);
+            var botAdapter = turnContext.Adapter;
             var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
-/*            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
+            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
 
             // remove team from user docs
             foreach (var member in members)
             {
                 var userId = member.Id;
                 await this.dataProvider.RemoveUserTeamAsync(userId, teamId);
-            }*/
+            }
 
             // remove team from database
             var teamInstallInfo = new TeamInstallInfo
