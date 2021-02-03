@@ -391,7 +391,7 @@ namespace Icebreaker.Bot
                     var activeTeams = new Dictionary<string, string>();
                     var botAdapter = turnContext.Adapter;
 
-                    foreach (var team in userInfo.OptedIn.Keys.ToList())
+                    foreach (var team in userInfo.OptedIn.Keys)
                     {
                         if (cardPayload[team] == null)
                         {
