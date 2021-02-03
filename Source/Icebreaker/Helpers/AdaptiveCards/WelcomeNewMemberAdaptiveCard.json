@@ -94,7 +94,7 @@
                   "type": "Action.Submit",
                   "title": "Save",
                   "data": {
-                      "action": "update"
+                      "ActionType": "update"
                   }
               }
           ]
