@@ -80,6 +80,7 @@ namespace Icebreaker.Services
 
                 // Fetch all db users opt-in status/lookup
                 var dbMembersLookup = await this.dataProvider.GetAllUsersOptInStatusAsync();
+                var dbMembersProfile = await this.dataProvider.GetAllUsersProfileAsync();
                 dbMembersCount = dbMembersLookup.Count;
 
                 var pairHistory = await this.dataProvider.GetPairHistoryAsync();
@@ -105,7 +106,16 @@ namespace Icebreaker.Services
                             var pairId = new Tuple<string, string>(pair.Item1.Id, pair.Item2.Id);
                             await this.dataProvider.AddPairAsync(pairId, prevIteration);
 
-                            usersNotifiedCount += await this.NotifyPairAsync(team, teamName, pair, default(CancellationToken));
+                            var user1AadId = this.GetChannelUserObjectId(pair.Item1);
+                            var user2AadId = this.GetChannelUserObjectId(pair.Item2);
+                            var profile1 = dbMembersProfile.ContainsKey(user1AadId) ? dbMembersProfile[user1AadId] : null;
+                            var profile2 = dbMembersProfile.ContainsKey(user2AadId) ? dbMembersProfile[user2AadId] : null;
+                            
+                            var profiles = new Tuple<string, string>(profile1, profile2);
+
+                            // var profiles = new Tuple<string, string>("A", "B");
+
+                            usersNotifiedCount += await this.NotifyPairAsync(team, teamName, pair, profiles, default(CancellationToken));
                             pairsNotifiedCount++;
                         }
                     }
@@ -142,9 +152,10 @@ namespace Icebreaker.Services
         /// <param name="teamModel">DB team model info.</param>
         /// <param name="teamName">MS-Teams team name</param>
         /// <param name="pair">The pairup</param>
+        /// <param name="profiles">The pairup's respective profiles</param>
         /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
         /// <returns>Number of users notified successfully</returns>
-        private async Task<int> NotifyPairAsync(TeamInstallInfo teamModel, string teamName, Tuple<ChannelAccount, ChannelAccount> pair, CancellationToken cancellationToken)
+        private async Task<int> NotifyPairAsync(TeamInstallInfo teamModel, string teamName, Tuple<ChannelAccount, ChannelAccount> pair, Tuple<string, string> profiles, CancellationToken cancellationToken)
         {
             this.telemetryClient.TrackTrace($"Sending pairup notification to {pair.Item1.Id} and {pair.Item2.Id}");
 
@@ -152,10 +163,10 @@ namespace Icebreaker.Services
             var teamsPerson2 = JObject.FromObject(pair.Item2).ToObject<TeamsChannelAccount>();
 
             // Fill in person2's info in the card for person1
-            var cardForPerson1 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson1, teamsPerson2, this.botDisplayName);
+            var cardForPerson1 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson1, teamsPerson2, profiles.Item2, this.botDisplayName);
 
             // Fill in person1's info in the card for person2
-            var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2, teamsPerson1, this.botDisplayName);
+            var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2, teamsPerson1, profiles.Item1, this.botDisplayName);
 
             // Send notifications and return the number that was successful
             var notifyResults = await Task.WhenAll(

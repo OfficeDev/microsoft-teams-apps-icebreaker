@@ -242,14 +242,62 @@ namespace Icebreaker.Helpers
         }
 
         /// <summary>
+        /// Get the stored profiles of given users
+        /// </summary>
+        /// <returns>User's custom profiles</returns>
+        public async Task<Dictionary<string, string>> GetAllUsersProfileAsync()
+        {
+            await this.EnsureInitializedAsync();
+
+            try
+            {
+                var collectionLink = UriFactory.CreateDocumentCollectionUri(this.database.Id, this.usersCollection.Id);
+                var query = this.documentClient.CreateDocumentQuery<UserInfo>(
+                        collectionLink,
+#pragma warning disable SA1118 // Parameter must not span multiple lines
+                        new FeedOptions
+                        {
+                            EnableCrossPartitionQuery = true,
+
+                            // Fetch items in bulk according to DB engine capability
+                            MaxItemCount = -1,
+
+                            // Max partition to query at a time
+                            MaxDegreeOfParallelism = -1
+                        })
+#pragma warning restore SA1118 // Parameter must not span multiple lines
+                    .Select(u => new UserInfo { Id = u.Id, Profile = u.Profile })
+                    .AsDocumentQuery();
+                var usersProfileLookup = new Dictionary<string, string>();
+                while (query.HasMoreResults)
+                {
+                    // Note that ExecuteNextAsync can return many records in each call
+                    var responseBatch = await query.ExecuteNextAsync<UserInfo>();
+                    foreach (var userInfo in responseBatch)
+                    {
+                        usersProfileLookup.Add(userInfo.Id, userInfo.Profile);
+                    }
+                }
+
+                return usersProfileLookup;
+            }
+            catch (Exception ex)
+            {
+                this.telemetryClient.TrackException(ex.InnerException);
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Set the user info for the given user
         /// </summary>
         /// <param name="tenantId">Tenant id</param>
         /// <param name="userId">User id</param>
         /// <param name="optedIn">User opt-in status</param>
         /// <param name="serviceUrl">User service URL</param>
+        /// <param name="profile">User profile</param>
         /// <returns>Tracking task</returns>
-        public async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl)
+        public async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl, string profile)
         {
             await this.EnsureInitializedAsync();
 
@@ -258,7 +306,8 @@ namespace Icebreaker.Helpers
                 TenantId = tenantId,
                 UserId = userId,
                 OptedIn = optedIn,
-                ServiceUrl = serviceUrl
+                ServiceUrl = serviceUrl,
+                Profile = profile,
             };
             await this.documentClient.UpsertDocumentAsync(this.usersCollection.SelfLink, userInfo);
         }
