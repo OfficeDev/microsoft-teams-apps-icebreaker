@@ -145,16 +145,17 @@ namespace Icebreaker.Bot
                         await this.SaveAddedToTeam(message.ServiceUrl, teamId, teamsChannelData.Tenant.Id, personThatAddedBot);
                         await this.WelcomeTeam(turnContext, personThatAddedBot, cancellationToken);
 
-                        // var watch = new System.Diagnostics.Stopwatch();
-                        // watch.Start();
+                        var watch = System.Diagnostics.Stopwatch.StartNew();
+
                         var users = await ((BotFrameworkAdapter)turnContext.Adapter).GetConversationMembersAsync(turnContext, cancellationToken);
                         foreach (var user in users)
                         {
                             await this.WelcomeUser(turnContext, user.Id, teamsChannelData.Tenant.Id, teamsChannelData.Team.Id, cancellationToken);
                         }
 
-                        // watch.Stop();
-                        // this.telemetryClient.TrackTrace($"Time to notify all users: {watch.ElapsedMilliseconds} ms");
+                        watch.Stop();
+                        this.telemetryClient.TrackTrace($"Execution Time: {watch.ElapsedMilliseconds} ms");
+
                     }
                     else
                     {
