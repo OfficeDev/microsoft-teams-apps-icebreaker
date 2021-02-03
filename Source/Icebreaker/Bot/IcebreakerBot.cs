@@ -678,15 +678,15 @@ namespace Icebreaker.Bot
             await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
 
             // add users in team
-/*            var teamInfo = await this.GetInstalledTeam(teamId);
+            var teamInfo = await this.GetInstalledTeam(teamId);
             var botAdapter = turnContext.Adapter;
             var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
 
             foreach (var member in members)
             {
                 var userId = member.Id;
-                await this.dataProvider.AddUserTeamAsync(tenantId, userId, teamId, serviceUrl);
-            }*/
+/*                await this.dataProvider.AddUserTeamAsync(tenantId, userId, teamId, serviceUrl);
+*/            }
         }
 
         /// <summary>
@@ -706,8 +706,8 @@ namespace Icebreaker.Bot
             foreach (var member in members)
             {
                 var userId = member.Id;
-                await this.dataProvider.RemoveUserTeamAsync(userId, teamId);
-            }
+/*                await this.dataProvider.RemoveUserTeamAsync(userId, teamId);
+*/            }
 
             // remove team from database
             var teamInstallInfo = new TeamInstallInfo
