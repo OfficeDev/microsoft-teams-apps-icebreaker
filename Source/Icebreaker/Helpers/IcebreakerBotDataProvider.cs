@@ -466,6 +466,7 @@ namespace Icebreaker.Helpers
             {
                 Id = feedbackCollectionName
             };
+            feedbackCollectionDefinition.PartitionKey.Paths.Add("/id");
             this.feedbackCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, feedbackCollectionDefinition, useSharedOffer ? null : requestOptions);
 
             this.telemetryClient.TrackTrace("Data store initialized");
