@@ -61,7 +61,7 @@
     },
     {
       "type": "Action.ShowCard",
-      "title": "Set up profile",
+      "title": "${setUpProfileButtonText}",
       "card": {
           "type": "AdaptiveCard",
           "body": [
@@ -71,7 +71,7 @@
                       {
                           "type": "Input.Text",
                           "id": "profile",
-                          "placeholder": "Share something about yourself with future matches!",
+                          "placeholder": "${profilePlaceholderText}",
                           "maxLength": 1000,
                           "isMultiline": true
                       }

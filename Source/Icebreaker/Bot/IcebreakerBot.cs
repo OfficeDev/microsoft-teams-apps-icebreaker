@@ -344,10 +344,10 @@ namespace Icebreaker.Bot
             var cardPayload = JToken.Parse(activity.Value.ToString());
             var cardAction = cardPayload["action"].Value<string>().ToLowerInvariant();
             var userInfo = await this.dataProvider.GetUserInfoAsync(activity.From.AadObjectId);
+
             switch (cardAction)
             {
                 case "update":
-
                     var profile = cardPayload["profile"].Value<string>();
                     await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userInfo.UserId, userInfo.OptedIn, userInfo.ServiceUrl, profile);
 
@@ -357,12 +357,13 @@ namespace Icebreaker.Bot
                     {
                         new HeroCard()
                         {
-                            Text = "Your profile has been updated!"
+                            Text = Resources.UpdateProfileConfirmation
                         }.ToAttachment(),
                     };
 
                     await turnContext.SendActivityAsync(reply, cancellationToken).ConfigureAwait(false);
                     break;
+
                 default:
                     this.telemetryClient.TrackTrace($"Unknown action taken: {cardAction}");
                     break;

@@ -62,8 +62,10 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 team = teamName,
                 welcomeCardImageUrl = $"https://{baseDomain}/Content/welcome-card-image.png",
                 pauseMatchesText = Resources.PausePairingsButtonText,
+                profilePlaceholderText = Resources.ProfilePlaceholderText,
                 tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}",
                 salutationText = Resources.SalutationTitleText,
+                setUpProfileButtonText = Resources.SetUpProfileButtonText,
                 tourButtonText = Resources.TakeATourButtonText
             };
 

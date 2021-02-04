@@ -110,7 +110,7 @@ namespace Icebreaker.Services
                             var user2AadId = this.GetChannelUserObjectId(pair.Item2);
                             var profile1 = dbMembersProfile.ContainsKey(user1AadId) ? dbMembersProfile[user1AadId] : null;
                             var profile2 = dbMembersProfile.ContainsKey(user2AadId) ? dbMembersProfile[user2AadId] : null;
-                            
+
                             var profiles = new Tuple<string, string>(profile1, profile2);
 
                             // var profiles = new Tuple<string, string>("A", "B");

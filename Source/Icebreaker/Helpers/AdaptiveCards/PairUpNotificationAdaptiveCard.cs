@@ -58,7 +58,9 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 chatWithMatchButtonText = string.Format(Resources.ChatWithMatchButtonText, senderGivenName),
                 chatWithMessageGreeting = Resources.ChatWithMessageGreeting,
                 pauseMatchesButtonText = Resources.PausePairingsButtonText,
+                profilePlaceholderText = Resources.ProfilePlaceholderText,
                 proposeMeetupButtonText = Resources.ProposeMeetupButtonText,
+                updateProfileButtonText = Resources.UpdateProfileButtonText,
                 personUpn = senderUpn,
                 meetingLink,
             };

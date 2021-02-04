@@ -230,7 +230,16 @@ namespace Icebreaker.Properties {
                 return ResourceManager.GetString("PausePairingsButtonText", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Share something about yourself with future matches!.
+        /// </summary>
+        internal static string ProfilePlaceholderText {
+            get {
+                return ResourceManager.GetString("ProfilePlaceholderText", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Propose meetup.
         /// </summary>
@@ -257,7 +266,7 @@ namespace Icebreaker.Properties {
                 return ResourceManager.GetString("SalutationTitleText", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Take a tour.
         /// </summary>
@@ -268,11 +277,38 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set up profile.
+        /// </summary>
+        internal static string SetUpProfileButtonText {
+            get {
+                return ResourceManager.GetString("SetUpProfileButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to I&apos;m sorry, but I can&apos;t process the incoming message. You can take a tour, though, to learn more about my functionality..
         /// </summary>
         internal static string UnrecognizedInput {
             get {
                 return ResourceManager.GetString("UnrecognizedInput", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Update profile.
+        /// </summary>
+        internal static string UpdateProfileButtonText {
+            get {
+                return ResourceManager.GetString("UpdateProfileButtonText", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Your profile has been updated!
+        /// </summary>
+        internal static string UpdateProfileConfirmation {
+            get {
+                return ResourceManager.GetString("UpdateProfileConfirmation", resourceCulture);
             }
         }
         
