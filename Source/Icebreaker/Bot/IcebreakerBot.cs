@@ -571,7 +571,7 @@ namespace Icebreaker.Bot
 
             foreach (var member in members)
             {
-                var userId = member.AadObjectId;
+                var userId = this.GetChannelUserObjectId(member);
                 await this.WelcomeUser(turnContext, userId, tenantId, teamId, cancellationToken);
             }
         }
