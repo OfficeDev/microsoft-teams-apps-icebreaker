@@ -155,7 +155,6 @@ namespace Icebreaker.Bot
 
                         watch.Stop();
                         this.telemetryClient.TrackTrace($"Execution Time: {watch.ElapsedMilliseconds} ms");
-
                     }
                     else
                     {
