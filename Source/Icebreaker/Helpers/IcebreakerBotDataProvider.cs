@@ -282,7 +282,7 @@ namespace Icebreaker.Helpers
             var optedIn = userInfo?.OptedIn ?? new Dictionary<string, bool>();
             optedIn.Add(teamId, true);
 
-            await this.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl, userInfo?.CardToDelete);
+            await this.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl, string.Empty);
         }
 
         /// <summary>
