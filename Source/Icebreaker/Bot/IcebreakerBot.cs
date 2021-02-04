@@ -615,12 +615,12 @@ namespace Icebreaker.Bot
             var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInstallInfo);
             var userIds = new HashSet<string>();
 
-            foreach (var member in members)
+/*            foreach (var member in members)
             {
                 var userId = member.Id;
                 userIds.Add(userId);
                 await this.dataProvider.AddUserTeamAsync(tenantId, userId, teamId, serviceUrl);
-            }
+            }*/
 
             teamInstallInfo.UserIds = userIds;
             await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
