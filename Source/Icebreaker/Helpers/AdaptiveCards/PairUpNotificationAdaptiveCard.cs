@@ -60,7 +60,9 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 pauseMatchesButtonText = Resources.PausePairingsButtonText,
                 profilePlaceholderText = Resources.ProfilePlaceholderText,
                 proposeMeetupButtonText = Resources.ProposeMeetupButtonText,
+                saveButtonText = Resources.SaveButtonText,
                 updateProfileButtonText = Resources.UpdateProfileButtonText,
+                updateProfileAction = Resources.UpdateProfileAction,
                 personUpn = senderUpn,
                 meetingLink,
             };

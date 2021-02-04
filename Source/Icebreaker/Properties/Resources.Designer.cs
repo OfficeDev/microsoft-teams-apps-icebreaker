@@ -268,6 +268,15 @@ namespace Icebreaker.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to save.
+        /// </summary>
+        internal static string SaveButtonText {
+            get {
+                return ResourceManager.GetString("SaveButtonText", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Take a tour.
         /// </summary>
         internal static string TakeATourButtonText {
@@ -300,6 +309,15 @@ namespace Icebreaker.Properties {
         internal static string UpdateProfileButtonText {
             get {
                 return ResourceManager.GetString("UpdateProfileButtonText", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to update.
+        /// </summary>
+        internal static string UpdateProfileAction {
+            get {
+                return ResourceManager.GetString("UpdateProfileAction", resourceCulture);
             }
         }
 

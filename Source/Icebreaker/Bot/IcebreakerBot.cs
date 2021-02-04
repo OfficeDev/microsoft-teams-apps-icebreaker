@@ -240,7 +240,7 @@ namespace Icebreaker.Bot
                 var activity = turnContext.Activity;
                 var senderAadId = activity.From.AadObjectId;
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
-                var userInfo = await this.dataProvider.GetUserInfoAsync(activity.From.Id);
+                var userInfo = await this.dataProvider.GetUserInfoAsync(activity.From.AadObjectId);
 
                 if (!string.IsNullOrEmpty(activity.ReplyToId) && (activity.Value != null) && ((JObject)activity.Value).HasValues)
                 {

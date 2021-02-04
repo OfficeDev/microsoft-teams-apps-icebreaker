@@ -209,6 +209,10 @@
     <value>Hi there!</value>
     <comment>This is the text for the salutation in the adaptive cards when the bot is installed to a team and also when new users are added to the team</comment>
   </data>
+  <data name="SaveButtonText" xml:space="preserve">
+    <value>Save</value>
+    <comment>Button text for save</comment>
+  </data>
   <data name="SetUpProfileButtonText" xml:space="preserve">
     <value>Set up Profile</value>
     <comment>Button text to set up profile</comment>
@@ -220,6 +224,10 @@
   <data name="UnrecognizedInput" xml:space="preserve">
     <value>I'm sorry, but I can't process the incoming message. You can take a tour, though, to learn more about my functionality.</value>
     <comment>The text for the unrecognized input scenario</comment>
+  </data>
+  <data name="UpdateProfileAction" xml:space="preserve">
+    <value>update</value>
+    <comment>Action text for updating profile</comment>
   </data>
   <data name="UpdateProfileButtonText" xml:space="preserve">
     <value>Update Profile</value>

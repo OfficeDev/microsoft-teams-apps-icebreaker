@@ -65,8 +65,10 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 profilePlaceholderText = Resources.ProfilePlaceholderText,
                 tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}",
                 salutationText = Resources.SalutationTitleText,
+                saveButtonText = Resources.SaveButtonText,
                 setUpProfileButtonText = Resources.SetUpProfileButtonText,
-                tourButtonText = Resources.TakeATourButtonText
+                tourButtonText = Resources.TakeATourButtonText,
+                updateProfileAction = Resources.UpdateProfileAction,
             };
 
             return GetCard(AdaptiveCardTemplate.Value, welcomeData);
