@@ -47,7 +47,7 @@ namespace Icebreaker.Helpers
         /// <summary>
         /// Gets or sets activity id of the card to be deleted on next message activity
         /// </summary>
-        [JsonProperty("optedIn")]
+        [JsonProperty("cardToDelete")]
         public string CardToDelete { get; set; }
 
         /// <summary>
