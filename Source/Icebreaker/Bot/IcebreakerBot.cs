@@ -150,14 +150,14 @@ namespace Icebreaker.Bot
                     }
                     else
                     {
-                        this.telemetryClient.TrackTrace($"New member {member.Id} added to team {teamId}");
+                        this.telemetryClient.TrackTrace($"New member {member.AadObjectId} added to team {teamId}");
 
                         var teamInfo = await this.GetInstalledTeam(teamId);
-                        await this.dataProvider.AddUserTeamAsync(tenantId, member.Id, teamId, serviceUrl);
-                        teamInfo.UserIds.Add(member.Id);
+                        await this.dataProvider.AddUserTeamAsync(tenantId, member.AadObjectId, teamId, serviceUrl);
+                        teamInfo.UserIds.Add(member.AadObjectId);
                         await this.dataProvider.UpdateTeamInstallStatusAsync(teamInfo, true);
 
-                        await this.WelcomeUser(turnContext, member.Id, tenantId, teamId, cancellationToken);
+                        await this.WelcomeUser(turnContext, member.AadObjectId, tenantId, teamId, cancellationToken);
                     }
                 }
             }
@@ -206,9 +206,9 @@ namespace Icebreaker.Bot
             {
                 foreach (var member in membersRemoved)
                 {
-                    this.telemetryClient.TrackTrace($"New member {member.Id} removed from {teamsChannelData.Team.Id}");
-                    await this.dataProvider.RemoveUserTeamAsync(member.Id, teamsChannelData.Team.Id);
-                    teamInfo.UserIds.Remove(member.Id);
+                    this.telemetryClient.TrackTrace($"New member {member.AadObjectId} removed from {teamsChannelData.Team.Id}");
+                    await this.dataProvider.RemoveUserTeamAsync(member.AadObjectId, teamsChannelData.Team.Id);
+                    teamInfo.UserIds.Remove(member.AadObjectId);
                     await this.dataProvider.UpdateTeamInstallStatusAsync(teamInfo, true);
                 }
             }
@@ -247,15 +247,14 @@ namespace Icebreaker.Bot
             {
                 var activity = turnContext.Activity;
                 var senderAadId = activity.From.AadObjectId;
-                var userId = activity.From.Id;
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
-                var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
+                var userInfo = await this.dataProvider.GetUserInfoAsync(senderAadId);
 
                 // Delete card if user has a card to be deleted
                 if (userInfo.CardToDelete != null)
                 {
                     await turnContext.DeleteActivityAsync(userInfo.CardToDelete, cancellationToken);
-                    await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userId, userInfo.OptedIn, userInfo.ServiceUrl, null);
+                    await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, senderAadId, userInfo.OptedIn, userInfo.ServiceUrl, null);
                 }
 
                 // Adaptive card was submitted
@@ -385,7 +384,7 @@ namespace Icebreaker.Bot
             var cardPayload = JToken.Parse(activity.Value.ToString());
             var cardType = cardPayload["ActionType"].Value<string>().ToLowerInvariant();
             var teamId = activity.Conversation.Id;
-            var userId = activity.From.Id;
+            var userId = activity.From.AadObjectId;
             var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
 
             switch (cardType)
@@ -572,7 +571,7 @@ namespace Icebreaker.Bot
 
             foreach (var member in members)
             {
-                var userId = member.Id;
+                var userId = member.AadObjectId;
                 await this.WelcomeUser(turnContext, userId, tenantId, teamId, cancellationToken);
             }
         }
@@ -617,7 +616,7 @@ namespace Icebreaker.Bot
 
             foreach (var member in members)
             {
-                var userId = member.Id;
+                var userId = member.AadObjectId;
                 userIds.Add(userId);
                 await this.dataProvider.AddUserTeamAsync(tenantId, userId, teamId, serviceUrl);
             }
