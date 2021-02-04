@@ -86,6 +86,15 @@ namespace Icebreaker.Interfaces
         Task RemoveUserTeamAsync(string userId, string teamId);
 
         /// <summary>
+        /// Adds feedback
+        /// </summary>
+        /// <param name="feedbackRating">User rating</param>
+        /// <param name="feedbackText">Text of user comment</param>
+        /// <param name="teamId">Team id</param>
+        /// <returns>Tracking task</returns>
+        Task AddFeedbackAsync(string feedbackRating, string feedbackText, string teamId);
+
+        /// <summary>
         /// Get a list of past pairings
         /// </summary>
         /// <returns>List of past pairings.</returns>

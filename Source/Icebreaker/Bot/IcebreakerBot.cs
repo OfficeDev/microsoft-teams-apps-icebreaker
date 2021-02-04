@@ -393,12 +393,12 @@ namespace Icebreaker.Bot
         private async Task OnAdaptiveCardSubmitAsync(Activity activity, ITurnContext turnContext, CancellationToken cancellationToken)
         {
             var cardPayload = JToken.Parse(activity.Value.ToString());
-            var cardType = cardPayload["ActionType"].Value<string>().ToLowerInvariant();
+            var cardActionType = cardPayload["ActionType"].Value<string>().ToLowerInvariant();
             var teamId = activity.Conversation.Id;
             var userId = activity.From.Id;
             var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
 
-            switch (cardType)
+            switch (cardActionType)
             {
                 // updated pause preferences
                 case "saveopt":
@@ -517,8 +517,31 @@ namespace Icebreaker.Bot
                     await turnContext.SendActivityAsync(reply, cancellationToken).ConfigureAwait(false);
                     break;
 
+                case "feedback":
+
+                    // add to database
+                    this.telemetryClient.TrackTrace("Received feedback");
+                    var rating = cardPayload["rating"].Value<string>();
+                    var comments = cardPayload["comments"].Value<string>();
+
+                    await this.dataProvider.AddFeedbackAsync(rating, comments, teamId);
+
+                    // send thank you message
+                    var feedbackSubmitReply = activity.CreateReply();
+                    feedbackSubmitReply.Attachments = new List<Attachment>
+                    {
+                        new HeroCard()
+                        {
+                            Text = Resources.ThankYouMessage
+                        }.ToAttachment(),
+                    };
+
+                    await turnContext.SendActivityAsync(feedbackSubmitReply, cancellationToken).ConfigureAwait(false);
+
+                    break;
+
                 default:
-                    this.telemetryClient.TrackTrace($"Unknown action taken: {cardType}");
+                    this.telemetryClient.TrackTrace($"Unknown action taken: {cardActionType}");
                     break;
             }
         }
