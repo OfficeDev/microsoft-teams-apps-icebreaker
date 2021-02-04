@@ -187,16 +187,6 @@ namespace Icebreaker.Services
         }
 
         /// <summary>
-        /// Extract user Aad object id from channel account
-        /// </summary>
-        /// <param name="account">User channel account</param>
-        /// <returns>Aad object id Guid value</returns>
-        private string GetChannelUserObjectId(ChannelAccount account)
-        {
-            return JObject.FromObject(account).ToObject<TeamsChannelAccount>()?.AadObjectId;
-        }
-
-        /// <summary>
         /// Parse through a list of pairing information.
         /// </summary>
         /// <param name="pairHistory">List of pairing information.</param>
