@@ -181,9 +181,20 @@ namespace Icebreaker.Services
                 .Where(member => member != null)
                 .Where(member =>
                 {
-                    return dbMembersLookup.ContainsKey(member.Id) && dbMembersLookup[member.Id].ContainsKey(teamInfo.Id) && dbMembersLookup[member.Id][teamInfo.Id];
+                    var memberObjectId = this.GetChannelUserObjectId(member);
+                    return dbMembersLookup.ContainsKey(memberObjectId) && dbMembersLookup[memberObjectId].ContainsKey(teamInfo.Id) && dbMembersLookup[memberObjectId][teamInfo.Id];
                 })
                 .ToList();
+        }
+
+        /// <summary>
+        /// Extract user Aad object id from channel account
+        /// </summary>
+        /// <param name="account">User channel account</param>
+        /// <returns>Aad object id Guid value</returns>
+        private string GetChannelUserObjectId(ChannelAccount account)
+        {
+            return JObject.FromObject(account).ToObject<TeamsChannelAccount>()?.AadObjectId;
         }
 
         /// <summary>

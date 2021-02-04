@@ -616,7 +616,7 @@ namespace Icebreaker.Bot
 
             foreach (var member in members)
             {
-                var userId = member.AadObjectId;
+                var userId = this.GetChannelUserObjectId(member);
                 userIds.Add(userId);
                 await this.dataProvider.AddUserTeamAsync(tenantId, userId, teamId, serviceUrl);
             }
@@ -642,6 +642,16 @@ namespace Icebreaker.Bot
 
             // remove team from database
             await this.dataProvider.UpdateTeamInstallStatusAsync(teamInfo, false);
+        }
+
+        /// <summary>
+        /// Extract user Aad object id from channel account
+        /// </summary>
+        /// <param name="account">User channel account</param>
+        /// <returns>Aad object id Guid value</returns>
+        private string GetChannelUserObjectId(ChannelAccount account)
+        {
+            return JObject.FromObject(account).ToObject<TeamsChannelAccount>()?.AadObjectId;
         }
 
         /// <summary>
