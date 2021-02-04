@@ -45,6 +45,12 @@ namespace Icebreaker.Helpers
         public IDictionary<string, bool> OptedIn { get; set; }
 
         /// <summary>
+        /// Gets or sets activity id of the card to be deleted on next message activity
+        /// </summary>
+        [JsonProperty("optedIn")]
+        public string CardToDelete { get; set; }
+
+        /// <summary>
         /// Gets or sets a list of recent pairups
         /// </summary>
         [JsonProperty("recentPairups")]

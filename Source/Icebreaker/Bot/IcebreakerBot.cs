@@ -36,7 +36,6 @@ namespace Icebreaker.Bot
         private readonly MicrosoftAppCredentials appCredentials;
         private readonly TelemetryClient telemetryClient;
         private readonly string botDisplayName;
-        private string teamsViewCardId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBot"/> class.
@@ -252,6 +251,13 @@ namespace Icebreaker.Bot
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
                 var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
 
+                // Delete card if user has a card to be deleted
+                if (userInfo.CardToDelete != null)
+                {
+                    await turnContext.DeleteActivityAsync(userInfo.CardToDelete, cancellationToken);
+                    await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userId, userInfo.OptedIn, userInfo.ServiceUrl, null);
+                }
+
                 // Adaptive card was submitted
                 if (!string.IsNullOrEmpty(activity.ReplyToId) && (activity.Value != null) && ((JObject)activity.Value).HasValues)
                 {
@@ -362,7 +368,9 @@ namespace Icebreaker.Bot
             var teamNameLookup = await this.GetTeamNamesAsync(userInfo, turnContext.Adapter);
             var teamsViewCard = MessageFactory.Attachment(TeamsViewCard.GetTeamsViewCard(userInfo, teamNameLookup));
             var response = await turnContext.SendActivityAsync(teamsViewCard, cancellationToken);
-            this.teamsViewCardId = response.Id;
+
+            // update card to delete
+            await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userInfo.Id, userInfo.OptedIn, userInfo.ServiceUrl, response.Id);
         }
 
         /// <summary>
@@ -409,7 +417,7 @@ namespace Icebreaker.Bot
                         }
                     }
 
-                    await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userId, optedIn, userInfo.ServiceUrl);
+                    await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userId, optedIn, userInfo.ServiceUrl, userInfo.CardToDelete);
 
                     // send active teams
                     AdaptiveCard activeTeamsCard = new AdaptiveCard("1.2")
@@ -470,7 +478,6 @@ namespace Icebreaker.Bot
                         }
                     };
 
-                    await turnContext.DeleteActivityAsync(this.teamsViewCardId, cancellationToken);
                     await turnContext.SendActivityAsync(saveOptSubmitReply, cancellationToken).ConfigureAwait(false);
 
                     break;
@@ -652,7 +659,7 @@ namespace Icebreaker.Bot
                 optedIn[team] = optStatus;
             }
 
-            return this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userInfo.Id, optedIn, userInfo.ServiceUrl);
+            return this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userInfo.Id, optedIn, userInfo.ServiceUrl, userInfo.CardToDelete);
         }
 
         /// <summary>

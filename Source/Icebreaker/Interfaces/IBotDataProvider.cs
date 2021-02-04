@@ -56,8 +56,9 @@ namespace Icebreaker.Interfaces
         /// <param name="userId">User id</param>
         /// <param name="optedIn">User opt-in status for each team user is in</param>
         /// <param name="serviceUrl">User service URL</param>
+        /// <param name="cardToDelete">Activity id of card to be deleted</param>
         /// <returns>Tracking task</returns>
-        Task SetUserInfoAsync(string tenantId, string userId, IDictionary<string, bool> optedIn, string serviceUrl);
+        Task SetUserInfoAsync(string tenantId, string userId, IDictionary<string, bool> optedIn, string serviceUrl, string cardToDelete);
 
         /// <summary>
         /// Add team to user's teams

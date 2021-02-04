@@ -248,8 +248,9 @@ namespace Icebreaker.Helpers
         /// <param name="userId">User id</param>
         /// <param name="optedIn">User opt-in status for each team user is in</param>
         /// <param name="serviceUrl">User service URL</param>
+        /// <param name="cardToDelete">Activity id of card to be deleted</param>
         /// <returns>Tracking task</returns>
-        public async Task SetUserInfoAsync(string tenantId, string userId, IDictionary<string, bool> optedIn, string serviceUrl)
+        public async Task SetUserInfoAsync(string tenantId, string userId, IDictionary<string, bool> optedIn, string serviceUrl, string cardToDelete)
         {
             await this.EnsureInitializedAsync();
 
@@ -258,7 +259,8 @@ namespace Icebreaker.Helpers
                 TenantId = tenantId,
                 UserId = userId,
                 OptedIn = optedIn,
-                ServiceUrl = serviceUrl
+                ServiceUrl = serviceUrl,
+                CardToDelete = cardToDelete
             };
             await this.documentClient.UpsertDocumentAsync(this.usersCollection.SelfLink, userInfo);
         }
@@ -280,7 +282,7 @@ namespace Icebreaker.Helpers
             var optedIn = userInfo?.OptedIn ?? new Dictionary<string, bool>();
             optedIn.Add(teamId, true);
 
-            await this.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl);
+            await this.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl, userInfo?.CardToDelete);
         }
 
         /// <summary>
@@ -298,7 +300,7 @@ namespace Icebreaker.Helpers
             var optedIn = userInfo.OptedIn;
             optedIn.Remove(teamId);
 
-            await this.SetUserInfoAsync(userInfo.TenantId, userId, optedIn, userInfo.ServiceUrl);
+            await this.SetUserInfoAsync(userInfo.TenantId, userId, optedIn, userInfo.ServiceUrl, userInfo.CardToDelete);
         }
 
         /// <summary>
