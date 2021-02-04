@@ -229,6 +229,10 @@
     <value>I'm sorry, but I can't process the incoming message. You can take a tour, though, to learn more about my functionality.</value>
     <comment>The text for the unrecognized input scenario</comment>
   </data>
+  <data name="ViewTeamsButtonText" xml:space="preserve">
+    <value>View my teams</value>
+    <comment>Button text to show team pausing preferences card</comment>
+  </data>
   <data name="ViewTeamsText" xml:space="preserve">
     <value>Here are your teams! Select the teams that you would like to pause matches for.</value>
     <comment>Text on card where user can edit team matching preferences</comment>

@@ -36,7 +36,6 @@ namespace Icebreaker.Bot
         private readonly MicrosoftAppCredentials appCredentials;
         private readonly TelemetryClient telemetryClient;
         private readonly string botDisplayName;
-        private string teamsViewCardId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBot"/> class.
@@ -163,11 +162,14 @@ namespace Icebreaker.Bot
                     }
                     else
                     {
-                        this.telemetryClient.TrackTrace($"New member {member.Id} added to team {teamsChannelData.Team.Id}");
+                        this.telemetryClient.TrackTrace($"New member {member.Id} added to team {teamId}");
 
-                        await this.dataProvider.AddUserTeamAsync(tenantId, member.Id, teamsChannelData.Team.Id, serviceUrl);
+                        var teamInfo = await this.GetInstalledTeam(teamId);
+                        await this.dataProvider.AddUserTeamAsync(tenantId, member.Id, teamId, serviceUrl);
+                        teamInfo.UserIds.Add(member.Id);
+                        await this.dataProvider.UpdateTeamInstallStatusAsync(teamInfo, true);
 
-                        await this.WelcomeUser(turnContext, member.Id, tenantId, teamsChannelData.Team.Id, cancellationToken);
+                        await this.WelcomeUser(turnContext, member.Id, tenantId, teamId, cancellationToken);
                     }
                 }
             }
@@ -195,6 +197,7 @@ namespace Icebreaker.Bot
             var message = turnContext.Activity;
             string myBotId = message.Recipient.Id;
             string teamId = message.Conversation.Id;
+            var teamInfo = await this.GetInstalledTeam(teamId);
             var teamsChannelData = message.GetChannelData<TeamsChannelData>();
             if (message.MembersRemoved?.Any(x => x.Id == myBotId) == true)
             {
@@ -209,7 +212,7 @@ namespace Icebreaker.Bot
                 this.telemetryClient.TrackEvent("AppUninstalled", properties);
 
                 // we were just removed from a team
-                await this.SaveRemoveFromTeamAsync(teamId, turnContext, cancellationToken);
+                await this.SaveRemoveFromTeamAsync(teamInfo);
             }
             else
             {
@@ -217,6 +220,8 @@ namespace Icebreaker.Bot
                 {
                     this.telemetryClient.TrackTrace($"New member {member.Id} removed from {teamsChannelData.Team.Id}");
                     await this.dataProvider.RemoveUserTeamAsync(member.Id, teamsChannelData.Team.Id);
+                    teamInfo.UserIds.Remove(member.Id);
+                    await this.dataProvider.UpdateTeamInstallStatusAsync(teamInfo, true);
                 }
             }
 
@@ -256,6 +261,13 @@ namespace Icebreaker.Bot
                 var senderId = activity.From.Id;
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
                 var userInfo = await this.dataProvider.GetUserInfoAsync(senderId);
+
+                // Delete card if user has a card to be deleted
+                if (userInfo.CardToDelete != null)
+                {
+                    await turnContext.DeleteActivityAsync(userInfo.CardToDelete, cancellationToken);
+                    await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, senderId, userInfo.OptedIn, userInfo.ServiceUrl, userInfo.Profile, null);
+                }
 
                 // Adaptive card was submitted
                 if (!string.IsNullOrEmpty(activity.ReplyToId) && (activity.Value != null) && ((JObject)activity.Value).HasValues)
@@ -366,7 +378,9 @@ namespace Icebreaker.Bot
             var teamNameLookup = await this.GetTeamNamesAsync(userInfo, turnContext.Adapter);
             var teamsViewCard = MessageFactory.Attachment(TeamsViewCard.GetTeamsViewCard(userInfo, teamNameLookup));
             var response = await turnContext.SendActivityAsync(teamsViewCard, cancellationToken);
-            this.teamsViewCardId = response.Id;
+
+            // update card to delete
+            await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userInfo.Id, userInfo.OptedIn, userInfo.ServiceUrl, userInfo.Profile, response.Id);
         }
 
         /// <summary>
@@ -395,7 +409,7 @@ namespace Icebreaker.Bot
                     var activeTeams = new Dictionary<string, string>();
                     var botAdapter = turnContext.Adapter;
 
-                    foreach (var team in userInfo.OptedIn.Keys.ToList())
+                    foreach (var team in userInfo.OptedIn.Keys)
                     {
                         if (cardPayload[team] == null)
                         {
@@ -413,7 +427,7 @@ namespace Icebreaker.Bot
                         }
                     }
 
-                    await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userId, optedIn, userInfo.ServiceUrl, userInfo.Profile);
+                    await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userId, optedIn, userInfo.ServiceUrl, userInfo.Profile, userInfo.CardToDelete);
 
                     // send active teams
                     AdaptiveCard activeTeamsCard = new AdaptiveCard("1.2")
@@ -474,7 +488,6 @@ namespace Icebreaker.Bot
                         }
                     };
 
-                    await turnContext.DeleteActivityAsync(this.teamsViewCardId, cancellationToken);
                     await turnContext.SendActivityAsync(saveOptSubmitReply, cancellationToken).ConfigureAwait(false);
 
                     break;
@@ -489,7 +502,7 @@ namespace Icebreaker.Bot
 
                     var profile = cardPayload["profile"].Value<string>();
 
-                    await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userId, userInfo.OptedIn, userInfo.ServiceUrl, profile);
+                    await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userId, userInfo.OptedIn, userInfo.ServiceUrl, profile, userInfo.CardToDelete);
 
                     // Confirmation message
                     var reply = activity.CreateReply();
@@ -629,49 +642,39 @@ namespace Icebreaker.Bot
                 TenantId = tenantId,
                 InstallerName = botInstaller
             };
-            await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
 
             // add users in team
-            var teamInfo = await this.GetInstalledTeam(teamId);
             var botAdapter = turnContext.Adapter;
-            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
+            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInstallInfo);
+            var userIds = new HashSet<string>();
 
             foreach (var member in members)
             {
                 var userId = member.Id;
+                userIds.Add(userId);
                 await this.dataProvider.AddUserTeamAsync(tenantId, userId, teamId, serviceUrl);
             }
+
+            teamInstallInfo.UserIds = userIds;
+            await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
         }
 
         /// <summary>
         /// Save information about the team from which the bot was removed.
         /// </summary>
-        /// <param name="teamId">The team id</param>
-        /// <param name="turnContext">The turn context</param>
-        /// <param name="cancellationToken">The cancellation token</param>
+        /// <param name="teamInfo">The team install info</param>
         /// <returns>Tracking task</returns>
-        private async Task SaveRemoveFromTeamAsync(string teamId, ITurnContext turnContext, CancellationToken cancellationToken)
+        private async Task SaveRemoveFromTeamAsync(TeamInstallInfo teamInfo)
         {
-            var teamInfo = await this.GetInstalledTeam(teamId);
-            var botAdapter = turnContext.Adapter;
-            var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
-            /*            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
-            */
-
-            var members = await ((BotFrameworkAdapter)turnContext.Adapter).GetConversationMembersAsync(turnContext, cancellationToken);
+            var members = teamInfo.UserIds;
 
             foreach (var member in members)
             {
-                await this.dataProvider.RemoveUserTeamAsync(member.Id, teamId);
+                await this.dataProvider.RemoveUserTeamAsync(member, teamInfo.Id);
             }
 
             // remove team from database
-            var teamInstallInfo = new TeamInstallInfo
-            {
-                TeamId = teamId,
-                TenantId = tenantId,
-            };
-            await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, false);
+            await this.dataProvider.UpdateTeamInstallStatusAsync(teamInfo, false);
         }
 
         /// <summary>
@@ -688,7 +691,7 @@ namespace Icebreaker.Bot
                 optedIn[team] = optStatus;
             }
 
-            return this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userInfo.Id, optedIn, userInfo.ServiceUrl, userInfo.Profile);
+            return this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userInfo.Id, optedIn, userInfo.ServiceUrl, userInfo.Profile, userInfo.CardToDelete);
         }
 
         /// <summary>

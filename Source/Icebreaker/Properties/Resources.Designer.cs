@@ -313,6 +313,15 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to View my teams.
+        /// </summary>
+        internal static string ViewTeamsButtonText {
+            get {
+                return ResourceManager.GetString("ViewTeamsButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Here are your teams! Select the teams that you would like to pause matches for..
         /// </summary>
         internal static string ViewTeamsText {
