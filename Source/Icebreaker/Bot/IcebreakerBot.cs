@@ -333,10 +333,10 @@ namespace Icebreaker.Bot
         private async Task OnAdaptiveCardSubmitAsync(Activity activity, ITurnContext turnContext, CancellationToken cancellationToken)
         {
             var cardPayload = JToken.Parse(activity.Value.ToString());
-            var cardType = cardPayload["ActionType"].Value<string>().ToLowerInvariant();
+            var cardActionType = cardPayload["ActionType"].Value<string>().ToLowerInvariant();
             var teamId = activity.Conversation.Id;
 
-            switch (cardType)
+            switch (cardActionType)
             {
                 case "feedback":
 
@@ -359,6 +359,10 @@ namespace Icebreaker.Bot
 
                     await turnContext.SendActivityAsync(feedbackSubmitReply, cancellationToken).ConfigureAwait(false);
 
+                    break;
+
+                default:
+                    this.telemetryClient.TrackTrace($"Unknown action taken: {cardActionType}");
                     break;
             }
         }

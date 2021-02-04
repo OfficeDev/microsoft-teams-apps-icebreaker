@@ -10,11 +10,6 @@ namespace Icebreaker.Helpers
     public enum AdaptiveCardName
     {
         /// <summary>
-        /// Represents the card sent to collect user feedback
-        /// </summary>
-        Feedback,
-
-        /// <summary>
         /// Represents the pair-up card sent after matching
         /// </summary>
         PairUpNotification,
@@ -32,6 +27,11 @@ namespace Icebreaker.Helpers
         /// <summary>
         /// Represents the welcome card sent to team channel once bot is added
         /// </summary>
-        WelcomeTeam
+        WelcomeTeam,
+
+        /// <summary>
+        /// Represents the card sent to collect user feedback
+        /// </summary>
+        Feedback
     }
 }
