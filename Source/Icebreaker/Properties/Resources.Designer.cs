@@ -88,20 +88,20 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Edit active teams.
-        /// </summary>
-        internal static string EditActiveTeamsButtonText {
-            get {
-                return ResourceManager.GetString("EditActiveTeamsButtonText", resourceCulture);
-            }
-        }
-
-        /// <summary>
         ///   Looks up a localized string similar to Tell us your thoughts!.
         /// </summary>
         internal static string CommentPlaceholderText {
             get {
                 return ResourceManager.GetString("CommentPlaceholderText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit active teams.
+        /// </summary>
+        internal static string EditActiveTeamsButtonText {
+            get {
+                return ResourceManager.GetString("EditActiveTeamsButtonText", resourceCulture);
             }
         }
         
@@ -185,9 +185,9 @@ namespace Icebreaker.Properties {
                 return ResourceManager.GetString("MatchUpCardContentPart1", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Hi there again, I&apos;m {0} in {1}. A bot that pairs you with a new coworker to meet each week. This week your match is {2}. Here is something they wanted to let you know about them: {3}..
+        ///   Looks up a localized string similar to Hi there again, I&apos;m {0} in {1}. A bot that pairs you with a new coworker to meet each week. This week your match is {2}. Here is something they wanted to let you know about them: {3}.
         /// </summary>
         internal static string MatchUpCardContentPart1b {
             get {
@@ -275,7 +275,7 @@ namespace Icebreaker.Properties {
                 return ResourceManager.GetString("PausePairingsButtonText", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Share something about yourself with future matches!.
         /// </summary>
@@ -284,7 +284,7 @@ namespace Icebreaker.Properties {
                 return ResourceManager.GetString("ProfilePlaceholderText", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Explain your rating or let us know any thoughts you have about Icebreaker..
         /// </summary>
@@ -338,7 +338,7 @@ namespace Icebreaker.Properties {
                 return ResourceManager.GetString("SalutationTitleText", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
@@ -349,11 +349,11 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save.
+        ///   Looks up a localized string similar to Set up Profile.
         /// </summary>
-        internal static string SaveButtonText {
+        internal static string SetUpProfileButtonText {
             get {
-                return ResourceManager.GetString("SaveButtonText", resourceCulture);
+                return ResourceManager.GetString("SetUpProfileButtonText", resourceCulture);
             }
         }
         
@@ -366,15 +366,6 @@ namespace Icebreaker.Properties {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Set up profile.
-        /// </summary>
-        internal static string SetUpProfileButtonText {
-            get {
-                return ResourceManager.GetString("SetUpProfileButtonText", resourceCulture);
-            }
-        }
-
         /// <summary>
         ///   Looks up a localized string similar to Thank you, your feedback is appreciated!.
         /// </summary>
@@ -392,16 +383,7 @@ namespace Icebreaker.Properties {
                 return ResourceManager.GetString("UnrecognizedInput", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Update profile.
-        /// </summary>
-        internal static string UpdateProfileButtonText {
-            get {
-                return ResourceManager.GetString("UpdateProfileButtonText", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to update.
         /// </summary>
@@ -410,9 +392,18 @@ namespace Icebreaker.Properties {
                 return ResourceManager.GetString("UpdateProfileAction", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Your profile has been updated!
+        ///   Looks up a localized string similar to Update Profile.
+        /// </summary>
+        internal static string UpdateProfileButtonText {
+            get {
+                return ResourceManager.GetString("UpdateProfileButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your profile has been updated!.
         /// </summary>
         internal static string UpdateProfileConfirmation {
             get {
