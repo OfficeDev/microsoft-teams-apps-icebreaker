@@ -593,18 +593,6 @@ namespace Icebreaker.Bot
             var teamName = turnContext.Activity.TeamsGetTeamInfo().Name;
             var welcomeTeamMessageCard = WelcomeTeamAdaptiveCard.GetCard(teamName, botInstaller);
             await this.NotifyTeamAsync(turnContext, MessageFactory.Attachment(welcomeTeamMessageCard), teamId, cancellationToken);
-
-            // welcome users on team
-            var teamInfo = await this.GetInstalledTeam(teamId);
-            var botAdapter = (BotFrameworkAdapter)turnContext.Adapter;
-            var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
-            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
-
-            foreach (var member in members)
-            {
-                var userId = this.GetChannelUserObjectId(member);
-                await this.WelcomeUser(turnContext, userId, tenantId, teamId, cancellationToken);
-            }
         }
 
         /// <summary>
