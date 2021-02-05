@@ -1,0 +1,89 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.0",
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "${promptFeedback}",
+          "wrap": true
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.ShowCard",
+      "title": "${giveFeedback}",
+      "card": {
+        "type": "AdaptiveCard",
+        "body": [
+          {
+            "type": "Container",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "${ratingText}",
+                "wrap": true
+              },
+              {
+                "type": "Input.ChoiceSet",
+                "id": "rating",
+                "style": "compact",
+                "isMultiSelect": false,
+                "value": "5",
+                "choices": [
+                  {
+                    "title": "1",
+                    "value": "1"
+                  },
+                  {
+                    "title": "2",
+                    "value": "2"
+                  },
+                  {
+                    "title": "3",
+                    "value": "3"
+                  },
+                  {
+                    "title": "4",
+                    "value": "4"
+                  },
+                  {
+                    "title": "5",
+                    "value": "5"
+                  }
+                ]
+              },
+              {
+                "type": "TextBlock",
+                "text": "${promptComment}",
+                "wrap": true
+              },
+              {
+                "type": "Input.Text",
+                "id": "comments",
+                "style": "compact",
+                "placeholder": "${commentPlaceholder}",
+                "maxLength": 1000,
+                "isMultiline": true
+              }
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "type": "Action.Submit",
+            "title": "${saveButton}",
+            "data": {
+              "ActionType": "feedback"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
