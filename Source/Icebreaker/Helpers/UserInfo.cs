@@ -55,5 +55,11 @@ namespace Icebreaker.Helpers
         /// </summary>
         [JsonProperty("recentPairups")]
         public List<UserInfo> RecentPairUps { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user's profile
+        /// </summary>
+        [JsonProperty("profile")]
+        public string Profile { get; set; }
     }
 }

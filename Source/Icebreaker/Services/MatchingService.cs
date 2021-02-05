@@ -80,6 +80,7 @@ namespace Icebreaker.Services
 
                 // Fetch all db users opt-in status/lookup
                 var dbMembersLookup = await this.dataProvider.GetAllUsersOptInStatusAsync();
+                var dbMembersProfile = await this.dataProvider.GetAllUsersProfileAsync();
                 dbMembersCount = dbMembersLookup.Count;
 
                 var pairHistory = await this.dataProvider.GetPairHistoryAsync();
@@ -105,7 +106,13 @@ namespace Icebreaker.Services
                             var pairId = new Tuple<string, string>(pair.Item1.Id, pair.Item2.Id);
                             await this.dataProvider.AddPairAsync(pairId, prevIteration);
 
-                            usersNotifiedCount += await this.NotifyPairAsync(team, teamName, pair, default(CancellationToken));
+                            var user1AadId = this.GetChannelUserObjectId(pair.Item1);
+                            var user2AadId = this.GetChannelUserObjectId(pair.Item2);
+
+                            var user1 = new Tuple<ChannelAccount, string>(pair.Item1, dbMembersProfile.ContainsKey(user1AadId) ? dbMembersProfile[user1AadId] : null);
+                            var user2 = new Tuple<ChannelAccount, string>(pair.Item2, dbMembersProfile.ContainsKey(user2AadId) ? dbMembersProfile[user2AadId] : null);
+
+                            usersNotifiedCount += await this.NotifyPairAsync(team, teamName, user1, user2, default(CancellationToken));
                             pairsNotifiedCount++;
                         }
                     }
@@ -141,21 +148,22 @@ namespace Icebreaker.Services
         /// </summary>
         /// <param name="teamModel">DB team model info.</param>
         /// <param name="teamName">MS-Teams team name</param>
-        /// <param name="pair">The pairup</param>
+        /// <param name="user1">The pair's first user's ChannelAccount and profile</param>
+        /// <param name="user2">The pair's second user's ChannelAccount and profile</param>
         /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
         /// <returns>Number of users notified successfully</returns>
-        private async Task<int> NotifyPairAsync(TeamInstallInfo teamModel, string teamName, Tuple<ChannelAccount, ChannelAccount> pair, CancellationToken cancellationToken)
+        private async Task<int> NotifyPairAsync(TeamInstallInfo teamModel, string teamName, Tuple<ChannelAccount, string> user1, Tuple<ChannelAccount, string> user2, CancellationToken cancellationToken)
         {
-            this.telemetryClient.TrackTrace($"Sending pairup notification to {pair.Item1.Id} and {pair.Item2.Id}");
+            this.telemetryClient.TrackTrace($"Sending pairup notification to {user1.Item1.Id} and {user2.Item1.Id}");
 
-            var teamsPerson1 = JObject.FromObject(pair.Item1).ToObject<TeamsChannelAccount>();
-            var teamsPerson2 = JObject.FromObject(pair.Item2).ToObject<TeamsChannelAccount>();
+            var teamsPerson1 = JObject.FromObject(user1.Item1).ToObject<TeamsChannelAccount>();
+            var teamsPerson2 = JObject.FromObject(user2.Item1).ToObject<TeamsChannelAccount>();
 
             // Fill in person2's info in the card for person1
-            var cardForPerson1 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson1, teamsPerson2, this.botDisplayName);
+            var cardForPerson1 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson1, teamsPerson2, user2.Item2, this.botDisplayName);
 
             // Fill in person1's info in the card for person2
-            var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2, teamsPerson1, this.botDisplayName);
+            var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2, teamsPerson1, user1.Item2, this.botDisplayName);
 
             // Send notifications and return the number that was successful
             var notifyResults = await Task.WhenAll(

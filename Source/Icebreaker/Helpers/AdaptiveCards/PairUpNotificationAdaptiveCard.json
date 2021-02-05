@@ -77,6 +77,36 @@
           "text": "viewteams"
         }
       }
+    },
+    {
+      "type": "Action.ShowCard",
+      "title": "${updateProfileButtonText}",
+      "card": {
+          "type": "AdaptiveCard",
+          "body": [
+              {
+                  "type": "Container",
+                  "items": [
+                      {
+                          "type": "Input.Text",
+                          "id": "profile",
+                          "placeholder": "${profilePlaceholderText}",
+                          "maxLength": 1000,
+                          "isMultiline": true
+                      }
+                  ]
+              }
+          ],
+          "actions": [
+              {
+                  "type": "Action.Submit",
+                  "title": "${saveButtonText}",
+                  "data": {
+                      "ActionType": "${updateProfileAction}"
+                  }
+              }
+          ]
+      }
     }
   ],
   "version": "1.0"

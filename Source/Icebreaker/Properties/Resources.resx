@@ -165,6 +165,10 @@
     <value>Hi there again, I'm {0} in {1}. A bot that pairs you with a new coworker to meet each week. This week your match is {2}.</value>
     <comment>First part of the match up card main content</comment>
   </data>
+  <data name="MatchUpCardContentPart1b" xml:space="preserve">
+    <value>Hi there again, I'm {0} in {1}. A bot that pairs you with a new coworker to meet each week. This week your match is {2}. Here is something they wanted to let you know about them: {3}</value>
+    <comment>First part of the match up card main content for users that have a profile</comment>
+  </data>
   <data name="MatchUpCardContentPart2" xml:space="preserve">
     <value>If you've got the inclination, set something up. See, meeting people *is* easy!</value>
     <comment>Second part of the match up card main content</comment>
@@ -201,6 +205,10 @@
     <value>Pause all matches</value>
     <comment>Button text to pause pairings</comment>
   </data>
+  <data name="ProfilePlaceholderText" xml:space="preserve">
+    <value>Share something about yourself with future matches!</value>
+    <comment>Placeholder for textbox when updating profile.</comment>
+  </data>
   <data name="ProposeMeetupButtonText" xml:space="preserve">
     <value>Propose meetup</value>
     <comment>Button text to propose the meetup with the match of the user</comment>
@@ -217,6 +225,10 @@
     <value>Save</value>
     <comment>Button to save preferences</comment>
   </data>
+  <data name="SetUpProfileButtonText" xml:space="preserve">
+    <value>Set up Profile</value>
+    <comment>Button text to set up profile</comment>
+  </data>
   <data name="TakeATourButtonText" xml:space="preserve">
     <value>Take a tour</value>
     <comment>The text for the button which launches a tour when clicked</comment>
@@ -232,6 +244,18 @@
   <data name="ViewTeamsText" xml:space="preserve">
     <value>Here are your teams! Select the teams that you would like to pause matches for.</value>
     <comment>Text on card where user can edit team matching preferences</comment>
+  </data>
+  <data name="UpdateProfileAction" xml:space="preserve">
+    <value>update</value>
+    <comment>Action text for updating profile</comment>
+  </data>
+  <data name="UpdateProfileButtonText" xml:space="preserve">
+    <value>Update Profile</value>
+    <comment>Button text to update profile</comment>
+  </data>
+  <data name="UpdateProfileConfirmation" xml:space="preserve">
+    <value>Your profile has been updated!</value>
+    <comment>The confirmation reply that is sent when the user updates the profile</comment>
   </data>
   <data name="WelcomeTourTitle" xml:space="preserve">
     <value>Tour</value>
