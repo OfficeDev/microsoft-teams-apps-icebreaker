@@ -66,6 +66,17 @@
           "text": "optout"
         }
       }
+    },
+    {
+      "type": "Action.Submit",
+      "title": "${viewTeamsButton}",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "${viewTeamsButton}",
+          "text": "viewteams"
+        }
+      }
     }
   ],
   "version": "1.0"

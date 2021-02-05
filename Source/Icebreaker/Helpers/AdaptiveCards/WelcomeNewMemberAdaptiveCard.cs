@@ -64,7 +64,8 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 pauseMatchesText = Resources.PausePairingsButtonText,
                 tourUrl = $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}",
                 salutationText = Resources.SalutationTitleText,
-                tourButtonText = Resources.TakeATourButtonText
+                tourButtonText = Resources.TakeATourButtonText,
+                viewTeamsButton = Resources.ViewTeamsButtonText
             };
 
             return GetCard(AdaptiveCardTemplate.Value, welcomeData);

@@ -8,6 +8,7 @@ namespace Icebreaker.Helpers
 {
     using Microsoft.Azure.Documents;
     using Newtonsoft.Json;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Represents information about a team to which the Icebreaker app was installed
@@ -42,6 +43,12 @@ namespace Icebreaker.Helpers
         /// </summary>
         [JsonProperty("installerName")]
         public string InstallerName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the channel ids of the users on the team
+        /// </summary>
+        [JsonProperty("userIds")]
+        public ISet<string> UserIds { get; set; }
 
         /// <inheritdoc/>
         public override string ToString()

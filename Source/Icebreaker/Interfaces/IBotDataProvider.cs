@@ -25,7 +25,7 @@ namespace Icebreaker.Interfaces
         /// Get the stored information about given users
         /// </summary>
         /// <returns>User information</returns>
-        Task<Dictionary<string, bool>> GetAllUsersOptInStatusAsync();
+        Task<Dictionary<string, IDictionary<string, bool>>> GetAllUsersOptInStatusAsync();
 
         /// <summary>
         /// Returns the team that the bot has been installed to
@@ -43,14 +43,40 @@ namespace Icebreaker.Interfaces
         Task UpdateTeamInstallStatusAsync(TeamInstallInfo team, bool installed);
 
         /// <summary>
+        /// Get the stored information about the given user
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <returns>User information</returns>
+        Task<UserInfo> GetUserInfoAsync(string userId);
+
+        /// <summary>
         /// Set the user info for the given user
         /// </summary>
         /// <param name="tenantId">Tenant id</param>
         /// <param name="userId">User id</param>
-        /// <param name="optedIn">User opt-in status</param>
+        /// <param name="optedIn">User opt-in status for each team user is in</param>
+        /// <param name="serviceUrl">User service URL</param>
+        /// <param name="cardToDelete">Activity id of card to be deleted</param>
+        /// <returns>Tracking task</returns>
+        Task SetUserInfoAsync(string tenantId, string userId, IDictionary<string, bool> optedIn, string serviceUrl, string cardToDelete);
+
+        /// <summary>
+        /// Add team to user's teams
+        /// </summary>
+        /// <param name="tenantId">Tenant id</param>
+        /// <param name="userId">User id</param>
+        /// <param name="teamId">Team to add</param>
         /// <param name="serviceUrl">User service URL</param>
         /// <returns>Tracking task</returns>
-        Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl);
+        Task AddUserTeamAsync(string tenantId, string userId, string teamId, string serviceUrl);
+
+        /// <summary>
+        /// Remove team from user's teams
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <param name="teamId">Team to remove</param>
+        /// <returns>Tracking task</returns>
+        Task RemoveUserTeamAsync(string userId, string teamId);
 
         /// <summary>
         /// Get a list of past pairings

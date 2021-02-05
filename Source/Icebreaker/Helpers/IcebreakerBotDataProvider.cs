@@ -198,7 +198,7 @@ namespace Icebreaker.Helpers
         /// Get the stored information about given users
         /// </summary>
         /// <returns>User information</returns>
-        public async Task<Dictionary<string, bool>> GetAllUsersOptInStatusAsync()
+        public async Task<Dictionary<string, IDictionary<string, bool>>> GetAllUsersOptInStatusAsync()
         {
             await this.EnsureInitializedAsync();
 
@@ -221,7 +221,7 @@ namespace Icebreaker.Helpers
 #pragma warning restore SA1118 // Parameter must not span multiple lines
                     .Select(u => new UserInfo { Id = u.Id, OptedIn = u.OptedIn })
                     .AsDocumentQuery();
-                var usersOptInStatusLookup = new Dictionary<string, bool>();
+                var usersOptInStatusLookup = new Dictionary<string, IDictionary<string, bool>>();
                 while (query.HasMoreResults)
                 {
                     // Note that ExecuteNextAsync can return many records in each call
@@ -246,10 +246,11 @@ namespace Icebreaker.Helpers
         /// </summary>
         /// <param name="tenantId">Tenant id</param>
         /// <param name="userId">User id</param>
-        /// <param name="optedIn">User opt-in status</param>
+        /// <param name="optedIn">User opt-in status for each team user is in</param>
         /// <param name="serviceUrl">User service URL</param>
+        /// <param name="cardToDelete">Activity id of card to be deleted</param>
         /// <returns>Tracking task</returns>
-        public async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl)
+        public async Task SetUserInfoAsync(string tenantId, string userId, IDictionary<string, bool> optedIn, string serviceUrl, string cardToDelete)
         {
             await this.EnsureInitializedAsync();
 
@@ -258,9 +259,48 @@ namespace Icebreaker.Helpers
                 TenantId = tenantId,
                 UserId = userId,
                 OptedIn = optedIn,
-                ServiceUrl = serviceUrl
+                ServiceUrl = serviceUrl,
+                CardToDelete = cardToDelete
             };
             await this.documentClient.UpsertDocumentAsync(this.usersCollection.SelfLink, userInfo);
+        }
+
+        /// <summary>
+        /// Add team to user's teams
+        /// </summary>
+        /// <param name="tenantId">Tenant id</param>
+        /// <param name="userId">User id</param>
+        /// <param name="teamId">Team to add</param>
+        /// <param name="serviceUrl">User service URL</param>
+        /// <returns>Tracking task</returns>
+        public async Task AddUserTeamAsync(string tenantId, string userId, string teamId, string serviceUrl)
+        {
+            await this.EnsureInitializedAsync();
+
+            // create document if user info doesn't exist yet, otherwise update existing document
+            var userInfo = await this.GetUserInfoAsync(userId);
+            var optedIn = userInfo?.OptedIn ?? new Dictionary<string, bool>();
+            optedIn.Add(teamId, true);
+
+            await this.SetUserInfoAsync(tenantId, userId, optedIn, serviceUrl, userInfo?.CardToDelete);
+        }
+
+        /// <summary>
+        /// Remove team from user's teams
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <param name="teamId">Team to remove</param>
+        /// <returns>Tracking task</returns>
+        public async Task RemoveUserTeamAsync(string userId, string teamId)
+        {
+            await this.EnsureInitializedAsync();
+
+            // create document if user info doesn't exist yet, otherwise update existing document
+            var userInfo = await this.GetUserInfoAsync(userId);
+            var optedIn = userInfo.OptedIn;
+            optedIn.Remove(teamId);
+
+            await this.SetUserInfoAsync(userInfo.TenantId, userId, optedIn, userInfo.ServiceUrl, userInfo.CardToDelete);
         }
 
         /// <summary>

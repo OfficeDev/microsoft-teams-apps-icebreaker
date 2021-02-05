@@ -58,6 +58,17 @@
           "text": "optout"
         }
       }
+    },
+    {
+      "type": "Action.Submit",
+      "title": "${viewTeamsButton}",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "displayText": "${viewTeamsButton}",
+          "text": "viewteams"
+        }
+      }
     }
   ],
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",

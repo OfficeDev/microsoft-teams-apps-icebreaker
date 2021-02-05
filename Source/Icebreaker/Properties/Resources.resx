@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ActiveTeamsText" xml:space="preserve">
+    <value>Your preferences have been updated. Here are the teams you're currently matching for:</value>
+    <comment>Text on the card showing a user's currently matching teams</comment>
+  </data>
   <data name="ChatWithMatchButtonText" xml:space="preserve">
     <value>Chat with {0}</value>
     <comment>Button text to initiate a chat with the person the user has been matched up with</comment>
@@ -124,6 +128,10 @@
   <data name="ChatWithMessageGreeting" xml:space="preserve">
     <value>Hi%20there%20</value>
     <comment>This is the greeting of the chat with matched member message</comment>
+  </data>
+  <data name="EditActiveTeamsButtonText" xml:space="preserve">
+    <value>Edit active teams</value>
+    <comment>Button text to edit teams that the user is currently matching in</comment>
   </data>
   <data name="ErrorOccured" xml:space="preserve">
     <value>There was an error while processing request. Retry?</value>
@@ -177,6 +185,10 @@
     <value>{0} / {1} Meet up</value>
     <comment>The title for the Meetup - {0} is the name of the first person that user has been matched with and {1} is the name of the user</comment>
   </data>
+  <data name="NoActiveTeamsMessage" xml:space="preserve">
+    <value>You are not currently matching for any teams.</value>
+    <comment>Text that is displayed on the active teams card if the user has no active teams</comment>
+  </data>
   <data name="OptInConfirmation" xml:space="preserve">
     <value>Welcome back! You've been missed. I've restarted your matches. Have fun!</value>
     <comment>The confirmation reply that is sent when the user resumes the matches</comment>
@@ -201,6 +213,10 @@
     <value>Hi there!</value>
     <comment>This is the text for the salutation in the adaptive cards when the bot is installed to a team and also when new users are added to the team</comment>
   </data>
+  <data name="SaveButtonText" xml:space="preserve">
+    <value>Save</value>
+    <comment>Button to save preferences</comment>
+  </data>
   <data name="TakeATourButtonText" xml:space="preserve">
     <value>Take a tour</value>
     <comment>The text for the button which launches a tour when clicked</comment>
@@ -208,6 +224,14 @@
   <data name="UnrecognizedInput" xml:space="preserve">
     <value>I'm sorry, but I can't process the incoming message. You can take a tour, though, to learn more about my functionality.</value>
     <comment>The text for the unrecognized input scenario</comment>
+  </data>
+  <data name="ViewTeamsButtonText" xml:space="preserve">
+    <value>View my teams</value>
+    <comment>Button text to show team pausing preferences card</comment>
+  </data>
+  <data name="ViewTeamsText" xml:space="preserve">
+    <value>Here are your teams! Select the teams that you would like to pause matches for.</value>
+    <comment>Text on card where user can edit team matching preferences</comment>
   </data>
   <data name="WelcomeTourTitle" xml:space="preserve">
     <value>Tour</value>

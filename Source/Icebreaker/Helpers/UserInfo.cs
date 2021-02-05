@@ -39,10 +39,16 @@ namespace Icebreaker.Helpers
         public string ServiceUrl { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the user is opted in to pairups
+        /// Gets or sets dictionary mapping team channel id to user's opt-in status for that team
         /// </summary>
         [JsonProperty("optedIn")]
-        public bool OptedIn { get; set; }
+        public IDictionary<string, bool> OptedIn { get; set; }
+
+        /// <summary>
+        /// Gets or sets activity id of the card to be deleted on next message activity
+        /// </summary>
+        [JsonProperty("cardToDelete")]
+        public string CardToDelete { get; set; }
 
         /// <summary>
         /// Gets or sets a list of recent pairups

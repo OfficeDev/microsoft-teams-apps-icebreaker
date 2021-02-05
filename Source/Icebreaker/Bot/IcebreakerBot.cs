@@ -11,6 +11,7 @@ namespace Icebreaker.Bot
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AdaptiveCards;
     using Helpers;
     using Helpers.AdaptiveCards;
     using Icebreaker.Interfaces;
@@ -23,6 +24,7 @@ namespace Icebreaker.Bot
     using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Implements the core logic for Icebreaker bot
@@ -122,6 +124,8 @@ namespace Icebreaker.Bot
                 string myBotId = message.Recipient.Id;
                 string teamId = message.Conversation.Id;
                 var teamsChannelData = message.GetChannelData<TeamsChannelData>();
+                var tenantId = teamsChannelData.Tenant.Id;
+                var serviceUrl = message.ServiceUrl;
 
                 foreach (var member in membersAdded)
                 {
@@ -141,14 +145,19 @@ namespace Icebreaker.Bot
                         // Note that in some cases we cannot resolve it to a team member, because the app was installed to the team programmatically via Graph
                         var personThatAddedBot = (await this.conversationHelper.GetMemberAsync(turnContext, message.From.Id, cancellationToken))?.Name;
 
-                        await this.SaveAddedToTeam(message.ServiceUrl, teamId, teamsChannelData.Tenant.Id, personThatAddedBot);
+                        await this.SaveAddedToTeamAsync(serviceUrl, teamId, turnContext, personThatAddedBot);
                         await this.WelcomeTeam(turnContext, personThatAddedBot, cancellationToken);
                     }
                     else
                     {
-                        this.telemetryClient.TrackTrace($"New member {member.Id} added to team {teamsChannelData.Team.Id}");
+                        this.telemetryClient.TrackTrace($"New member {member.AadObjectId} added to team {teamId}");
 
-                        await this.WelcomeUser(turnContext, member.Id, teamsChannelData.Tenant.Id, teamsChannelData.Team.Id, cancellationToken);
+                        var teamInfo = await this.GetInstalledTeam(teamId);
+                        await this.dataProvider.AddUserTeamAsync(tenantId, member.AadObjectId, teamId, serviceUrl);
+                        teamInfo.UserIds.Add(member.AadObjectId);
+                        await this.dataProvider.UpdateTeamInstallStatusAsync(teamInfo, true);
+
+                        await this.WelcomeUser(turnContext, member.AadObjectId, tenantId, teamId, cancellationToken);
                     }
                 }
             }
@@ -176,6 +185,7 @@ namespace Icebreaker.Bot
             var message = turnContext.Activity;
             string myBotId = message.Recipient.Id;
             string teamId = message.Conversation.Id;
+            var teamInfo = await this.GetInstalledTeam(teamId);
             var teamsChannelData = message.GetChannelData<TeamsChannelData>();
             if (message.MembersRemoved?.Any(x => x.Id == myBotId) == true)
             {
@@ -190,7 +200,17 @@ namespace Icebreaker.Bot
                 this.telemetryClient.TrackEvent("AppUninstalled", properties);
 
                 // we were just removed from a team
-                await this.SaveRemoveFromTeam(teamId, teamsChannelData.Tenant.Id);
+                await this.SaveRemoveFromTeamAsync(teamInfo);
+            }
+            else
+            {
+                foreach (var member in membersRemoved)
+                {
+                    this.telemetryClient.TrackTrace($"New member {member.AadObjectId} removed from {teamsChannelData.Team.Id}");
+                    await this.dataProvider.RemoveUserTeamAsync(member.AadObjectId, teamsChannelData.Team.Id);
+                    teamInfo.UserIds.Remove(member.AadObjectId);
+                    await this.dataProvider.UpdateTeamInstallStatusAsync(teamInfo, true);
+                }
             }
 
             await base.OnMembersRemovedAsync(membersRemoved, turnContext, cancellationToken);
@@ -228,6 +248,23 @@ namespace Icebreaker.Bot
                 var activity = turnContext.Activity;
                 var senderAadId = activity.From.AadObjectId;
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
+                var userInfo = await this.dataProvider.GetUserInfoAsync(senderAadId);
+
+                // Delete card if user has a card to be deleted
+                if (userInfo.CardToDelete != null)
+                {
+                    await turnContext.DeleteActivityAsync(userInfo.CardToDelete, cancellationToken);
+                    await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, senderAadId, userInfo.OptedIn, userInfo.ServiceUrl, null);
+                }
+
+                // Adaptive card was submitted
+                if (!string.IsNullOrEmpty(activity.ReplyToId) && (activity.Value != null) && ((JObject)activity.Value).HasValues)
+                {
+                    this.telemetryClient.TrackTrace("Adaptive card submitted");
+
+                    await this.OnAdaptiveCardSubmitAsync(activity, turnContext, cancellationToken).ConfigureAwait(false);
+                    return;
+                }
 
                 if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -241,7 +278,7 @@ namespace Icebreaker.Bot
                     };
                     this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
 
-                    await this.OptOutUser(tenantId, senderAadId, activity.ServiceUrl);
+                    await this.OptUserAll(userInfo, false);
 
                     var optOutReply = activity.CreateReply();
                     optOutReply.Attachments = new List<Attachment>
@@ -276,7 +313,7 @@ namespace Icebreaker.Bot
                     };
                     this.telemetryClient.TrackEvent("UserOptInStatusSet", properties);
 
-                    await this.OptInUser(tenantId, senderAadId, activity.ServiceUrl);
+                    await this.OptUserAll(userInfo, true);
 
                     var optInReply = activity.CreateReply();
                     optInReply.Attachments = new List<Attachment>
@@ -299,6 +336,10 @@ namespace Icebreaker.Bot
 
                     await turnContext.SendActivityAsync(optInReply, cancellationToken).ConfigureAwait(false);
                 }
+                else if (string.Equals(activity.Text, "viewteams", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    await this.SendViewTeamsCardAsync(turnContext, userInfo, cancellationToken);
+                }
                 else
                 {
                     // Unknown input
@@ -315,6 +356,140 @@ namespace Icebreaker.Bot
         }
 
         /// <summary>
+        /// Send view teams card
+        /// </summary>
+        /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
+        /// <param name="userInfo">User info</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        private async Task SendViewTeamsCardAsync(ITurnContext turnContext, UserInfo userInfo, CancellationToken cancellationToken)
+        {
+            var teamNameLookup = await this.GetTeamNamesAsync(userInfo, turnContext.Adapter);
+            var teamsViewCard = MessageFactory.Attachment(TeamsViewCard.GetTeamsViewCard(userInfo, teamNameLookup));
+            var response = await turnContext.SendActivityAsync(teamsViewCard, cancellationToken);
+
+            // update card to delete
+            await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userInfo.Id, userInfo.OptedIn, userInfo.ServiceUrl, response.Id);
+        }
+
+        /// <summary>
+        /// Handle adaptive card submits
+        /// </summary>
+        /// <param name="activity">Message from submitted card</param>
+        /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        private async Task OnAdaptiveCardSubmitAsync(Activity activity, ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            var cardPayload = JToken.Parse(activity.Value.ToString());
+            var cardType = cardPayload["ActionType"].Value<string>().ToLowerInvariant();
+            var teamId = activity.Conversation.Id;
+            var userId = activity.From.AadObjectId;
+            var userInfo = await this.dataProvider.GetUserInfoAsync(userId);
+
+            switch (cardType)
+            {
+                // updated pause preferences
+                case "saveopt":
+
+                    // update database
+                    this.telemetryClient.TrackTrace("Received pause preferences");
+                    var optedIn = new Dictionary<string, bool>();
+                    var activeTeams = new Dictionary<string, string>();
+                    var botAdapter = turnContext.Adapter;
+
+                    foreach (var team in userInfo.OptedIn.Keys)
+                    {
+                        if (cardPayload[team] == null)
+                        {
+                            continue;
+                        }
+
+                        var teamStatus = cardPayload[team].Value<bool>();
+                        optedIn.Add(team, teamStatus);
+                        if (teamStatus)
+                        {
+                            // update active teams
+                            var teamInfo = await this.GetInstalledTeam(team);
+                            var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
+                            activeTeams.Add(team, teamName);
+                        }
+                    }
+
+                    await this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userId, optedIn, userInfo.ServiceUrl, userInfo.CardToDelete);
+
+                    // send active teams
+                    AdaptiveCard activeTeamsCard = new AdaptiveCard("1.2")
+                    {
+                        Body = new List<AdaptiveElement>
+                        {
+                            new AdaptiveTextBlock
+                            {
+                                HorizontalAlignment = AdaptiveHorizontalAlignment.Left,
+                                Text = Resources.ActiveTeamsText,
+                                Wrap = true
+                            },
+                        },
+
+                        Actions = new List<AdaptiveAction>()
+                        {
+                            new AdaptiveSubmitAction()
+                            {
+                                Title = Resources.EditActiveTeamsButtonText,
+                                Data = new
+                                {
+                                    ActionType = "viewteams"
+                                },
+                            }
+                        }
+                    };
+
+                    var activeTeamsList = activeTeams.Keys.ToList();
+                    foreach (var team in activeTeamsList)
+                    {
+                        activeTeamsCard.Body.Add(
+                            new AdaptiveTextBlock
+                            {
+                                HorizontalAlignment = AdaptiveHorizontalAlignment.Left,
+                                Text = activeTeams[team],
+                                Wrap = true
+                            });
+                    }
+
+                    if (activeTeams.Count == 0)
+                    {
+                        activeTeamsCard.Body.Add(
+                            new AdaptiveTextBlock
+                            {
+                                HorizontalAlignment = AdaptiveHorizontalAlignment.Left,
+                                Text = Resources.NoActiveTeamsMessage,
+                                Wrap = true
+                            });
+                    }
+
+                    var saveOptSubmitReply = activity.CreateReply();
+                    saveOptSubmitReply.Attachments = new List<Attachment>
+                    {
+                        new Attachment
+                        {
+                            ContentType = AdaptiveCard.ContentType,
+                            Content = activeTeamsCard
+                        }
+                    };
+
+                    await turnContext.SendActivityAsync(saveOptSubmitReply, cancellationToken).ConfigureAwait(false);
+
+                    break;
+
+                case "viewteams":
+
+                    // send view teams card
+                    await this.SendViewTeamsCardAsync(turnContext, userInfo, cancellationToken);
+                    break;
+            }
+        }
+
+        /// <summary>
         /// Method that will return the information of the installed team
         /// </summary>
         /// <param name="teamId">The team id</param>
@@ -322,6 +497,26 @@ namespace Icebreaker.Bot
         private Task<TeamInstallInfo> GetInstalledTeam(string teamId)
         {
             return this.dataProvider.GetInstalledTeamAsync(teamId);
+        }
+
+        /// <summary>
+        /// Maps user's teams' ids to team names
+        /// </summary>
+        /// <param name="userInfo">User info</param>
+        /// <param name="botAdapter">Bot adapter</param>
+        /// <returns>The team that the bot has been installed to</returns>
+        private async Task<Dictionary<string, string>> GetTeamNamesAsync(UserInfo userInfo, BotAdapter botAdapter)
+        {
+            var teamsList = userInfo.OptedIn.Keys.ToList();
+            var teamNameLookup = new Dictionary<string, string>();
+            foreach (var teamId in teamsList)
+            {
+                var teamInfo = await this.GetInstalledTeam(teamId);
+                var teamName = await this.conversationHelper.GetTeamNameByIdAsync(botAdapter, teamInfo);
+                teamNameLookup.Add(teamId, teamName);
+            }
+
+            return teamNameLookup;
         }
 
         /// <summary>
@@ -367,6 +562,18 @@ namespace Icebreaker.Bot
             var teamName = turnContext.Activity.TeamsGetTeamInfo().Name;
             var welcomeTeamMessageCard = WelcomeTeamAdaptiveCard.GetCard(teamName, botInstaller);
             await this.NotifyTeamAsync(turnContext, MessageFactory.Attachment(welcomeTeamMessageCard), teamId, cancellationToken);
+
+            // welcome users on team
+            var teamInfo = await this.GetInstalledTeam(teamId);
+            var botAdapter = (BotFrameworkAdapter)turnContext.Adapter;
+            var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
+            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInfo);
+
+            foreach (var member in members)
+            {
+                var userId = this.GetChannelUserObjectId(member);
+                await this.WelcomeUser(turnContext, userId, tenantId, teamId, cancellationToken);
+            }
         }
 
         /// <summary>
@@ -387,11 +594,13 @@ namespace Icebreaker.Bot
         /// </summary>
         /// <param name="serviceUrl">The service url</param>
         /// <param name="teamId">The team id</param>
-        /// <param name="tenantId">The tenant id</param>
+        /// <param name="turnContext">Turn context</param>
         /// <param name="botInstaller">Person that has added the bot to the team</param>
         /// <returns>Tracking task</returns>
-        private Task SaveAddedToTeam(string serviceUrl, string teamId, string tenantId, string botInstaller)
+        private async Task SaveAddedToTeamAsync(string serviceUrl, string teamId, ITurnContext turnContext, string botInstaller)
         {
+            var tenantId = turnContext.Activity.GetChannelData<TeamsChannelData>().Tenant.Id;
+
             var teamInstallInfo = new TeamInstallInfo
             {
                 ServiceUrl = serviceUrl,
@@ -399,47 +608,67 @@ namespace Icebreaker.Bot
                 TenantId = tenantId,
                 InstallerName = botInstaller
             };
-            return this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
+
+            // add users in team
+            var botAdapter = turnContext.Adapter;
+            var members = await this.conversationHelper.GetTeamMembers(botAdapter, teamInstallInfo);
+            var userIds = new HashSet<string>();
+
+            foreach (var member in members)
+            {
+                var userId = this.GetChannelUserObjectId(member);
+                userIds.Add(userId);
+                await this.dataProvider.AddUserTeamAsync(tenantId, userId, teamId, serviceUrl);
+            }
+
+            teamInstallInfo.UserIds = userIds;
+            await this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
         }
 
         /// <summary>
         /// Save information about the team from which the bot was removed.
         /// </summary>
-        /// <param name="teamId">The team id</param>
-        /// <param name="tenantId">The tenant id</param>
+        /// <param name="teamInfo">The team install info</param>
         /// <returns>Tracking task</returns>
-        private Task SaveRemoveFromTeam(string teamId, string tenantId)
+        private async Task SaveRemoveFromTeamAsync(TeamInstallInfo teamInfo)
         {
-            var teamInstallInfo = new TeamInstallInfo
+            var members = teamInfo.UserIds;
+
+            // remove team from user docs
+            foreach (var member in members)
             {
-                TeamId = teamId,
-                TenantId = tenantId,
-            };
-            return this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, false);
+                await this.dataProvider.RemoveUserTeamAsync(member, teamInfo.Id);
+            }
+
+            // remove team from database
+            await this.dataProvider.UpdateTeamInstallStatusAsync(teamInfo, false);
         }
 
         /// <summary>
-        /// Opt out the user from further pairups
+        /// Extract user Aad object id from channel account
         /// </summary>
-        /// <param name="tenantId">The tenant id</param>
-        /// <param name="userId">The user id</param>
-        /// <param name="serviceUrl">The service url</param>
-        /// <returns>Tracking task</returns>
-        private Task OptOutUser(string tenantId, string userId, string serviceUrl)
+        /// <param name="account">User channel account</param>
+        /// <returns>Aad object id Guid value</returns>
+        private string GetChannelUserObjectId(ChannelAccount account)
         {
-            return this.dataProvider.SetUserInfoAsync(tenantId, userId, false, serviceUrl);
+            return JObject.FromObject(account).ToObject<TeamsChannelAccount>()?.AadObjectId;
         }
 
         /// <summary>
-        /// Opt in the user to pairups
+        /// Opt the user in/out from all further pairups
         /// </summary>
-        /// <param name="tenantId">The tenant id</param>
-        /// <param name="userId">The user id</param>
-        /// <param name="serviceUrl">The service url</param>
+        /// <param name="userInfo">User info</param>
+        /// <param name="optStatus">Opt in or out</param>
         /// <returns>Tracking task</returns>
-        private Task OptInUser(string tenantId, string userId, string serviceUrl)
+        private Task OptUserAll(UserInfo userInfo, bool optStatus)
         {
-            return this.dataProvider.SetUserInfoAsync(tenantId, userId, true, serviceUrl);
+            var optedIn = userInfo.OptedIn;
+            foreach (var team in optedIn.Keys.ToList())
+            {
+                optedIn[team] = optStatus;
+            }
+
+            return this.dataProvider.SetUserInfoAsync(userInfo.TenantId, userInfo.Id, optedIn, userInfo.ServiceUrl, userInfo.CardToDelete);
         }
 
         /// <summary>

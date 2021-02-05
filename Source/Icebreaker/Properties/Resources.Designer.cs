@@ -19,7 +19,7 @@ namespace Icebreaker.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -61,6 +61,15 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your preferences have been updated. Here are the teams you&apos;re currently matching for:.
+        /// </summary>
+        internal static string ActiveTeamsText {
+            get {
+                return ResourceManager.GetString("ActiveTeamsText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Chat with {0}.
         /// </summary>
         internal static string ChatWithMatchButtonText {
@@ -75,6 +84,15 @@ namespace Icebreaker.Properties {
         internal static string ChatWithMessageGreeting {
             get {
                 return ResourceManager.GetString("ChatWithMessageGreeting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit active teams.
+        /// </summary>
+        internal static string EditActiveTeamsButtonText {
+            get {
+                return ResourceManager.GetString("EditActiveTeamsButtonText", resourceCulture);
             }
         }
         
@@ -196,6 +214,15 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You are not currently matching for any teams..
+        /// </summary>
+        internal static string NoActiveTeamsMessage {
+            get {
+                return ResourceManager.GetString("NoActiveTeamsMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Welcome back! You&apos;ve been missed. I&apos;ve restarted your matches. Have fun!.
         /// </summary>
         internal static string OptInConfirmation {
@@ -250,6 +277,15 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        internal static string SaveButtonText {
+            get {
+                return ResourceManager.GetString("SaveButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Take a tour.
         /// </summary>
         internal static string TakeATourButtonText {
@@ -264,6 +300,24 @@ namespace Icebreaker.Properties {
         internal static string UnrecognizedInput {
             get {
                 return ResourceManager.GetString("UnrecognizedInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View my teams.
+        /// </summary>
+        internal static string ViewTeamsButtonText {
+            get {
+                return ResourceManager.GetString("ViewTeamsButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Here are your teams! Select the teams that you would like to pause matches for..
+        /// </summary>
+        internal static string ViewTeamsText {
+            get {
+                return ResourceManager.GetString("ViewTeamsText", resourceCulture);
             }
         }
         
