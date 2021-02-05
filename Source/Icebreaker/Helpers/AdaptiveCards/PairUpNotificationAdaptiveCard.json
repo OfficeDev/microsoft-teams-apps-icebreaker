@@ -100,9 +100,9 @@
           "actions": [
               {
                   "type": "Action.Submit",
-                  "title": "Save",
+                  "title": "${saveButtonText}",
                   "data": {
-                      "ActionType": "update"
+                      "ActionType": "${updateProfileAction}"
                   }
               }
           ]

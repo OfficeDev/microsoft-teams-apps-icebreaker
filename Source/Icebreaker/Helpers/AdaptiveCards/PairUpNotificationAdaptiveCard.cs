@@ -61,7 +61,9 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 profilePlaceholderText = Resources.ProfilePlaceholderText,
                 proposeMeetupButtonText = Resources.ProposeMeetupButtonText,
                 viewTeamsButton = Resources.ViewTeamsButtonText,
+                saveButtonText = Resources.SaveButtonText,
                 updateProfileButtonText = Resources.UpdateProfileButtonText,
+                updateProfileAction = Resources.UpdateProfileAction,
                 personUpn = senderUpn,
                 meetingLink,
             };

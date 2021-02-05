@@ -340,6 +340,15 @@ namespace Icebreaker.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to update.
+        /// </summary>
+        internal static string UpdateProfileAction {
+            get {
+                return ResourceManager.GetString("UpdateProfileAction", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Your profile has been updated!
         /// </summary>
         internal static string UpdateProfileConfirmation {

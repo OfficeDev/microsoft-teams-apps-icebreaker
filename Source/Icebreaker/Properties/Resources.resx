@@ -245,6 +245,10 @@
     <value>Here are your teams! Select the teams that you would like to pause matches for.</value>
     <comment>Text on card where user can edit team matching preferences</comment>
   </data>
+  <data name="UpdateProfileAction" xml:space="preserve">
+    <value>update</value>
+    <comment>Action text for updating profile</comment>
+  </data>
   <data name="UpdateProfileButtonText" xml:space="preserve">
     <value>Update Profile</value>
     <comment>Button text to update profile</comment>
