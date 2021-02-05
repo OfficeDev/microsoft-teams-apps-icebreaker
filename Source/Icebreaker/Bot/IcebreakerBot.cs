@@ -512,6 +512,30 @@ namespace Icebreaker.Bot
                     };
 
                     await turnContext.SendActivityAsync(reply, cancellationToken).ConfigureAwait(false);
+
+                    break;
+
+                case "feedback":
+
+                    // add to database
+                    this.telemetryClient.TrackTrace("Received feedback");
+                    var rating = cardPayload["rating"].Value<string>();
+                    var comments = cardPayload["comments"].Value<string>();
+
+                    await this.dataProvider.AddFeedbackAsync(rating, comments, teamId);
+
+                    // send thank you message
+                    var feedbackSubmitReply = activity.CreateReply();
+                    feedbackSubmitReply.Attachments = new List<Attachment>
+                    {
+                        new HeroCard()
+                        {
+                            Text = Resources.ThankYouMessage
+                        }.ToAttachment(),
+                    };
+
+                    await turnContext.SendActivityAsync(feedbackSubmitReply, cancellationToken).ConfigureAwait(false);
+
                     break;
 
                 default:
