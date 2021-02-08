@@ -5,26 +5,26 @@
   "id": "d55d08d9-bacb-4567-942f-afd85d632dcc",
   "packageName": "com.microsoft.teams.icebreaker",
   "developer": {
-    "name": "<company name>",
-    "websiteUrl": "<website url>",
-    "privacyUrl": "<privacy url>",
-    "termsOfUseUrl": "<terms of use url>"
+    "name": "FX Innovation",
+    "websiteUrl": "https://www.fxinnovation.com",
+    "privacyUrl": "https://www.fxinnovation.com",
+    "termsOfUseUrl": "https://www.fxinnovation.com"
   },
   "icons": {
     "color": "color.png",
     "outline": "outline.png"
   },
   "name": {
-    "short": "Icebreaker"
+    "short": "FX Coffee Machine"
   },
   "description": {
-    "short": "Icebreaker is a bot that randomly pairs team members up to build team unity.",
-    "full": "Icebreaker is a cute little bot that randomly pairs team members up every week to help the team build trust and personal connections."
+    "short": "FX Coffee Machine is a bot that randomly pairs team members up to build team unity.",
+    "full": "FX Coffee Machine is a cute little bot that randomly pairs team members up every week to help the team build trust and personal connections."
   },
   "accentColor": "#64A2CC",
   "bots": [
     {
-      "botId": "<bot id>",
+      "botId": "f74a1cea-aecf-432d-9bb3-4aa181020ba2",
       "scopes": [
         "personal",
         "team"
@@ -38,6 +38,6 @@
     "messageTeamMembers"
   ],
   "validDomains": [
-    "<app domain>"
+    "fxcoffeemachinepoc-eyufl62kl5xfu.azurewebsites.net"
   ]
 }
