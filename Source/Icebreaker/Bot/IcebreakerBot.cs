@@ -1,8 +1,7 @@
-//----------------------------------------------------------------------------------------------
 // <copyright file="IcebreakerBot.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 // </copyright>
-//----------------------------------------------------------------------------------------------
 
 namespace Icebreaker.Bot
 {
@@ -12,8 +11,8 @@ namespace Icebreaker.Bot
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Helpers;
-    using Helpers.AdaptiveCards;
+    using Icebreaker.Helpers;
+    using Icebreaker.Helpers.AdaptiveCards;
     using Icebreaker.Interfaces;
     using Icebreaker.Properties;
     using Microsoft.ApplicationInsights;
@@ -280,9 +279,9 @@ namespace Icebreaker.Bot
                                     Title = Resources.ResumePairingsButtonText,
                                     DisplayText = Resources.ResumePairingsButtonText,
                                     Type = ActionTypes.MessageBack,
-                                    Text = MatchingActions.OptIn
-                                }
-                            }
+                                    Text = MatchingActions.OptIn,
+                                },
+                            },
                         }.ToAttachment(),
                     };
 
@@ -315,9 +314,9 @@ namespace Icebreaker.Bot
                                     Title = Resources.PausePairingsButtonText,
                                     DisplayText = Resources.PausePairingsButtonText,
                                     Type = ActionTypes.MessageBack,
-                                    Text = MatchingActions.OptOut
-                                }
-                            }
+                                    Text = MatchingActions.OptOut,
+                                },
+                            },
                         }.ToAttachment(),
                     };
 
@@ -421,7 +420,7 @@ namespace Icebreaker.Bot
                 ServiceUrl = serviceUrl,
                 TeamId = teamId,
                 TenantId = tenantId,
-                InstallerName = botInstaller
+                InstallerName = botInstaller,
             };
             return this.dataProvider.UpdateTeamInstallStatusAsync(teamInstallInfo, true);
         }
@@ -483,7 +482,7 @@ namespace Icebreaker.Bot
             {
                 activity.Conversation = new ConversationAccount()
                 {
-                    Id = teamId
+                    Id = teamId,
                 };
 
                 var conversationParameters = new ConversationParameters
@@ -529,7 +528,7 @@ namespace Icebreaker.Bot
                 { "ConversationId", activity.Conversation?.Id },
                 { "TeamId", channelData?.Team?.Id },
                 { "Locale", clientInfoEntity?.Properties["locale"]?.ToString() },
-                { "Platform", clientInfoEntity?.Properties["platform"]?.ToString() }
+                { "Platform", clientInfoEntity?.Properties["platform"]?.ToString() },
             };
             this.telemetryClient.TrackEvent("UserActivity", properties);
         }

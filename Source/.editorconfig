@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# SA1629: Documentation text should end with a period
+dotnet_diagnostic.SA1629.severity = none

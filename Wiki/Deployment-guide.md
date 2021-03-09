@@ -1,29 +1,24 @@
-- [Deployment Guide](#)
-    - [Prerequisites](#prerequisites)
-    - [Steps](#Deployment-Steps)
-        - [Deploy to Azure subscription](#1-deploy-to-your-azure-subscription)
-        - [Update parameters.json file](#2-Update-parameters.json-file)
-        - [Execute script](#3-execute-script)
-        - [Run the app in Microsoft Teams](#4-run-the-app-in-microsoft-teams)
-    - [Troubleshooting](#troubleshooting)
-***
-
 # Prerequisites
 
-To begin, you will need:
+Before you begin, please review the information in the [README file](https://github.com/OfficeDev/microsoft-teams-apps-icebreaker#legal-notice). The default settings in the repo were selected to enable users to easily set up and try the application. You may need to modify these settings to meet your organization's specific requirements.
+
+You will need:
 * An Azure subscription where you can create the following kinds of resources:
-    * Azure Logic App
+    * Azure logic app
     * App service
     * App service plan
     * Bot channels registration
     * Azure Cosmos DB account
     * Application Insights
 * A copy of the Icebreaker app GitHub repo (https://github.com/officedev/microsoft-teams-icebreaker-app)
-* This is not a pre-requisite per se, but here is a video walk-through of this deployment if you'd like to follow along as you go through your own deployment. [Icebreaker video walkthrough](https://www.youtube.com/watch?v=BkoLT3MEtZg)
 
-# Deployment Steps
+# Manual deployment
 
-*For manual deployment (old approach) please use this [deployment guide](/Wiki/Deployment-Guide-manual.md).*
+For the manual deployment (old approach) please use this [deployment guide](/Wiki/Deployment-Guide-manual.md).
+
+Here is a video walk-through of the manual deployment, if you'd like to follow along as you go through your own deployment: [Icebreaker video walkthrough](https://www.youtube.com/watch?v=BkoLT3MEtZg)
+
+# Powershell deployment
 
 ## 1. Deploy to your Azure subscription
 
@@ -63,7 +58,7 @@ To begin, you will need:
     - `baseResourceName` - which the template uses to generate names for the other resources.
       - The [Base Resource Name] must be available. For example, if you select contoso-icebreaker as the base name, the name contoso-icebreaker must be available (not taken); otherwise, it will prompt you to confirmation dialog to update the existing resources.
     - `tenantId` - Tenant Id where the teams application will be installed. If the Azure subscription is in the same tenant, copy `subscriptionTenantId` parameter value.
-    > **Note**: If your Azure subscription is in a different tenant than the tenant where you want to install the Teams App, please update the Tenant Id field with the tenant where you want to install the Teams App.
+        > **IMPORTANT**: If your Azure subscription is in a different tenant than the tenant where you want to run Icebreaker, please update the Tenant Id field with the tenant where you want to **run** Icebreaker.
     - `pairingWeekInterval` The number of weeks between pairings. Default value 1
     - `pairingDayOfWeek` The day of the week when pairings are created. Default value: Monday
     - `pairingHour` The hour at which pairings are created. Default value: 10
@@ -144,5 +139,3 @@ To begin, you will need:
 # Troubleshooting
 
 Please see our [Troubleshooting](Troubleshooting) page.
-
-***

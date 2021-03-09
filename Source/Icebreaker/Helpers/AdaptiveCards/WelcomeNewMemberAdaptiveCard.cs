@@ -1,8 +1,7 @@
-﻿//----------------------------------------------------------------------------------------------
-// <copyright file="WelcomeNewMemberAdaptiveCard.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
+﻿// <copyright file="WelcomeNewMemberAdaptiveCard.cs" company="Microsoft">
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 // </copyright>
-//----------------------------------------------------------------------------------------------
 
 namespace Icebreaker.Helpers.AdaptiveCards
 {
@@ -63,7 +62,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 pauseMatchesText = Resources.PausePairingsButtonText,
                 tourUrl = GetTourFullUrl(appId, GetTourUrl(baseDomain), tourTitle),
                 salutationText = Resources.SalutationTitleText,
-                tourButtonText = Resources.TakeATourButtonText
+                tourButtonText = Resources.TakeATourButtonText,
             };
 
             return GetCard(AdaptiveCardTemplate.Value, welcomeData);

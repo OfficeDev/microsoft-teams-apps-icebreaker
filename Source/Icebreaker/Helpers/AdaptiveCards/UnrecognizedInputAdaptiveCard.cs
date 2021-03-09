@@ -1,8 +1,7 @@
-﻿//----------------------------------------------------------------------------------------------
-// <copyright file="UnrecognizedInputAdaptiveCard.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
+﻿// <copyright file="UnrecognizedInputAdaptiveCard.cs" company="Microsoft">
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 // </copyright>
-//----------------------------------------------------------------------------------------------
 
 namespace Icebreaker.Helpers.AdaptiveCards
 {
@@ -34,7 +33,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
             {
                 messageContent = Resources.UnrecognizedInput,
                 tourUrl = GetTourFullUrl(appId, GetTourUrl(baseDomain), tourTitle),
-                tourButtonText = Resources.TakeATourButtonText
+                tourButtonText = Resources.TakeATourButtonText,
             };
 
             return GetCard(AdaptiveCardTemplate.Value, cardData);

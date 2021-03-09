@@ -1,8 +1,7 @@
-//----------------------------------------------------------------------------------------------
 // <copyright file="MatchingService.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 // </copyright>
-//----------------------------------------------------------------------------------------------
 
 namespace Icebreaker.Services
 {
@@ -11,8 +10,8 @@ namespace Icebreaker.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Helpers;
-    using Helpers.AdaptiveCards;
+    using Icebreaker.Helpers;
+    using Icebreaker.Helpers.AdaptiveCards;
     using Icebreaker.Interfaces;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;

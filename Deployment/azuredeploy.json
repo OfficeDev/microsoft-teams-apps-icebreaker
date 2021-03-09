@@ -270,7 +270,7 @@
             "type": "Microsoft.Web/sites",
             "kind": "app",
             "name": "[variables('appServiceName')]",
-            "apiVersion": "2016-08-01",
+            "apiVersion": "2018-02-01",
             "location": "[parameters('location')]",
             "identity": {
                 "type": "SystemAssigned"
@@ -346,18 +346,16 @@
                         "name": "DisableTenantFilter",
                         "value": "false"
                         }
-                    ]
+                    ],
+                    "ftpsState": "Disabled"
                 },
-                "scmSiteAlsoStopped": "false",
                 "scmType": "ExternalGit",
-                "hostingEnvironmentProfile": null,
                 "clientAffinityEnabled": true,
                 "clientCertEnabled": false,
                 "hostNamesDisabled": false,
                 "containerSize": 0,
                 "dailyMemoryTimeQuota": 0,
-                "cloningInfo": null,
-                "httpsOnly": false
+                "httpsOnly": true
             },
             "dependsOn": [
                 "[concat('Microsoft.Web/serverfarms/', variables('appHostingPlanName'))]"

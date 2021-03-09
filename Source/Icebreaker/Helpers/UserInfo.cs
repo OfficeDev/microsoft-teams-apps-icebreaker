@@ -1,8 +1,7 @@
-﻿//----------------------------------------------------------------------------------------------
-// <copyright file="UserInfo.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
+﻿// <copyright file="UserInfo.cs" company="Microsoft">
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 // </copyright>
-//----------------------------------------------------------------------------------------------
 
 namespace Icebreaker.Helpers
 {

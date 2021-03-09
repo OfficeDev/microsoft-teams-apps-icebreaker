@@ -1,5 +1,6 @@
 ﻿// <copyright file="IcebreakerModule.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 // </copyright>
 
 namespace Icebreaker

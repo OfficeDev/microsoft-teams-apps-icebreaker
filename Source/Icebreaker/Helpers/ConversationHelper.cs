@@ -1,5 +1,6 @@
 ﻿// <copyright file="ConversationHelper.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 // </copyright>
 
 namespace Icebreaker.Helpers
@@ -83,7 +84,7 @@ namespace Icebreaker.Helpers
                     ChannelData = new TeamsChannelData
                     {
                         Tenant = new TenantInfo(tenantId),
-                    }
+                    },
                 };
 
                 if (!this.isTesting)

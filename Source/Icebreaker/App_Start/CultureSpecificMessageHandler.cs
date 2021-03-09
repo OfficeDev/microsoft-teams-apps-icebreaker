@@ -1,5 +1,6 @@
 ﻿// <copyright file="CultureSpecificMessageHandler.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 // </copyright>
 
 namespace Icebreaker
@@ -11,7 +12,7 @@ namespace Icebreaker
     using Microsoft.Azure;
 
     /// <summary>
-    /// Message handler to set culture specific settings
+    /// Message handler to set culture specific settings.
     /// </summary>
     public class CultureSpecificMessageHandler : DelegatingHandler
     {

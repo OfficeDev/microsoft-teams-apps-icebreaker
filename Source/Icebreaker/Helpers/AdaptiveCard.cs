@@ -1,5 +1,6 @@
 ﻿// <copyright file="AdaptiveCard.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 // </copyright>
 
 namespace Icebreaker.Helpers
@@ -27,6 +28,6 @@ namespace Icebreaker.Helpers
         /// <summary>
         /// Represents the welcome card sent to team channel once bot is added
         /// </summary>
-        WelcomeTeam
+        WelcomeTeam,
     }
 }

@@ -14,7 +14,7 @@
     },
     {
       "provider": "unpkg",
-      "library": "@microsoft/teams-js@1.4.1",
+      "library": "@microsoft/teams-js@1.9.0",
       "destination": "lib/microsoft-teams/",
       "files": [
         "dist/MicrosoftTeams.min.js",

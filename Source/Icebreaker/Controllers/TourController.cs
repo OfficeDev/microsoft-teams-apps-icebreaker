@@ -1,5 +1,6 @@
 ﻿// <copyright file="TourController.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 // </copyright>
 
 namespace Icebreaker.Controllers
@@ -31,6 +32,7 @@ namespace Icebreaker.Controllers
                 }
                 catch
                 {
+                    // Fall back to the default culture setting if there is an error getting a CultureInfo from the locale
                     culture = CultureInfo.GetCultureInfo(CloudConfigurationManager.GetSetting("DefaultCulture"));
                 }
 

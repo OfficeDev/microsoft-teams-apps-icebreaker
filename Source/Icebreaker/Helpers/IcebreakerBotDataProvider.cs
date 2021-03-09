@@ -1,8 +1,7 @@
-//----------------------------------------------------------------------------------------------
 // <copyright file="IcebreakerBotDataProvider.cs" company="Microsoft">
-// Copyright (c) Microsoft. All rights reserved.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 // </copyright>
-//----------------------------------------------------------------------------------------------
 
 namespace Icebreaker.Helpers
 {
@@ -58,12 +57,12 @@ namespace Icebreaker.Helpers
 
             if (installed)
             {
-                var response = await this.documentClient.UpsertDocumentAsync(this.teamsCollection.SelfLink, team);
+                await this.documentClient.UpsertDocumentAsync(this.teamsCollection.SelfLink, team);
             }
             else
             {
                 var documentUri = UriFactory.CreateDocumentUri(this.database.Id, this.teamsCollection.Id, team.Id);
-                var response = await this.documentClient.DeleteDocumentAsync(documentUri, new RequestOptions { PartitionKey = new PartitionKey(team.Id) });
+                await this.documentClient.DeleteDocumentAsync(documentUri, new RequestOptions { PartitionKey = new PartitionKey(team.Id) });
             }
         }
 
@@ -154,7 +153,6 @@ namespace Icebreaker.Helpers
                 var collectionLink = UriFactory.CreateDocumentCollectionUri(this.database.Id, this.usersCollection.Id);
                 var query = this.documentClient.CreateDocumentQuery<UserInfo>(
                         collectionLink,
-#pragma warning disable SA1118 // Parameter must not span multiple lines
                         new FeedOptions
                         {
                             EnableCrossPartitionQuery = true,
@@ -163,9 +161,8 @@ namespace Icebreaker.Helpers
                             MaxItemCount = -1,
 
                             // Max partition to query at a time
-                            MaxDegreeOfParallelism = -1
+                            MaxDegreeOfParallelism = -1,
                         })
-#pragma warning restore SA1118 // Parameter must not span multiple lines
                     .Select(u => new UserInfo { Id = u.Id, OptedIn = u.OptedIn })
                     .AsDocumentQuery();
                 var usersOptInStatusLookup = new Dictionary<string, bool>();
@@ -205,7 +202,7 @@ namespace Icebreaker.Helpers
                 TenantId = tenantId,
                 UserId = userId,
                 OptedIn = optedIn,
-                ServiceUrl = serviceUrl
+                ServiceUrl = serviceUrl,
             };
             await this.documentClient.UpsertDocumentAsync(this.usersCollection.SelfLink, userInfo);
         }
@@ -259,7 +256,7 @@ namespace Icebreaker.Helpers
             // Get a reference to the Users collection, creating it if needed
             var usersCollectionDefinition = new DocumentCollection
             {
-                Id = usersCollectionName
+                Id = usersCollectionName,
             };
             usersCollectionDefinition.PartitionKey.Paths.Add("/id");
             this.usersCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, usersCollectionDefinition, useSharedOffer ? null : requestOptions);
