@@ -14,7 +14,7 @@ You will need:
 
 # Manual deployment
 
-For the manual deployment (old approach) please use this [deployment guide](/Wiki/Deployment-Guide-manual.md).
+For the manual deployment (old approach) please use this [deployment guide](Deployment-Guide-manual).
 
 Here is a video walk-through of the manual deployment, if you'd like to follow along as you go through your own deployment: [Icebreaker video walkthrough](https://www.youtube.com/watch?v=BkoLT3MEtZg)
 

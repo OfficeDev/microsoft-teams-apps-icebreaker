@@ -23,7 +23,7 @@ To begin, you will need:
 
 # Deployment Steps
 
-*For PowerShell deployment (new automated approach) please use this [deployment guide](/Wiki/Deployment-Guide.md).*
+*For PowerShell deployment (new automated approach) please use this [deployment guide](Deployment-Guide).*
 
 ## 1. Register Microsoft Azure AD application
 

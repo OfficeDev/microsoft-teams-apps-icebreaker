@@ -4,7 +4,6 @@ sudo: false
 env:
   global:
     - ORG="OfficeDev"
-    - EMAIL="v-abtan@microsoft.com"
     - REPO_SOURCE="microsoft-teams-icebreaker-app"
     - REPO_DEST="${REPO_SOURCE}.wiki"
     - GH_REPO_DEST="github.com/${ORG}/${REPO_DEST}.git"
