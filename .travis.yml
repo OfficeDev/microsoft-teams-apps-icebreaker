@@ -4,7 +4,7 @@ sudo: false
 env:
   global:
     - ORG="OfficeDev"
-    - REPO_SOURCE="microsoft-teams-icebreaker-app"
+    - REPO_SOURCE="microsoft-teams-apps-icebreaker"
     - REPO_DEST="${REPO_SOURCE}.wiki"
     - GH_REPO_DEST="github.com/${ORG}/${REPO_DEST}.git"
     - GH_REPO_CONSOLIDATE="github.com/${ORG}/${REPO_SOURCE}.git"
@@ -14,7 +14,7 @@ stages:
 jobs:
   include:
     - stage: WikiUpdate
-      if: (branch = main) AND (type = push)
+      if: (branch = v-abtan/wiki_test) AND (type = push)
       script:
         - rm -rf ${REPO_SOURCE}
         - rm -rf ${REPO_DEST}
