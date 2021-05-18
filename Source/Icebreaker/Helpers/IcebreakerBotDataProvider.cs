@@ -192,8 +192,9 @@ namespace Icebreaker.Helpers
         /// <param name="userId">User id</param>
         /// <param name="optedIn">User opt-in status</param>
         /// <param name="serviceUrl">User service URL</param>
+        /// <param name="recentPairUps">User recent pairs</param>
         /// <returns>Tracking task</returns>
-        public async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl)
+        public async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl, List<UserInfo> recentPairUps)
         {
             await this.EnsureInitializedAsync();
 
@@ -203,6 +204,7 @@ namespace Icebreaker.Helpers
                 UserId = userId,
                 OptedIn = optedIn,
                 ServiceUrl = serviceUrl,
+                RecentPairUps = recentPairUps
             };
             await this.documentClient.UpsertDocumentAsync(this.usersCollection.SelfLink, userInfo);
         }
