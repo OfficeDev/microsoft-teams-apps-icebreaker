@@ -49,6 +49,6 @@ namespace Icebreaker.Interfaces
         /// <param name="optedIn">User opt-in status</param>
         /// <param name="serviceUrl">User service URL</param>
         /// <returns>Tracking task</returns>
-        Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl);
+        Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl, List<UserInfo> recentPairUps);
     }
 }
