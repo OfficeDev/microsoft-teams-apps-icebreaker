@@ -191,6 +191,7 @@ namespace Icebreaker.Services
         /// Pair list of users into groups of 2 users per group
         /// </summary>
         /// <param name="users">Users accounts</param>
+        /// <param name="teamModel">DB team model info.</param>
         /// <returns>List of pairs</returns>
         private List<Tuple<ChannelAccount, ChannelAccount>> MakePairs(List<ChannelAccount> users, TeamInstallInfo teamModel)
         {
@@ -224,8 +225,8 @@ namespace Icebreaker.Services
                 for (LinkedListNode<ChannelAccount> restOfQueue = queue.First; restOfQueue != null; restOfQueue = restOfQueue.Next)
                 {
                     pairUserTwo = restOfQueue.Value;
-                    UserInfo pairUserOneInfo = this.GetOrCreateUserInfoAsync(GetChannelUserObjectId(pairUserOne), teamModel)?.Result;
-                    UserInfo pairUserTwoInfo = this.GetOrCreateUserInfoAsync(GetChannelUserObjectId(pairUserTwo), teamModel)?.Result;
+                    UserInfo pairUserOneInfo = this.GetOrCreateUserInfoAsync(this.GetChannelUserObjectId(pairUserOne), teamModel)?.Result;
+                    UserInfo pairUserTwoInfo = this.GetOrCreateUserInfoAsync(this.GetChannelUserObjectId(pairUserTwo), teamModel)?.Result;
 
                     this.telemetryClient.TrackTrace($"Processing {pairUserOneInfo?.UserId} and {pairUserTwoInfo?.UserId}");
 
@@ -267,6 +268,12 @@ namespace Icebreaker.Services
             return pairs;
         }
 
+        /// <summary>
+        /// Gets user info from the data store, or else generates it
+        /// </summary>
+        /// <param name="userId">User object Id</param>
+        /// <param name="teamModel">DB team model info</param>
+        /// <returns>List of pairs</returns>
         private async Task<UserInfo> GetOrCreateUserInfoAsync(string userId, TeamInstallInfo teamModel)
         {
             this.telemetryClient.TrackTrace($"Getting info for {userId}");
@@ -282,7 +289,7 @@ namespace Icebreaker.Services
                     TenantId = teamModel.TenantId,
                     UserId = userId,
                     OptedIn = true,
-                    ServiceUrl = teamModel.ServiceUrl
+                    ServiceUrl = teamModel.ServiceUrl,
                 };
             }
 
@@ -344,7 +351,6 @@ namespace Icebreaker.Services
 
             return true;
         }
-
 
         /// <summary>
         /// Randomize list of users
