@@ -93,7 +93,7 @@ namespace Icebreaker.Services
                         var teamName = await this.conversationHelper.GetTeamNameByIdAsync(this.botAdapter, team);
                         var optedInUsers = await this.GetOptedInUsersAsync(dbMembersLookup, team);
 
-                        foreach (var pair in this.MakePairs(optedInUsers).Take(this.maxPairUpsPerTeam))
+                        foreach (var pair in this.MakePairs(optedInUsers, team).Take(this.maxPairUpsPerTeam))
                         {
                             usersNotifiedCount += await this.NotifyPairAsync(team, teamName, pair, default(CancellationToken));
                             pairsNotifiedCount++;
@@ -192,7 +192,7 @@ namespace Icebreaker.Services
         /// </summary>
         /// <param name="users">Users accounts</param>
         /// <returns>List of pairs</returns>
-        private List<Tuple<ChannelAccount, ChannelAccount>> MakePairs(List<ChannelAccount> users)
+        private List<Tuple<ChannelAccount, ChannelAccount>> MakePairs(List<ChannelAccount> users, TeamInstallInfo teamModel)
         {
             if (users.Count > 1)
             {
@@ -224,8 +224,8 @@ namespace Icebreaker.Services
                 for (LinkedListNode<ChannelAccount> restOfQueue = queue.First; restOfQueue != null; restOfQueue = restOfQueue.Next)
                 {
                     pairUserTwo = restOfQueue.Value;
-                    UserInfo pairUserOneInfo = this.dataProvider.GetUserInfoAsync(GetChannelUserObjectId(pairUserOne))?.Result;
-                    UserInfo pairUserTwoInfo = this.dataProvider.GetUserInfoAsync(GetChannelUserObjectId(pairUserTwo))?.Result;
+                    UserInfo pairUserOneInfo = await this.GetOrCreateUserInfoAsync(GetChannelUserObjectId(pairUserOne));
+                    UserInfo pairUserTwoInfo = await this.GetOrCreateUserInfoAsync(GetChannelUserObjectId(pairUserTwo));
 
                     this.telemetryClient.TrackTrace($"Processing {pairUserOneInfo?.UserId} and {pairUserTwoInfo?.UserId}");
 
@@ -265,6 +265,28 @@ namespace Icebreaker.Services
             }
 
             return pairs;
+        }
+
+        private Task<UserInfo> GetOrCreateUserInfoAsync(string userId, TeamInstallInfo teamModel)
+        {
+            this.telemetryClient.TrackTrace($"Getting info for {userId}");
+
+            UserInfo userInfo = await this.dataProvider.GetUserInfoAsync(userId);
+
+            if (userInfo == null)
+            {
+                this.telemetryClient.TrackTrace($"{userId} info is not saved, generating now");
+
+                userInfo = new UserInfo()
+                {
+                    TenantId = teamModel.TenantId,
+                    UserId = pairUserOne.AadObjectId,
+                    OptedIn = true,
+                    ServiceUrl = teamModel.ServiceUrl
+                };
+            }
+
+            return userInfo;
         }
 
         /// <summary>
