@@ -251,10 +251,18 @@ namespace Icebreaker.Services
                 if (!foundPerfectPairing)
                 {
                     this.telemetryClient.TrackTrace($"No perfect pair; selecting next user");
-                    pairUserTwo = queue.First.Value;
-                    pairs.Add(new Tuple<ChannelAccount, ChannelAccount>(pairUserOne, pairUserTwo));
-                    queue.RemoveFirst();
-                    this.telemetryClient.TrackTrace($"Pair formed; dequeued next user");
+                    pairUserTwo = queue.First?.Value;
+
+                    if (pairUserTwo != null)
+                    {
+                        pairs.Add(new Tuple<ChannelAccount, ChannelAccount>(pairUserOne, pairUserTwo));
+                        queue.RemoveFirst();
+                        this.telemetryClient.TrackTrace($"Pair formed; dequeued next user");
+                    }
+                    else
+                    {
+                        this.telemetryClient.TrackTrace($"No more users left to pair with");
+                    }
                 }
             }
 
@@ -376,7 +384,7 @@ namespace Icebreaker.Services
             {
                 this.telemetryClient.TrackTrace($"{userTwoInfo?.UserId} was recently paired with {userTwoRecentPair?.UserId}");
 
-                if (userOneInfo.RecentPairUps.Contains(userTwoRecentPair))
+                if (userOneInfo.RecentPairUps.Any(u => u.UserId == userTwoRecentPair.UserId))
                 {
                     this.telemetryClient.TrackTrace($"{userTwoInfo?.UserId} was already paired with {userOneInfo?.UserId} recently");
 
