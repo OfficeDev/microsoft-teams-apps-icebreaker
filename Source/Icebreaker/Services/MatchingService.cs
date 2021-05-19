@@ -381,12 +381,7 @@ namespace Icebreaker.Services
 
             this.telemetryClient.TrackTrace($"Check if {userOneInfo.UserId} and {userTwoInfo.UserId} have been recently paired");
 
-            if (userOneInfo.RecentPairUps == null)
-            {
-                return true;
-            }
-
-            return !userOneInfo.RecentPairUps.Any(u => u.UserId == userTwoInfo.UserId);
+            return !userOneInfo.RecentPairUps.Any(u => u.UserId == userTwoInfo.UserId) && !userTwoInfo.RecentPairUps.Any(u => u.UserId == userOneInfo.UserId);
         }
 
         /// <summary>
