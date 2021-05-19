@@ -227,6 +227,8 @@ namespace Icebreaker.Services
                     UserInfo pairUserOneInfo = this.dataProvider.GetUserInfoAsync(GetChannelUserObjectId(pairUserOne))?.Result;
                     UserInfo pairUserTwoInfo = this.dataProvider.GetUserInfoAsync(GetChannelUserObjectId(pairUserTwo))?.Result;
 
+                    this.telemetryClient.TrackTrace($"Processing {pairUserOneInfo?.UserId} and {pairUserTwoInfo?.UserId}");
+
                     // if no recent pairups, create this list
                     if (pairUserOneInfo?.RecentPairUps == null)
                     {
@@ -241,6 +243,8 @@ namespace Icebreaker.Services
                     // check if userone and usertwo have already paired recently
                     if (this.SamePairNotCreatedRecently(pairUserOneInfo, pairUserTwoInfo))
                     {
+                        this.telemetryClient.TrackTrace($"Pairing {pairUserOneInfo?.UserId} and {pairUserTwoInfo?.UserId}");
+
                         pairs.Add(new Tuple<ChannelAccount, ChannelAccount>(pairUserOne, pairUserTwo));
                         this.UpdateUserRecentlyPairedAsync(pairUserOneInfo, pairUserTwoInfo);
 
@@ -283,6 +287,8 @@ namespace Icebreaker.Services
             userOneInfo.RecentPairUps.Add(userTwoInfo);
             userTwoInfo.RecentPairUps.Add(userOneInfo);
 
+            this.telemetryClient.TrackTrace($"Updating user info for {userOneInfo?.UserId} and {userTwoInfo?.UserId}");
+
             await this.dataProvider.SetUserInfoAsync(userOneInfo.TenantId, userOneInfo.UserId, userOneInfo.OptedIn, userOneInfo.ServiceUrl, userOneInfo.RecentPairUps);
             await this.dataProvider.SetUserInfoAsync(userTwoInfo.TenantId, userTwoInfo.UserId, userTwoInfo.OptedIn, userTwoInfo.ServiceUrl, userTwoInfo.RecentPairUps);
         }
@@ -300,10 +306,16 @@ namespace Icebreaker.Services
                 return false;
             }
 
+            this.telemetryClient.TrackTrace($"Check recent pairups for {userTwoInfo?.UserId}");
+
             foreach (UserInfo userTwoRecentPair in userTwoInfo.RecentPairUps)
             {
+                this.telemetryClient.TrackTrace($"{userTwoInfo?.UserId} was recently paired with {userTwoRecentPair?.UserId}");
+
                 if (userOneInfo.RecentPairUps.Contains(userTwoRecentPair))
                 {
+                    this.telemetryClient.TrackTrace($"{userTwoInfo?.UserId} was already paired with {userOneInfo?.UserId} recently");
+
                     return false;
                 }
             }
