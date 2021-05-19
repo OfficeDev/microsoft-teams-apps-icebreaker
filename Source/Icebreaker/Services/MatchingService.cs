@@ -224,8 +224,8 @@ namespace Icebreaker.Services
                 for (LinkedListNode<ChannelAccount> restOfQueue = queue.First; restOfQueue != null; restOfQueue = restOfQueue.Next)
                 {
                     pairUserTwo = restOfQueue.Value;
-                    UserInfo pairUserOneInfo = await this.GetOrCreateUserInfoAsync(GetChannelUserObjectId(pairUserOne));
-                    UserInfo pairUserTwoInfo = await this.GetOrCreateUserInfoAsync(GetChannelUserObjectId(pairUserTwo));
+                    UserInfo pairUserOneInfo = this.GetOrCreateUserInfoAsync(GetChannelUserObjectId(pairUserOne, teamModel))?.Result;
+                    UserInfo pairUserTwoInfo = this.GetOrCreateUserInfoAsync(GetChannelUserObjectId(pairUserTwo, teamModel))?.Result;
 
                     this.telemetryClient.TrackTrace($"Processing {pairUserOneInfo?.UserId} and {pairUserTwoInfo?.UserId}");
 
@@ -267,7 +267,7 @@ namespace Icebreaker.Services
             return pairs;
         }
 
-        private Task<UserInfo> GetOrCreateUserInfoAsync(string userId, TeamInstallInfo teamModel)
+        private async Task<UserInfo> GetOrCreateUserInfoAsync(string userId, TeamInstallInfo teamModel)
         {
             this.telemetryClient.TrackTrace($"Getting info for {userId}");
 
