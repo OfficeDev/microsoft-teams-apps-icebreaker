@@ -208,12 +208,6 @@ namespace Icebreaker.Services
             LinkedList<ChannelAccount> queue = new LinkedList<ChannelAccount>(users);
             var pairs = new List<Tuple<ChannelAccount, ChannelAccount>>();
 
-            /*
-             * The idea of the following matching algorithm is as follows:
-             * Pick first user X from queue.
-             * Find in FIFO manner from the rest of the queue the first user Y such that X and Y have not been "recently paired".
-             * If no such perfect pairing is possible, match with next user in queue.
-             */
             while (queue.Count > 0)
             {
                 ChannelAccount pairUserOne = queue.First.Value;
