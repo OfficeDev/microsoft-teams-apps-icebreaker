@@ -34,6 +34,13 @@ namespace Icebreaker.Interfaces
         Task<TeamInstallInfo> GetInstalledTeamAsync(string teamId);
 
         /// <summary>
+        /// Get the stored information about the given user
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <returns>User information</returns>
+        Task<UserInfo> GetUserInfoAsync(string userId);
+
+        /// <summary>
         /// Updates team installation status in store. If the bot is installed, the info is saved, otherwise info for the team is deleted.
         /// </summary>
         /// <param name="team">The team installation info</param>
