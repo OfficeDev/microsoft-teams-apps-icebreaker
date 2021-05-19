@@ -218,6 +218,9 @@ namespace Icebreaker.Services
             {
                 ChannelAccount pairUserOne = queue.First.Value;
                 ChannelAccount pairUserTwo = null;
+
+                UserInfo pairUserOneInfo = this.GetOrCreateUserInfoAsync(this.GetChannelUserObjectId(pairUserOne), teamModel)?.Result;
+                this.telemetryClient.TrackTrace($"Dequeuing (1) {pairUserOneInfo?.UserId}");
                 queue.RemoveFirst();
 
                 bool foundPerfectPairing = false;
@@ -225,9 +228,7 @@ namespace Icebreaker.Services
                 for (LinkedListNode<ChannelAccount> restOfQueue = queue.First; restOfQueue != null; restOfQueue = restOfQueue.Next)
                 {
                     pairUserTwo = restOfQueue.Value;
-                    UserInfo pairUserOneInfo = this.GetOrCreateUserInfoAsync(this.GetChannelUserObjectId(pairUserOne), teamModel)?.Result;
                     UserInfo pairUserTwoInfo = this.GetOrCreateUserInfoAsync(this.GetChannelUserObjectId(pairUserTwo), teamModel)?.Result;
-                    this.telemetryClient.TrackTrace($"Dequeuing (1) {pairUserOneInfo?.UserId}");
 
                     this.telemetryClient.TrackTrace($"Processing {pairUserOneInfo?.UserId} and {pairUserTwoInfo?.UserId}");
 
@@ -378,21 +379,14 @@ namespace Icebreaker.Services
                 return false;
             }
 
-            this.telemetryClient.TrackTrace($"Check recent pairups for {userTwoInfo?.UserId}");
+            this.telemetryClient.TrackTrace($"Check if {userOneInfo.UserId} and {userTwoInfo.UserId} have been recently paired");
 
-            foreach (UserInfo userTwoRecentPair in userTwoInfo.RecentPairUps)
+            if (userOneInfo.RecentPairUps == null)
             {
-                this.telemetryClient.TrackTrace($"{userTwoInfo?.UserId} was recently paired with {userTwoRecentPair?.UserId}");
-
-                if (userOneInfo.RecentPairUps.Any(u => u.UserId == userTwoRecentPair.UserId))
-                {
-                    this.telemetryClient.TrackTrace($"{userTwoInfo?.UserId} was already paired with {userOneInfo?.UserId} recently");
-
-                    return false;
-                }
+                return true;
             }
 
-            return true;
+            return !userOneInfo.RecentPairUps.Any(u => u.UserId == userTwoInfo.UserId);
         }
 
         /// <summary>
