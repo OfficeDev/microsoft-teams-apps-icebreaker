@@ -224,8 +224,8 @@ namespace Icebreaker.Services
                 for (LinkedListNode<ChannelAccount> restOfQueue = queue.First; restOfQueue != null; restOfQueue = restOfQueue.Next)
                 {
                     pairUserTwo = restOfQueue.Value;
-                    UserInfo pairUserOneInfo = this.dataProvider.GetUserInfoAsync(pairUserOne.GetChannelUserObjectId())?.Result;
-                    UserInfo pairUserTwoInfo = this.dataProvider.GetUserInfoAsync(pairUserTwo.GetChannelUserObjectId())?.Result;
+                    UserInfo pairUserOneInfo = this.dataProvider.GetUserInfoAsync(GetChannelUserObjectId(pairUserOne))?.Result;
+                    UserInfo pairUserTwoInfo = this.dataProvider.GetUserInfoAsync(GetChannelUserObjectId(pairUserTwo))?.Result;
 
                     // if no recent pairups, create this list
                     if (pairUserOneInfo?.RecentPairUps == null)
