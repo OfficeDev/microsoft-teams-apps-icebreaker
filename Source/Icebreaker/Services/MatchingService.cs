@@ -308,8 +308,16 @@ namespace Icebreaker.Services
 
             this.telemetryClient.TrackTrace($"Updating user info for {userOneInfo?.UserId} and {userTwoInfo?.UserId}");
 
-            await this.dataProvider.SetUserInfoAsync(userOneInfo.TenantId, userOneInfo.UserId, userOneInfo.OptedIn, userOneInfo.ServiceUrl, userOneInfo.RecentPairUps);
-            await this.dataProvider.SetUserInfoAsync(userTwoInfo.TenantId, userTwoInfo.UserId, userTwoInfo.OptedIn, userTwoInfo.ServiceUrl, userTwoInfo.RecentPairUps);
+            try
+            {
+                await this.dataProvider.SetUserInfoAsync(userOneInfo.TenantId, userOneInfo.UserId, userOneInfo.OptedIn, userOneInfo.ServiceUrl, userOneInfo.RecentPairUps);
+                await this.dataProvider.SetUserInfoAsync(userTwoInfo.TenantId, userTwoInfo.UserId, userTwoInfo.OptedIn, userTwoInfo.ServiceUrl, userTwoInfo.RecentPairUps);
+            }
+            catch (Exception ex)
+            {
+                this.telemetryClient.TrackTrace($"Error updating user info: {ex.Message}", SeverityLevel.Warning);
+                this.telemetryClient.TrackException(ex);
+            }
         }
 
         /// <summary>
