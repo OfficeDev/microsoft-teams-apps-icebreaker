@@ -194,7 +194,7 @@ namespace Icebreaker.Helpers
         /// <param name="serviceUrl">User service URL</param>
         /// <param name="recentPairUps">User recent pairs</param>
         /// <returns>Tracking task</returns>
-        public async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl, List<UserInfo> recentPairUps)
+        public async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl, List<UserInfo> recentPairUps = null)
         {
             await this.EnsureInitializedAsync();
 
