@@ -310,14 +310,43 @@ namespace Icebreaker.Services
 
             try
             {
-                await this.dataProvider.SetUserInfoAsync(userOneInfo.TenantId, userOneInfo.UserId, userOneInfo.OptedIn, userOneInfo.ServiceUrl, userOneInfo.RecentPairUps);
-                await this.dataProvider.SetUserInfoAsync(userTwoInfo.TenantId, userTwoInfo.UserId, userTwoInfo.OptedIn, userTwoInfo.ServiceUrl, userTwoInfo.RecentPairUps);
+                await this.SetUserInfoAsync(userOneInfo.TenantId, userOneInfo.UserId, userOneInfo.OptedIn, userOneInfo.ServiceUrl, userOneInfo.RecentPairUps);
+                await this.SetUserInfoAsync(userTwoInfo.TenantId, userTwoInfo.UserId, userTwoInfo.OptedIn, userTwoInfo.ServiceUrl, userTwoInfo.RecentPairUps);
             }
             catch (Exception ex)
             {
                 this.telemetryClient.TrackTrace($"Error updating user info: {ex.Message}", SeverityLevel.Warning);
                 this.telemetryClient.TrackException(ex);
             }
+        }
+
+        /// <summary>
+        /// Set the user info for the given user
+        /// </summary>
+        /// <param name="tenantId">Tenant id</param>
+        /// <param name="userId">User id</param>
+        /// <param name="optedIn">User opt-in status</param>
+        /// <param name="serviceUrl">User service URL</param>
+        /// <param name="recentPairUps">User recent pairs</param>
+        /// <returns>Tracking task</returns>
+        private async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl, List<UserInfo> recentPairUps)
+        {
+            await this.dataProvider.SetUserInfoAsync(
+                tenantId,
+                userId,
+                optedIn,
+                serviceUrl,
+                recentPairUps
+                    .Where(u => u.UserId != userId)
+                    .Select(u => new UserInfo()
+                    {
+                        TenantId = u.TenantId,
+                        UserId = u.UserId,
+                        OptedIn = u.OptedIn,
+                        ServiceUrl = u.ServiceUrl,
+                        RecentPairUps = null,
+                    })
+                    .ToList());
         }
 
         /// <summary>
