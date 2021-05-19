@@ -230,17 +230,6 @@ namespace Icebreaker.Services
 
                     this.telemetryClient.TrackTrace($"Processing {pairUserOneInfo?.UserId} and {pairUserTwoInfo?.UserId}");
 
-                    // if no recent pairups, create this list
-                    if (pairUserOneInfo?.RecentPairUps == null)
-                    {
-                        pairUserOneInfo.RecentPairUps = new List<UserInfo>();
-                    }
-
-                    if (pairUserTwoInfo?.RecentPairUps == null)
-                    {
-                        pairUserTwoInfo.RecentPairUps = new List<UserInfo>();
-                    }
-
                     // check if userone and usertwo have already paired recently
                     if (this.SamePairNotCreatedRecently(pairUserOneInfo, pairUserTwoInfo))
                     {
@@ -290,6 +279,7 @@ namespace Icebreaker.Services
                     UserId = userId,
                     OptedIn = true,
                     ServiceUrl = teamModel.ServiceUrl,
+                    RecentPairUps = new List<UserInfo>(),
                 };
             }
 
