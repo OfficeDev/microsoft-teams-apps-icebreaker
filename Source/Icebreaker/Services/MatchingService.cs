@@ -227,6 +227,7 @@ namespace Icebreaker.Services
                     pairUserTwo = restOfQueue.Value;
                     UserInfo pairUserOneInfo = this.GetOrCreateUserInfoAsync(this.GetChannelUserObjectId(pairUserOne), teamModel)?.Result;
                     UserInfo pairUserTwoInfo = this.GetOrCreateUserInfoAsync(this.GetChannelUserObjectId(pairUserTwo), teamModel)?.Result;
+                    this.telemetryClient.TrackTrace($"Dequeuing (1) {pairUserOneInfo?.UserId}");
 
                     this.telemetryClient.TrackTrace($"Processing {pairUserOneInfo?.UserId} and {pairUserTwoInfo?.UserId}");
 
@@ -239,6 +240,7 @@ namespace Icebreaker.Services
                         this.UpdateUserRecentlyPairedAsync(pairUserOneInfo, pairUserTwoInfo);
 
                         // Remove pairUserTwo since user has been paired
+                        this.telemetryClient.TrackTrace($"Dequeuing (2) {pairUserTwoInfo?.UserId}");
                         queue.Remove(pairUserTwo);
                         foundPerfectPairing = true;
                         break;
@@ -248,11 +250,15 @@ namespace Icebreaker.Services
                 // Not possible to find a perfect pairing, so just use next.
                 if (!foundPerfectPairing)
                 {
+                    this.telemetryClient.TrackTrace($"No perfect pair; selecting next user");
                     pairUserTwo = queue.First.Value;
                     pairs.Add(new Tuple<ChannelAccount, ChannelAccount>(pairUserOne, pairUserTwo));
                     queue.RemoveFirst();
+                    this.telemetryClient.TrackTrace($"Pair formed; dequeued next user");
                 }
             }
+
+            this.telemetryClient.TrackTrace($"Formed {pairs.Count} pairs");
 
             return pairs;
         }
@@ -318,6 +324,8 @@ namespace Icebreaker.Services
                 this.telemetryClient.TrackTrace($"Error updating user info: {ex.Message}", SeverityLevel.Warning);
                 this.telemetryClient.TrackException(ex);
             }
+
+            this.telemetryClient.TrackTrace($"Successfully updated user info for {userOneInfo?.UserId} and {userTwoInfo?.UserId}");
         }
 
         /// <summary>
