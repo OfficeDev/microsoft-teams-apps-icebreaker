@@ -280,7 +280,7 @@ namespace Icebreaker.Services
                 userInfo = new UserInfo()
                 {
                     TenantId = teamModel.TenantId,
-                    UserId = pairUserOne.AadObjectId,
+                    UserId = userInfo.AadObjectId,
                     OptedIn = true,
                     ServiceUrl = teamModel.ServiceUrl
                 };
