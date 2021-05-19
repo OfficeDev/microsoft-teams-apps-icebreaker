@@ -136,7 +136,7 @@ namespace Icebreaker.Services
         /// <returns>Number of users notified successfully</returns>
         private async Task<int> NotifyPairAsync(TeamInstallInfo teamModel, string teamName, Tuple<ChannelAccount, ChannelAccount> pair, CancellationToken cancellationToken)
         {
-            this.telemetryClient.TrackTrace($"Sending pairup notification to {pair.Item1.Id} and {pair.Item2.Id}");
+            this.telemetryClient.TrackTrace($"Sending pairup notification to {pair?.Item1?.Id} and {pair?.Item2?.Id}");
 
             var teamsPerson1 = JObject.FromObject(pair.Item1).ToObject<TeamsChannelAccount>();
             var teamsPerson2 = JObject.FromObject(pair.Item2).ToObject<TeamsChannelAccount>();
