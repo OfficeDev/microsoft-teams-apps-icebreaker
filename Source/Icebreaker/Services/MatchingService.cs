@@ -302,6 +302,12 @@ namespace Icebreaker.Services
         /// <param name="userTwoInfo">UserInfo of the second user in pair</param>
         private async void UpdateUserRecentlyPairedAsync(UserInfo userOneInfo, UserInfo userTwoInfo)
         {
+            if (userOneInfo.RecentPairUps == null)
+                userOneInfo.RecentPairUps = new List<UserInfo>();
+
+            if (userTwoInfo.RecentPairUps == null)
+                userTwoInfo.RecentPairUps = new List<UserInfo>();
+
             if (userOneInfo.RecentPairUps.Count == this.maxRecentPairUpsToPersistPerUser)
             {
                 userOneInfo.RecentPairUps.RemoveAt(0);
