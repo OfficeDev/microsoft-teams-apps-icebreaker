@@ -217,12 +217,18 @@ namespace Icebreaker.Services
                 this.telemetryClient.TrackTrace($"Dequeuing (1) {pairUserOneInfo?.UserId}");
                 queue.RemoveFirst();
 
+                if (pairUserOneInfo.RecentPairUps == null)
+                    pairUserOneInfo.RecentPairUps = new List<UserInfo>();
+
                 bool foundPerfectPairing = false;
 
                 for (LinkedListNode<ChannelAccount> restOfQueue = queue.First; restOfQueue != null; restOfQueue = restOfQueue.Next)
                 {
                     pairUserTwo = restOfQueue.Value;
                     UserInfo pairUserTwoInfo = this.GetOrCreateUserInfoAsync(this.GetChannelUserObjectId(pairUserTwo), teamModel)?.Result;
+
+                    if (pairUserTwoInfo.RecentPairUps == null)
+                        pairUserTwoInfo.RecentPairUps = new List<UserInfo>();
 
                     this.telemetryClient.TrackTrace($"Processing {pairUserOneInfo?.UserId} and {pairUserTwoInfo?.UserId}");
 
@@ -302,12 +308,6 @@ namespace Icebreaker.Services
         /// <param name="userTwoInfo">UserInfo of the second user in pair</param>
         private async void UpdateUserRecentlyPairedAsync(UserInfo userOneInfo, UserInfo userTwoInfo)
         {
-            if (userOneInfo.RecentPairUps == null)
-                userOneInfo.RecentPairUps = new List<UserInfo>();
-
-            if (userTwoInfo.RecentPairUps == null)
-                userTwoInfo.RecentPairUps = new List<UserInfo>();
-
             if (userOneInfo.RecentPairUps.Count == this.maxRecentPairUpsToPersistPerUser)
             {
                 userOneInfo.RecentPairUps.RemoveAt(0);
