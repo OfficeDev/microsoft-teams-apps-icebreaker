@@ -319,8 +319,8 @@ namespace Icebreaker.Services
 
             try
             {
-                await this.SetUserInfoAsync(userOneInfo.TenantId, userOneInfo.UserId, userOneInfo.OptedIn, userOneInfo.ServiceUrl, userOneInfo.RecentPairUps);
-                await this.SetUserInfoAsync(userTwoInfo.TenantId, userTwoInfo.UserId, userTwoInfo.OptedIn, userTwoInfo.ServiceUrl, userTwoInfo.RecentPairUps);
+                await this.SetUserInfoAsync(userOneInfo);
+                await this.SetUserInfoAsync(userTwoInfo);
             }
             catch (Exception ex)
             {
@@ -329,6 +329,16 @@ namespace Icebreaker.Services
             }
 
             this.telemetryClient.TrackTrace($"Successfully updated user info for {userOneInfo?.UserId} and {userTwoInfo?.UserId}");
+        }
+
+        /// <summary>
+        /// Set the user info for the given user (from UserInfo object)
+        /// </summary>
+        /// <param name="userInfo">User info</param>
+        /// <returns>Tracking task</returns>
+        private async Task SetUserInfoAsync(UserInfo userInfo)
+        {
+            await this.SetUserInfoAsync(userInfo.TenantId, userInfo.UserId, userInfo.OptedIn, userInfo.ServiceUrl, userInfo.RecentPairUps);
         }
 
         /// <summary>
@@ -375,7 +385,8 @@ namespace Icebreaker.Services
 
             this.telemetryClient.TrackTrace($"Check if {userOneInfo.UserId} and {userTwoInfo.UserId} have been recently paired");
 
-            return !userOneInfo.RecentPairUps.Any(u => u.UserId == userTwoInfo.UserId) && !userTwoInfo.RecentPairUps.Any(u => u.UserId == userOneInfo.UserId);
+            return !userOneInfo.RecentPairUps.Any(u => u.UserId == userTwoInfo.UserId) &&
+                !userTwoInfo.RecentPairUps.Any(u => u.UserId == userOneInfo.UserId);
         }
 
         /// <summary>
