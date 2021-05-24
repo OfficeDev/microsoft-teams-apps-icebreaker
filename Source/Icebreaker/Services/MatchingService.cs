@@ -233,6 +233,7 @@ namespace Icebreaker.Services
 
                         pairs.Add(new Tuple<ChannelAccount, ChannelAccount>(pairUserOne, pairUserTwo));
                         this.UpdateUserRecentlyPairedAsync(pairUserOneInfo, pairUserTwoInfo);
+                        this.UpdateUserRecentlyPairedAsync(pairUserTwoInfo, pairUserOneInfo);
 
                         // Remove pairUserTwo since user has been paired
                         this.telemetryClient.TrackTrace($"Dequeuing (2) {pairUserTwoInfo?.UserId}");
@@ -307,28 +308,13 @@ namespace Icebreaker.Services
                 userOneInfo.RecentPairUps.RemoveAt(0);
             }
 
-            if (userTwoInfo.RecentPairUps.Count == this.maxRecentPairUpsToPersistPerUser)
-            {
-                userTwoInfo.RecentPairUps.RemoveAt(0);
-            }
-
             userOneInfo.RecentPairUps.Add(userTwoInfo);
-            userTwoInfo.RecentPairUps.Add(userOneInfo);
 
-            this.telemetryClient.TrackTrace($"Updating user info for {userOneInfo?.UserId} and {userTwoInfo?.UserId}");
+            this.telemetryClient.TrackTrace($"Updating user info for {userOneInfo?.UserId}");
 
-            try
-            {
-                await this.SetUserInfoAsync(userOneInfo);
-                await this.SetUserInfoAsync(userTwoInfo);
-            }
-            catch (Exception ex)
-            {
-                this.telemetryClient.TrackTrace($"Error updating user info: {ex.Message}", SeverityLevel.Warning);
-                this.telemetryClient.TrackException(ex);
-            }
+            await this.SetUserInfoAsync(userOneInfo);
 
-            this.telemetryClient.TrackTrace($"Successfully updated user info for {userOneInfo?.UserId} and {userTwoInfo?.UserId}");
+            this.telemetryClient.TrackTrace($"Successfully updated user info for {userOneInfo?.UserId}");
         }
 
         /// <summary>
@@ -352,22 +338,30 @@ namespace Icebreaker.Services
         /// <returns>Tracking task</returns>
         private async Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl, List<UserInfo> recentPairUps)
         {
-            await this.dataProvider.SetUserInfoAsync(
-                tenantId,
-                userId,
-                optedIn,
-                serviceUrl,
-                recentPairUps
-                    .Where(u => u.UserId != userId)
-                    .Select(u => new UserInfo()
-                    {
-                        TenantId = u.TenantId,
-                        UserId = u.UserId,
-                        OptedIn = u.OptedIn,
-                        ServiceUrl = u.ServiceUrl,
-                        RecentPairUps = null,
-                    })
-                    .ToList());
+            try
+            {
+                await this.dataProvider.SetUserInfoAsync(
+                    tenantId,
+                    userId,
+                    optedIn,
+                    serviceUrl,
+                    recentPairUps
+                        .Where(u => u.UserId != userId)
+                        .Select(u => new UserInfo()
+                        {
+                            TenantId = u.TenantId,
+                            UserId = u.UserId,
+                            OptedIn = u.OptedIn,
+                            ServiceUrl = u.ServiceUrl,
+                            RecentPairUps = null,
+                        })
+                        .ToList());
+            }
+            catch (Exception ex)
+            {
+                this.telemetryClient.TrackTrace($"Error updating user info: {ex.Message}", SeverityLevel.Warning);
+                this.telemetryClient.TrackException(ex);
+            }
         }
 
         /// <summary>
