@@ -1,0 +1,125 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "botAppID": {
+            "type": "string",
+            "minLength": 36,
+            "maxLength": 36,
+            "metadata": {
+              "description": "The Microsoft Application ID for the bot, e.g., 123e4567-e89b-12d3-a456-426655440000."
+            }
+        },
+        "botAppPassword": {
+            "type": "securestring",
+            "minLength": 1,
+            "metadata": {
+                "description": "The Microsoft Application Password for the bot."
+            }
+        },
+        "appName": {
+            "type": "string",
+            "minLength": 1,
+            "defaultValue": "Icebreaker",
+            "metadata": {
+                "description": "The app name to use for the resources that will be provisioned."
+            }
+        },
+        "appDescription": {
+            "type": "string",
+            "minLength": 1,
+            "defaultValue": "Icebreaker is a cute little bot that randomly pairs team members up every week to help the team build trust and personal connections.",
+            "metadata": {
+                "description": "The description for the app."
+            }
+        },
+        "appIconUrl": {
+            "type": "string",
+            "minLength": 1,
+            "defaultValue": "https://raw.githubusercontent.com/OfficeDev/microsoft-teams-icebreaker-app/main/Manifest/color.png",
+            "metadata": {
+                "description": "The link to the icon for the bot. It must resolve to a PNG file."
+            }
+        },
+        "location": {
+            "type": "string",
+            "minLength": 1,
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+              "description": "Location for all resources."
+            }
+        }
+    },
+    "variables": {
+        "baseResourceName": "[toLower(parameters('appName'))]",
+        "botDisplayName": "[parameters('appName')]",
+        "botUniqueName": "[concat(variables('baseResourceName'))]",
+        "appInsightsName": "[variables('baseResourceName')]",
+        "appServiceName": "[concat(variables('baseResourceName'))]",
+        "appServiceBaseDomain": "[concat(variables('appServiceName'), '.azurewebsites.us')]",
+        "appServiceBaseUrl": "[concat('https://', variables('appServiceBaseDomain'))]",
+        "botMessagingUrl": "[concat(variables('appServiceBaseUrl'), '/api/messages')]"
+    },
+    "resources": [
+        {
+            "name": "[variables('botUniqueName')]",
+            "type": "Microsoft.BotService/botServices",
+            "location": "global",
+            "apiVersion": "2018-07-12",
+            "tags": {},
+            "sku": {
+                "name": "F0"
+            },
+            "kind": "sdk",
+            "properties": {
+                "displayName": "[variables('botDisplayName')]",
+                "description": "[parameters('appDescription')]",
+                "endpoint": "[variables('botMessagingUrl')]",
+                "iconUrl": "[parameters('appIconUrl')]",
+                "msaAppId":"[parameters('botAppID')]",
+                "developerAppInsightKey": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2015-05-01').InstrumentationKey]"
+            },
+            "resources": [
+                {
+                    "name": "[concat(variables('botUniqueName'), '/MsTeamsChannel')]",
+                    "type": "Microsoft.BotService/botServices/channels",
+                    "apiVersion": "2018-07-12",
+                    "location": "global",
+                    "tags": {},
+                    "sku": {
+                        "name": "F0"
+                    },
+                    "properties": {
+                        "channelName": "MsTeamsChannel",
+                        "location": "global",
+                        "properties": {
+                            "isEnabled": true
+                        }
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.BotService/botServices/', variables('botUniqueName'))]"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "[variables('appInsightsName')]",
+            "type": "Microsoft.Insights/components",
+            "kind": "other",
+            "apiVersion": "2015-05-01",
+            "location": "[parameters('location')]",
+            "tags": {},
+            "scale": null,
+            "properties": {
+                "Application_Type": "other"
+            },
+            "dependsOn": []
+        }
+    ],
+  "outputs": {
+    "appDomain": {
+      "type": "string",
+      "value": "[variables('appServiceBaseDomain')]"
+    }
+  }
+}
