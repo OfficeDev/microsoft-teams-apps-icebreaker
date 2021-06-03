@@ -53,5 +53,5 @@ jobs:
       with:
         app-name: 'icebreaker-uekbzx2ye26si'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_ab9e1d518e364757b9dbbcd603b57c69 }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_921af41663a441d4be1230da1ad880b7 }}
         package: .
