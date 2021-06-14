@@ -307,6 +307,10 @@
                             "value": "5000"
                         },
                         {
+                            "name": "MaxRecentPairUpsToPersistPerUser",
+                            "value": "20"
+                        },
+                        {
                             "name": "Testing",
                             "value": "false"
                         },

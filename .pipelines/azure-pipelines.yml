@@ -34,7 +34,7 @@ steps:
     configuration: '$(buildConfiguration)'
     runSettingsFile: Source/Icebreaker.Tests/test.runsettings
     codeCoverageEnabled: true
-    
+
 - task: RoslynAnalyzers@2
   inputs:
     userProvideBuildInfo: 'auto'
