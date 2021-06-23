@@ -51,6 +51,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
         protected static string GetTourFullUrl(string appId, string htmlUrl, string tourTitle)
         {
             htmlUrl = Uri.EscapeDataString(htmlUrl);
+            tourTitle = Uri.EscapeDataString(tourTitle);
             return
                 $"https://teams.microsoft.com/l/task/{appId}?url={htmlUrl}&height=533px&width=600px&title={tourTitle}";
         }

@@ -21,6 +21,10 @@
         "dist/MicrosoftTeams.js",
         "dist/MicrosoftTeams.js.map"
       ]
+    },
+    {
+      "library": "i18next@20.2.1",
+      "destination": "lib/i18next/"
     }
   ]
 }

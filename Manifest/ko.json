@@ -1,0 +1,6 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
+  "name.short": "Icebreaker",
+  "description.short": "Icebreaker는 팀의 단결력을 구축하기 위해 팀 구성원을 임의로 페어링하는 봇입니다.",
+  "description.full": "Icebreaker는 팀이 신뢰와 개인 연결을 구축하는 데 도움이 되도록 매주 임의로 팀 구성원을 페어링하는 귀여운 작은 봇입니다."
+}

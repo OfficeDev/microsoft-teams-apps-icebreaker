@@ -1,0 +1,6 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
+  "name.short": "Icebreaker",
+  "description.short": "Icebreaker 是一個可隨機配對團隊成員以建立小組團結性的聊天機器人。",
+  "description.full": "Icebreaker 是可愛的小機器人，每周可隨機配對小組成員，以協助小組建立信任和個人關係。"
+}

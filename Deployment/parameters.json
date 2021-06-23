@@ -48,8 +48,8 @@
     "Description": "The pricing tier for the hosting plan."
   },
   "defaultCulture": {
-    "Value": "en-US",
-    "Description": "Default culture."
+    "Value": "<<value>>",
+    "Description": "Default culture. You can select default culture from the following: en, ar, de, es, fr, he, ja, ko, pt-BR, ru, zh-CN, zh-TW"
   },
   "planSize": {
     "Value": "1",

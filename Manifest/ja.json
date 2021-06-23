@@ -1,0 +1,6 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
+  "name.short": "Icebreaker",
+  "description.short": "Icebreaker は、チーム メンバーをランダムにペアにしてチームの団結を図るボットです。",
+  "description.full": "Icebreaker は、チームが信頼と個人のつながりを構築するために、チーム メンバーを毎週ランダムにペアにする、かわいい小さなボットです。"
+}

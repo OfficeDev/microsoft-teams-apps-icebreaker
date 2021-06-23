@@ -6,6 +6,8 @@
 namespace Icebreaker.Helpers.AdaptiveCards
 {
     using System;
+    using System.Globalization;
+    using global::AdaptiveCards;
     using global::AdaptiveCards.Templating;
     using Icebreaker.Properties;
     using Microsoft.Azure;
@@ -29,6 +31,9 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <returns>The welcome new member card</returns>
         public static Attachment GetCard(string teamName, string personFirstName, string botDisplayName, string botInstaller)
         {
+            // Set alignment of text based on default locale.
+            var textAlignment = CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? AdaptiveHorizontalAlignment.Right.ToString() : AdaptiveHorizontalAlignment.Left.ToString();
+
             string introMessagePart1;
             string introMessagePart2;
             string introMessagePart3;
@@ -52,6 +57,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
 
             var welcomeData = new
             {
+                textAlignment,
                 personFirstName,
                 botDisplayName,
                 introMessagePart1,
