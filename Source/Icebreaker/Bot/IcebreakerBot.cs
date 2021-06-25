@@ -80,13 +80,9 @@ namespace Icebreaker.Bot
                     return;
                 }
 
-                // Get the current culture info to use in resource files
-                string locale = turnContext?.Activity.Entities?.FirstOrDefault(entity => entity.Type == "clientInfo")?.Properties["locale"]?.ToString();
-
-                if (!string.IsNullOrEmpty(locale))
-                {
-                    CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(locale);
-                }
+                // Get the default culture info to use in resource files
+                var cultureName = CloudConfigurationManager.GetSetting("DefaultCulture");
+                CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(cultureName);
 
                 await base.OnTurnAsync(turnContext, cancellationToken);
             }
@@ -153,11 +149,11 @@ namespace Icebreaker.Bot
                         this.telemetryClient.TrackTrace($"Bot installed to team {teamId}");
 
                         var properties = new Dictionary<string, string>
-                                {
-                                    { "Scope", message.Conversation?.ConversationType },
-                                    { "TeamId", teamId },
-                                    { "InstallerId", message.From.Id },
-                                };
+                        {
+                            { "Scope", message.Conversation?.ConversationType },
+                            { "TeamId", teamId },
+                            { "InstallerId", message.From.Id },
+                        };
                         this.telemetryClient.TrackEvent("AppInstalled", properties);
 
                         // Try to determine the name of the person that installed the app, which is usually the sender of the message (From.Id)
@@ -210,6 +206,7 @@ namespace Icebreaker.Bot
                     { "TeamId", teamId },
                     { "UninstallerId", message.From.Id },
                 };
+
                 this.telemetryClient.TrackEvent("AppUninstalled", properties);
 
                 // we were just removed from a team

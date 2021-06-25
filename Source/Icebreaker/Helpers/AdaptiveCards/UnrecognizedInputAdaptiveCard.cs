@@ -6,6 +6,8 @@
 namespace Icebreaker.Helpers.AdaptiveCards
 {
     using System;
+    using System.Globalization;
+    using global::AdaptiveCards;
     using global::AdaptiveCards.Templating;
     using Icebreaker.Properties;
     using Microsoft.Azure;
@@ -25,6 +27,9 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <returns>The adaptive card for the unrecognized input</returns>
         public static Attachment GetCard()
         {
+            // Set alignment of text based on default locale.
+            var textAlignment = CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? AdaptiveHorizontalAlignment.Right.ToString() : AdaptiveHorizontalAlignment.Left.ToString();
+
             var baseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain");
             var tourTitle = Resources.WelcomeTourTitle;
             var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
@@ -34,6 +39,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 messageContent = Resources.UnrecognizedInput,
                 tourUrl = GetTourFullUrl(appId, GetTourUrl(baseDomain), tourTitle),
                 tourButtonText = Resources.TakeATourButtonText,
+                textAlignment,
             };
 
             return GetCard(AdaptiveCardTemplate.Value, cardData);

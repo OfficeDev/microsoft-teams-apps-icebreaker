@@ -50,14 +50,28 @@
                 "description": "The link to the icon for the bot. It must resolve to a PNG file."
             }
         },
-        "DefaultCulture": {
-            "defaultValue": "en-US",
-            "minLength": 1,
-            "type": "String",
-            "metadata": {
-                "description": "Default culture."
-            }
-        },
+      "DefaultCulture": {
+        "defaultValue": "en",
+        "minLength": 1,
+        "type": "String",
+        "allowedValues": [
+          "en",
+          "ar",
+          "de",
+          "es",
+          "fr",
+          "he",
+          "ja",
+          "ko",
+          "pt-BR",
+          "ru",
+          "zh-CN",
+          "zh-TW"
+        ],
+        "metadata": {
+          "description": "Default culture."
+        }
+      },
         "pairingWeekInterval": {
             "type": "int",
             "minValue": 1,

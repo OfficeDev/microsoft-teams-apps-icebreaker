@@ -9,7 +9,8 @@
         {
           "type": "TextBlock",
           "text": "${messageContent}",
-          "wrap": true
+          "wrap": true,
+          "horizontalAlignment": "${textAlignment}"
         }
       ]
     }

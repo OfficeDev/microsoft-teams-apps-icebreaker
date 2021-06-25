@@ -1,0 +1,6 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
+  "name.short": "Icebreaker",
+  "description.short": "Icebreaker est un bot associant au hasard des membres pr créer 1 unité d’équipe.",
+  "description.full": "Icebreaker est un adorable petit robot qui couple de manière aléatoire les membres d’une équipe chaque semaine pour aider l’équipe à construire des connexions personnelles et fiables."
+}

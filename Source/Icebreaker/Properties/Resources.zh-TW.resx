@@ -118,135 +118,135 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="BackButtonText" xml:space="preserve">
-    <value>Back</value>
+    <value>返回</value>
     <comment>This is the back button text</comment>
   </data>
   <data name="ChatWithMatchButtonText" xml:space="preserve">
-    <value>Chat with {0}</value>
+    <value>與 {0} 聊天</value>
     <comment>Button text to initiate a chat with the person the user has been matched up with</comment>
   </data>
   <data name="ChatWithMessageGreeting" xml:space="preserve">
-    <value>Hi there</value>
+    <value>您好</value>
     <comment>This is the greeting of the chat with matched member message</comment>
   </data>
   <data name="DoneButtonText" xml:space="preserve">
-    <value>Done</value>
+    <value>完成</value>
     <comment>This is the done button text</comment>
   </data>
   <data name="ErrorOccured" xml:space="preserve">
-    <value>There was an error while processing request. Retry?</value>
+    <value>處理要求時發生錯誤。重試?</value>
     <comment>A generic message that is sent when there is an error occurring</comment>
   </data>
   <data name="InstallMessageKnownInstallerPart1" xml:space="preserve">
-    <value>If you're reading this, it's most likely because {0} added me to the **{1} Team.**</value>
+    <value>如果您正在閱讀此訊息，這很可能是因為 {0} 將我新增至 **{1} 團隊中。**</value>
     <comment>Install message and also the welcome message when the app installer is known - {0} is the placeholder for the name of the user that has installed the app to the team, and {1} is the placeholder for the name of the team that the app has been installed to</comment>
   </data>
   <data name="InstallMessageKnownInstallerPart2" xml:space="preserve">
-    <value>I get to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It's a win-win-*win* situation.</value>
+    <value>我可以協助您認識與您組織周圍更多的人，每周將您與新人員隨機配對。您可以結交更多朋友，深入了解與您共事的人員。這是一個三贏的狀況。</value>
     <comment>Part 2 of the install message when the name of the installer is known</comment>
   </data>
   <data name="InstallMessageKnownInstallerPart3" xml:space="preserve">
-    <value>**To meet new people, just hang tight. I'll send you an invite soon.**</value>
+    <value>**若要認識新的人員，請稍等。我即將傳送邀請給您。**</value>
     <comment>Part 3 of the install message with the name of the installer known</comment>
   </data>
   <data name="InstallMessageUnknownInstallerPart1" xml:space="preserve">
-    <value>If you're reading this, it's because I was installed to **{0} Team.** </value>
+    <value>如果您正閱讀此訊息，這是因為我已在 **{0} 小組安裝完成。** </value>
     <comment>Install message and also the welcome message when the app installer is not known - {0} is the placeholder for the name of the team that the app has been installed to</comment>
   </data>
   <data name="InstallMessageUnknownInstallerPart2" xml:space="preserve">
-    <value>I get to help you meet more people around your organization by randomly pairing you with someone new every week. You get to make more friends and learn about the people you work with. It's a win-win-*win* situation.</value>
+    <value>我可以協助您認識與您組織周圍更多的人，每周將您與新人員隨機配對。您可以結交更多朋友，深入了解與您共事的人員。這是一個三贏的狀況。</value>
     <comment>Part 2 of the install message when the name of the installer is not known</comment>
   </data>
   <data name="InstallMessageUnknownInstallerPart3" xml:space="preserve">
-    <value>**To meet new people, just hang tight. I'll send you an invite soon.**</value>
+    <value>**若要認識新的人員，請稍等。我即將傳送邀請給您。**</value>
     <comment>Part 3 of the install message when the name of the installer is not known</comment>
   </data>
   <data name="MatchUpCardContentPart1" xml:space="preserve">
-    <value>Hi there again, I'm {0} in {1}. A bot that pairs you with a new coworker to meet each week. This week your match is {2}.</value>
+    <value>您好，又見面了。我是 {1} 中的 {0}。是每周為您與新的同事配對碰面的聊天機器人。這一周您的配對對象是 {2}。</value>
     <comment>First part of the match up card main content</comment>
   </data>
   <data name="MatchUpCardContentPart2" xml:space="preserve">
-    <value>If you've got the inclination, set something up. See, meeting people *is* easy!</value>
+    <value>如果您有任何意向，請設定一些條件。看吧，認識人們 *是* 很簡單！</value>
     <comment>Second part of the match up card main content</comment>
   </data>
   <data name="MatchUpCardMatchedText" xml:space="preserve">
-    <value>You've been matched with {0}.</value>
+    <value>您已與 {0} 配對。</value>
     <comment>The text saying who the user has been matched up with</comment>
   </data>
   <data name="MatchUpCardTitleContent" xml:space="preserve">
-    <value>It's time for a match!</value>
+    <value>現在是配對時間了!</value>
     <comment>The title text for the pairup notification adaptive card</comment>
   </data>
   <data name="MeetupContent" xml:space="preserve">
-    <value>Hey there, looks like we've been matched by {0} this week. It'd be great to meet up for a coffee or a lunch or a call if you've got time.</value>
+    <value>您好，我們這周似乎已由 {0} 進行媒合。當您有時間時，若能一起喝杯咖啡或共進午餐或進行通話會是很棒的。</value>
     <comment>Content of the Meetup for the propose meeting</comment>
   </data>
   <data name="MeetupTitle" xml:space="preserve">
-    <value>{0} / {1} Meet up</value>
+    <value>{0} / {1} 聚會</value>
     <comment>The title for the Meetup - {0} is the name of the first person that user has been matched with and {1} is the name of the user</comment>
   </data>
   <data name="NextButtonText" xml:space="preserve">
-    <value>Next</value>
+    <value>下一步</value>
     <comment>This is the next button text</comment>
   </data>
   <data name="OptInConfirmation" xml:space="preserve">
-    <value>Welcome back! You've been missed. I've restarted your matches. Have fun!</value>
+    <value>歡迎回來！您已經錯過了。我已重新啟動您的配對。祝您使用愉快!</value>
     <comment>The confirmation reply that is sent when the user resumes the matches</comment>
   </data>
   <data name="OptOutConfirmation" xml:space="preserve">
-    <value>All set. I've paused your matches. You can turn them back on whenever you like.</value>
+    <value>全部已設定。我已暫停您的配對活動。您可以隨時將它們重新開啟。</value>
     <comment>The confirmation reply that is sent when the user pauses all matches</comment>
   </data>
   <data name="PausePairingsButtonText" xml:space="preserve">
-    <value>Pause all matches</value>
+    <value>暫停所有配對</value>
     <comment>Button text to pause pairings</comment>
   </data>
   <data name="ProposeMeetupButtonText" xml:space="preserve">
-    <value>Propose meetup</value>
+    <value>建議聚會</value>
     <comment>Button text to propose the meetup with the match of the user</comment>
   </data>
   <data name="ResumePairingsButtonText" xml:space="preserve">
-    <value>Resume matches</value>
+    <value>繼續配對</value>
     <comment>Button text to resume pairings</comment>
   </data>
   <data name="SalutationTitleText" xml:space="preserve">
-    <value>Hi there!</value>
+    <value>您好!</value>
     <comment>This is the text for the salutation in the adaptive cards when the bot is installed to a team and also when new users are added to the team</comment>
   </data>
   <data name="TakeATourButtonText" xml:space="preserve">
-    <value>Take a tour</value>
+    <value>進行導覽</value>
     <comment>The text for the button which launches a tour when clicked</comment>
   </data>
   <data name="TourContentPageTitleText" xml:space="preserve">
-    <value>Tour</value>
+    <value>導覽</value>
     <comment>This is the tour content page title text</comment>
   </data>
   <data name="TourMatchesBodyText" xml:space="preserve">
-    <value>Pause matches whenever you need. Too busy that week? Out of the office? No problem. Just click the button at anytime.</value>
+    <value>每次需要時暫停配對。這一周太忙?不在辦公室嗎?沒關係。只要隨時按一下按鈕即可。</value>
     <comment>This is the tour match task module body text</comment>
   </data>
   <data name="TourMatchesHeaderText" xml:space="preserve">
-    <value>Easily pause matches as needed</value>
+    <value>如有需要，可輕鬆地暫停配對</value>
     <comment>This is the tour match task module header text</comment>
   </data>
   <data name="TourWelcomeBodyText" xml:space="preserve">
-    <value>Every week, I'll pair you with someone new. If you have the inclination that week, you can meet up--grab a lunch, or a call if you're in different locations. Look out for another message in which I'll pair you with your first match.</value>
+    <value>每週，我會將您與某人進行配對。如果您在那周有意向，您可以碰面-快速午餐或通話，如果您位於不同地點。請留意我在為您進行的第一次配對中的不同訊息。</value>
     <comment>This is the tour welcome body text</comment>
   </data>
   <data name="TourWelcomeHeaderText" xml:space="preserve">
-    <value>Make new friends and build community with them</value>
+    <value>結交新朋友並與他們建立社群</value>
     <comment>This is the tour welcome header text</comment>
   </data>
   <data name="TourWelcomeImageAltText" xml:space="preserve">
-    <value>Welcome image</value>
+    <value>歡迎使用圖片</value>
     <comment>This is the tour welcome image alt text</comment>
   </data>
   <data name="UnrecognizedInput" xml:space="preserve">
-    <value>I'm sorry, but I can't process the incoming message. You can take a tour, though, to learn more about my functionality.</value>
+    <value>很抱歉，但我無法處理內送郵件。不過，您可以進行導覽，深入瞭解我的功能。</value>
     <comment>The text for the unrecognized input scenario</comment>
   </data>
   <data name="WelcomeTourTitle" xml:space="preserve">
-    <value>Tour</value>
+    <value>導覽</value>
     <comment>This is the title of the tour for the Icebreaker Bot</comment>
   </data>
 </root>

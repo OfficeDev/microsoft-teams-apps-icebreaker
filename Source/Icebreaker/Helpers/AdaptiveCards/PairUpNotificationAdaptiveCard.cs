@@ -6,6 +6,8 @@
 namespace Icebreaker.Helpers.AdaptiveCards
 {
     using System;
+    using System.Globalization;
+    using global::AdaptiveCards;
     using global::AdaptiveCards.Templating;
     using Icebreaker.Properties;
     using Microsoft.Bot.Schema;
@@ -34,6 +36,9 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <returns>Pairup notification card</returns>
         public static Attachment GetCard(string teamName, TeamsChannelAccount sender, TeamsChannelAccount recipient, string botDisplayName)
         {
+            // Set alignment of text based on default locale.
+            var textAlignment = CultureInfo.CurrentCulture.TextInfo.IsRightToLeft ? AdaptiveHorizontalAlignment.Right.ToString() : AdaptiveHorizontalAlignment.Left.ToString();
+
             // Guest users may not have their given name specified in AAD, so fall back to the full name if needed
             var senderGivenName = string.IsNullOrEmpty(sender.GivenName) ? sender.Name : sender.GivenName;
             var recipientGivenName = string.IsNullOrEmpty(recipient.GivenName) ? recipient.Name : recipient.GivenName;
@@ -52,11 +57,12 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 matchUpCardContentPart1 = string.Format(Resources.MatchUpCardContentPart1, botDisplayName, teamName, recipient.Name),
                 matchUpCardContentPart2 = Resources.MatchUpCardContentPart2,
                 chatWithMatchButtonText = string.Format(Resources.ChatWithMatchButtonText, recipientGivenName),
-                chatWithMessageGreeting = Resources.ChatWithMessageGreeting,
+                chatWithMessageGreeting = Uri.EscapeDataString(Resources.ChatWithMessageGreeting),
                 pauseMatchesButtonText = Resources.PausePairingsButtonText,
                 proposeMeetupButtonText = Resources.ProposeMeetupButtonText,
                 personUpn = recipientUpn,
                 meetingLink,
+                textAlignment,
             };
 
             return GetCard(AdaptiveCardTemplate.Value, cardData);

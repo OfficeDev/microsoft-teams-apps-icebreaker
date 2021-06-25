@@ -1,0 +1,6 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
+  "name.short": "Icebreaker",
+  "description.short": "Icebreaker — бот, определяющий членов команды в пары для единства команды.",
+  "description.full": "Icebreaker — это прикольный бот, который каждую неделю случайным образом объединяет членов команды в пары, чтобы помочь вам построить доверительные отношения и личные связи."
+}

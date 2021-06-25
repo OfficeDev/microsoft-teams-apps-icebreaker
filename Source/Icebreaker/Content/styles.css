@@ -36,9 +36,9 @@ html {
     text-align: center;
 }
 
-    .imageDiv img {
-        padding-top: 1.25rem;
-    }
+.imageDiv img {
+    padding-top: 1.25rem;
+}
 
 body {
     width: 100%;
@@ -159,11 +159,13 @@ body {
     background: #6264A7;
     color: #FFFFFF;
 }
+
     .theme-default .primary-button:hover {
         background: #464775;
         border-color: transparent;
         color: #FFFFFF;
     }
+
     .theme-default .primary-button:active:focus {
         background: #464775;
         border-color: transparent;
@@ -171,6 +173,7 @@ body {
         outline: 0.125rem solid #FFFFFF;
         outline-offset: -0.25rem;
     }
+
 
 .theme-default .secondary-button {
     background: #FFFFFF;
@@ -206,6 +209,7 @@ body {
     background: #FFFFFF;
     color: #000000;
 }
+
     .theme-highContrast .primary-button:hover {
         background: #FFFF00;
         border-color: transparent;

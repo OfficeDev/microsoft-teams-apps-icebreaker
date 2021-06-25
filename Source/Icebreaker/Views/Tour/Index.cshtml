@@ -10,12 +10,14 @@
     <title>@(Resources.TourContentPageTitleText)</title>
     <script src="/lib/microsoft-teams/dist/MicrosoftTeams.min.js"></script>
     <script src="/lib/jquery/jquery.min.js"></script>
+    <script src="/lib/i18next/i18next.min.js"></script>
     <link href="/Content/styles.css" rel="stylesheet" />
+    <link href="/Content/styles-rtl.css" rel="stylesheet" />
     <script type="text/javascript">
         $(document).ready(function () {
             let queryParameters = GetQueryParameters();
             let currentTheme = queryParameters["theme"];
-
+            
             var setTheme = function (theme) {
                 if (theme === "dark")
                     document.getElementById("themeCSS").className = "theme-dark";
@@ -26,6 +28,25 @@
             };
 
             microsoftTeams.initialize();
+            microsoftTeams.getContext(setLocaleContext);
+
+            function setLocaleContext(context) {
+                i18next.init({ lng: context.locale });
+                var isRtl = i18next.dir(context.locale) === "rtl";
+                if (isRtl) {
+                    $(".textDiv").addClass("textDiv-rtl").removeClass("textDiv");
+                    $(".bold-header").addClass("bold-header-rtl").removeClass("bold-header");
+                    $(".footer").addClass("footer-rtl").removeClass("footer");
+                    $(".primary-button").addClass("primary-button-rtl").removeClass("primary-button");
+                }
+                else {
+                    $(".textDiv-rtl").addClass("textDiv").removeClass("textDiv-rtl");
+                    $(".bold-header-rtl").addClass("bold-header").removeClass("bold-header-rtl");
+                    $(".footer-rtl").addClass("footer").removeClass("footer-rtl");
+                    $(".primary-button-rtl").addClass("primary-button").removeClass("primary-button-rtl");
+                }
+            }
+
             setTheme(currentTheme);
             microsoftTeams.registerOnThemeChangeHandler(setTheme);
         });
