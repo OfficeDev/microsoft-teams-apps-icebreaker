@@ -1,4 +1,4 @@
-﻿//----------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------
 // <copyright file="PairUpNotificationAdaptiveCard.cs" company="Microsoft">
 // Copyright (c) Microsoft. All rights reserved.
 // </copyright>
