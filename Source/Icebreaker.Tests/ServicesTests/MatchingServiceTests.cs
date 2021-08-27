@@ -31,6 +31,9 @@ namespace Icebreaker.Tests.ServicesTests
         private readonly Mock<IBotDataProvider> dataProvider;
         private readonly Mock<ConversationHelper> conversationHelper;
         private readonly string maxPairsSettingsKey = "MaxPairUpsPerTeam";
+        private readonly Mock<ISecretsProvider> secretsProvider;
+        private readonly string apiKey;
+        private readonly Mock<IAppSettings> appSettings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MatchingServiceTests"/> class.
@@ -55,7 +58,11 @@ namespace Icebreaker.Tests.ServicesTests
             this.dataProvider = new Mock<IBotDataProvider>();
             this.dataProvider.Setup(x => x.GetInstalledTeamAsync(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(new TeamInstallInfo()));
-            this.sut = new MatchingService(this.dataProvider.Object, this.conversationHelper.Object, telemetryClient, this.botAdapter);
+            this.apiKey = Guid.NewGuid().ToString();
+            var secretsProvider = new Mock<ISecretsProvider>();
+            secretsProvider.Setup(x => x.GetLogicAppKey()).Returns(this.apiKey);
+            var appSettings = new Mock<IAppSettings>();
+            this.sut = new MatchingService(this.dataProvider.Object, this.conversationHelper.Object, telemetryClient, this.botAdapter, appSettings);
         }
 
         [Fact]

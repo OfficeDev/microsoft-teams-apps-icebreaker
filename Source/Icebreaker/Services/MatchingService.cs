@@ -30,8 +30,7 @@ namespace Icebreaker.Services
         private readonly ConversationHelper conversationHelper;
         private readonly TelemetryClient telemetryClient;
         private readonly BotAdapter botAdapter;
-        private readonly int maxPairUpsPerTeam;
-        private readonly string botDisplayName;
+        private readonly IAppSettings appSettings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MatchingService"/> class.
@@ -40,14 +39,19 @@ namespace Icebreaker.Services
         /// <param name="conversationHelper">Conversation helper instance to notify team members</param>
         /// <param name="telemetryClient">The telemetry client to use</param>
         /// <param name="botAdapter">Bot adapter.</param>
-        public MatchingService(IBotDataProvider dataProvider, ConversationHelper conversationHelper, TelemetryClient telemetryClient, BotAdapter botAdapter)
+        /// <param name="appSettings">App Settings.</param>
+        public MatchingService(
+            IBotDataProvider dataProvider,
+            ConversationHelper conversationHelper,
+            TelemetryClient telemetryClient,
+            BotAdapter botAdapter,
+            IAppSettings appSettings)
         {
-            this.dataProvider = dataProvider;
-            this.conversationHelper = conversationHelper;
-            this.telemetryClient = telemetryClient;
-            this.botAdapter = botAdapter;
-            this.maxPairUpsPerTeam = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"));
-            this.botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
+            this.dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(this.dataProvider));
+            this.conversationHelper = conversationHelper ?? throw new ArgumentNullException(nameof(this.conversationHelper));
+            this.telemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(this.telemetryClient));
+            this.botAdapter = botAdapter ?? throw new ArgumentNullException(nameof(this.botAdapter));
+            this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(this.appSettings));
         }
 
         /// <summary>
@@ -89,8 +93,9 @@ namespace Icebreaker.Services
                     {
                         var teamName = await this.conversationHelper.GetTeamNameByIdAsync(this.botAdapter, team);
                         var optedInUsers = await this.GetOptedInUsersAsync(dbMembersLookup, team);
+                        var maxPairUpsPerTeam = this.appSettings.MaxPairUpsPerTeam;
 
-                        foreach (var pair in this.MakePairs(optedInUsers).Take(this.maxPairUpsPerTeam))
+                        foreach (var pair in this.MakePairs(optedInUsers).Take(maxPairUpsPerTeam))
                         {
                             usersNotifiedCount += await this.NotifyPairAsync(team, teamName, pair, default(CancellationToken));
                             pairsNotifiedCount++;
@@ -139,10 +144,10 @@ namespace Icebreaker.Services
             var teamsPerson2 = JObject.FromObject(pair.Item2).ToObject<TeamsChannelAccount>();
 
             // Fill in person2's info in the card for person1
-            var cardForPerson1 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson1, teamsPerson2, this.botDisplayName);
+            var cardForPerson1 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson1, teamsPerson2, this.appSettings.BotDisplayName);
 
             // Fill in person1's info in the card for person2
-            var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2, teamsPerson1, this.botDisplayName);
+            var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2, teamsPerson1, this.appSettings.BotDisplayName);
 
             // Send notifications and return the number that was successful
             var notifyResults = await Task.WhenAll(

@@ -26,8 +26,8 @@ namespace Icebreaker.Controllers
         /// <param name="bot">The Icebreaker bot instance</param>
         public MessagesController(IBotFrameworkHttpAdapter adapter, IBot bot)
         {
-            this.adapter = adapter;
-            this.bot = bot;
+            this.adapter = adapter ?? throw new System.ArgumentNullException(nameof(adapter));
+            this.bot = bot ?? throw new System.ArgumentNullException(nameof(bot));
         }
 
         /// <summary>

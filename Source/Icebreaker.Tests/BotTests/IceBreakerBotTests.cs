@@ -40,6 +40,8 @@ namespace Icebreaker.Tests.BotTests
         private readonly Mock<IBotDataProvider> dataProvider;
         private readonly TelemetryClient telemetryClient;
         private readonly ConversationHelperMock conversationHelper;
+        private readonly IAppSettings appSettings;
+        private readonly ISecretsProvider secretsProvider;
 
         public IceBreakerBotTests()
         {
@@ -57,9 +59,10 @@ namespace Icebreaker.Tests.BotTests
             this.telemetryClient = new TelemetryClient();
             this.conversationHelper = new ConversationHelperMock();
             this.dataProvider = new Mock<IBotDataProvider>();
+
             this.dataProvider.Setup(x => x.GetInstalledTeamAsync(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(new TeamInstallInfo()));
-            this.sut = new IcebreakerBot(this.dataProvider.Object, this.conversationHelper, MicrosoftAppCredentials.Empty, this.telemetryClient);
+            this.sut = new IcebreakerBot(this.dataProvider.Object, this.conversationHelper, this.appSettings, this.secretsProvider, this.telemetryClient);
             this.userAccount = new TeamsChannelAccount { Id = Guid.NewGuid().ToString(), Properties = JObject.FromObject(new { Id = Guid.NewGuid().ToString() }) };
             this.botAccount = new TeamsChannelAccount { Id = "bot", Properties = JObject.FromObject(new { Id = "bot" }) };
             this.teamsChannelData = new TeamsChannelData

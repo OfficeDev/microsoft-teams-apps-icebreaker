@@ -1,3 +1,6 @@
 # Paths with files restored by libman
-lib/jquery/
-lib/microsoft-teams/
+wwwroot/lib/jquery/
+wwwroot/lib/microsoft-teams/
+wwwroot/lib/bootstrap
+wwwroot/lib/jquery-validation
+wwwroot/lib/jquery-validation-unobtrusive

@@ -10,7 +10,6 @@ namespace Icebreaker.Tests.BotTests
     using Icebreaker.Helpers;
     using Microsoft.ApplicationInsights;
     using Microsoft.Bot.Builder;
-    using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema.Teams;
 
     /// <summary>
@@ -19,7 +18,7 @@ namespace Icebreaker.Tests.BotTests
     public class ConversationHelperMock : ConversationHelper
     {
         public ConversationHelperMock()
-            : base(MicrosoftAppCredentials.Empty, new TelemetryClient())
+            : base(null, null, new TelemetryClient())
         {
         }
 

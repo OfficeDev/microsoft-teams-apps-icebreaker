@@ -9,12 +9,11 @@ namespace Icebreaker.Helpers
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Icebreaker.Interfaces;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;
-    using Microsoft.Azure;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Builder.Teams;
-    using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
 
@@ -23,22 +22,24 @@ namespace Icebreaker.Helpers
     /// </summary>
     public class ConversationHelper
     {
-        private readonly MicrosoftAppCredentials appCredentials;
+        private readonly IAppSettings appSettings;
+        private readonly ISecretsProvider secretsProvider;
         private readonly TelemetryClient telemetryClient;
-        private readonly string botId;
-        private readonly bool isTesting;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConversationHelper"/> class.
         /// </summary>
-        /// <param name="appCredentials">Microsoft app credentials to use.</param>
+        /// <param name="appSettings">App Settings.</param>
+        /// <param name="secretsProvider">To fetch secrets</param>
         /// <param name="telemetryClient">The telemetry client to use</param>
-        public ConversationHelper(MicrosoftAppCredentials appCredentials, TelemetryClient telemetryClient)
+        public ConversationHelper(
+            IAppSettings appSettings,
+            ISecretsProvider secretsProvider,
+            TelemetryClient telemetryClient)
         {
-            this.appCredentials = appCredentials;
-            this.telemetryClient = telemetryClient;
-            this.botId = CloudConfigurationManager.GetSetting("MicrosoftAppId");
-            this.isTesting = Convert.ToBoolean(CloudConfigurationManager.GetSetting("Testing"));
+            this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            this.secretsProvider = secretsProvider ?? throw new ArgumentNullException(nameof(secretsProvider));
+            this.telemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(this.telemetryClient));
         }
 
         /// <summary>
@@ -79,7 +80,7 @@ namespace Icebreaker.Helpers
                 // conversation parameters
                 var conversationParameters = new ConversationParameters
                 {
-                    Bot = new ChannelAccount { Id = this.botId },
+                    Bot = new ChannelAccount { Id = this.appSettings.MicrosoftAppId },
                     Members = new[] { user },
                     ChannelData = new TeamsChannelData
                     {
@@ -87,13 +88,14 @@ namespace Icebreaker.Helpers
                     },
                 };
 
-                if (!this.isTesting)
+                var appCredentials = await this.secretsProvider.GetAppCredentialsAsync();
+                if (!this.appSettings.IsTesting)
                 {
                     // shoot the activity over
                     await ((BotFrameworkAdapter)botFrameworkAdapter).CreateConversationAsync(
                         teamsChannelId,
                         serviceUrl,
-                        this.appCredentials,
+                        appCredentials,
                         conversationParameters,
                         async (newTurnContext, newCancellationToken) =>
                         {
@@ -101,7 +103,7 @@ namespace Icebreaker.Helpers
                             var conversationReference = newTurnContext.Activity.GetConversationReference();
 
                             await botFrameworkAdapter.ContinueConversationAsync(
-                                this.appCredentials.MicrosoftAppId,
+                                this.appSettings.MicrosoftAppId,
                                 conversationReference,
                                 async (conversationTurnContext, conversationCancellationToken) =>
                                 {
@@ -208,7 +210,7 @@ namespace Icebreaker.Helpers
             };
 
             await botAdapter.ContinueConversationAsync(
-                this.botId,
+                this.appSettings.MicrosoftAppId,
                 conversationReference,
                 callback,
                 default(CancellationToken)).ConfigureAwait(false);

@@ -5,10 +5,16 @@
 
 namespace Icebreaker
 {
+    using System;
+    using System.Globalization;
+    using System.Linq;
     using System.Reflection;
     using System.Web.Http;
     using Autofac;
     using Autofac.Integration.WebApi;
+    using Azure.Identity;
+    using Azure.Security.KeyVault.Certificates;
+    using Azure.Security.KeyVault.Secrets;
     using Icebreaker.Bot;
     using Icebreaker.Helpers;
     using Icebreaker.Interfaces;
@@ -33,25 +39,60 @@ namespace Icebreaker
 
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
             builder.RegisterWebApiFilterProvider(GlobalConfiguration.Configuration);
+            var appInsightsInstrumentationKey = CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY");
+            var keyVaultUri = CloudConfigurationManager.GetSetting("KeyVaultUri");
 
-            builder.RegisterType<SecretsHelper>().As<ISecretsHelper>()
-                .SingleInstance();
+            var disableTenantFilter = Convert.ToBoolean(CloudConfigurationManager.GetSetting("DisableTenantFilter"), CultureInfo.InvariantCulture);
+            var allowedTenantIds = CloudConfigurationManager.GetSetting("AllowedTenants")?.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries)
+                ?.Select(p => p.Trim())
+                .ToHashSet();
 
-            // ICredentialProvider is required for AD queries
+            // ToDo - Check for 401 error without simple credential provider
             builder.Register(c => new SimpleCredentialProvider(
                     CloudConfigurationManager.GetSetting("MicrosoftAppId"),
-                    c.Resolve<ISecretsHelper>().MicrosoftAppPassword))
+                    CloudConfigurationManager.GetSetting("MicrosoftAppPassword")))
                 .As<ICredentialProvider>()
                 .SingleInstance();
 
-            builder.Register(c =>
-            {
-                return new TelemetryClient(new TelemetryConfiguration(CloudConfigurationManager.GetSetting("APPINSIGHTS_INSTRUMENTATIONKEY")));
-            }).SingleInstance();
+            builder
+                .Register(c => new AppSettings
+                {
+                    IsTesting = Convert.ToBoolean(CloudConfigurationManager.GetSetting("Testing")),
+                    DisableTenantFilter = disableTenantFilter,
+                    AllowedTenantIds = allowedTenantIds,
+                    BotDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName"),
+                    BotCertName = CloudConfigurationManager.GetSetting("BotCertificateName"),
+                    MicrosoftAppId = CloudConfigurationManager.GetSetting("MicrosoftAppId"),
+                    AppBaseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain"),
+                    CosmosDBEndpointUrl = CloudConfigurationManager.GetSetting("CosmosDBEndpointUrl"), // TODO(Bhavya): Create a separate setting for DB
+                    CosmosDBDatabaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName"),
+                    CosmosCollectionTeams = CloudConfigurationManager.GetSetting("CosmosCollectionTeams"),
+                    CosmosCollectionUsers = CloudConfigurationManager.GetSetting("CosmosCollectionUsers"),
+                    AppInsightsInstrumentationKey = appInsightsInstrumentationKey,
+                    DefaultCulture = CloudConfigurationManager.GetSetting("DefaultCulture"),
+                    MaxPairUpsPerTeam = int.Parse(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam")),
+                })
+                .As<IAppSettings>()
+                .SingleInstance();
 
-            builder.Register(c => new MicrosoftAppCredentials(
-                    CloudConfigurationManager.GetSetting("MicrosoftAppId"),
-                    c.Resolve<ISecretsHelper>().MicrosoftAppPassword))
+            builder.Register(c => new SecretOptions
+            {
+                KeyVaultUri = keyVaultUri,
+                MicrosoftAppPassword = CloudConfigurationManager.GetSetting("MicrosoftAppPassword"),
+                CosmosDBKey = CloudConfigurationManager.GetSetting("CosmosDBKey"),
+                Key = CloudConfigurationManager.GetSetting("Key"),
+            });
+
+            builder.Register(c => new TelemetryClient(new TelemetryConfiguration(appInsightsInstrumentationKey)))
+                .SingleInstance();
+
+            builder.Register(c => new CertificateClient(new Uri(keyVaultUri), new DefaultAzureCredential()))
+                .SingleInstance();
+
+            builder.Register(c => new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential()))
+                .SingleInstance();
+
+            builder.RegisterType<SecretsProvider>().As<ISecretsProvider>()
                 .SingleInstance();
 
             builder.RegisterType<BotFrameworkHttpAdapter>()

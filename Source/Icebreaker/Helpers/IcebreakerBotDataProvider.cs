@@ -26,8 +26,9 @@ namespace Icebreaker.Helpers
         private const int DefaultRequestThroughput = 400;
 
         private readonly TelemetryClient telemetryClient;
+        private readonly IAppSettings appSettings;
         private readonly Lazy<Task> initializeTask;
-        private readonly ISecretsHelper secretsHelper;
+        private readonly ISecretsProvider secretProvider;
         private DocumentClient documentClient;
         private Database database;
         private DocumentCollection teamsCollection;
@@ -37,11 +38,16 @@ namespace Icebreaker.Helpers
         /// Initializes a new instance of the <see cref="IcebreakerBotDataProvider"/> class.
         /// </summary>
         /// <param name="telemetryClient">The telemetry client to use</param>
-        /// <param name="secretsHelper">Secrets helper to fetch secrets</param>
-        public IcebreakerBotDataProvider(TelemetryClient telemetryClient, ISecretsHelper secretsHelper)
+        /// <param name="appSettings">App settings.</param>
+        /// <param name="secretProvider">Secrets helper to fetch secrets</param>
+        public IcebreakerBotDataProvider(
+            TelemetryClient telemetryClient,
+            IAppSettings appSettings,
+            ISecretsProvider secretProvider)
         {
-            this.telemetryClient = telemetryClient;
-            this.secretsHelper = secretsHelper;
+            this.telemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(telemetryClient));
+            this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            this.secretProvider = secretProvider ?? throw new ArgumentNullException(nameof(secretProvider));
             this.initializeTask = new Lazy<Task>(() => this.InitializeAsync());
         }
 
@@ -214,14 +220,9 @@ namespace Icebreaker.Helpers
         private async Task InitializeAsync()
         {
             this.telemetryClient.TrackTrace("Initializing data store");
+            var databaseName = this.appSettings.CosmosDBDatabaseName;
 
-            var endpointUrl = CloudConfigurationManager.GetSetting("CosmosDBEndpointUrl");
-            var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
-            var teamsCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
-            var usersCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
-
-            this.documentClient = new DocumentClient(new Uri(endpointUrl), this.secretsHelper.CosmosDBKey);
-
+            this.documentClient = new DocumentClient(new Uri(this.appSettings.CosmosDBEndpointUrl), this.secretProvider.GetCosmosDBKey());
             var requestOptions = new RequestOptions { OfferThroughput = DefaultRequestThroughput };
             bool useSharedOffer = true;
 
@@ -248,7 +249,7 @@ namespace Icebreaker.Helpers
             // Get a reference to the Teams collection, creating it if needed
             var teamsCollectionDefinition = new DocumentCollection
             {
-                Id = teamsCollectionName,
+                Id = this.appSettings.CosmosCollectionTeams,
             };
             teamsCollectionDefinition.PartitionKey.Paths.Add("/id");
             this.teamsCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, teamsCollectionDefinition, useSharedOffer ? null : requestOptions);
@@ -256,7 +257,7 @@ namespace Icebreaker.Helpers
             // Get a reference to the Users collection, creating it if needed
             var usersCollectionDefinition = new DocumentCollection
             {
-                Id = usersCollectionName,
+                Id = this.appSettings.CosmosCollectionUsers,
             };
             usersCollectionDefinition.PartitionKey.Paths.Add("/id");
             this.usersCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, usersCollectionDefinition, useSharedOffer ? null : requestOptions);

@@ -17,10 +17,8 @@ namespace Icebreaker.Bot
     using Icebreaker.Properties;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;
-    using Microsoft.Azure;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Builder.Teams;
-    using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
 
@@ -31,32 +29,30 @@ namespace Icebreaker.Bot
     {
         private readonly IBotDataProvider dataProvider;
         private readonly ConversationHelper conversationHelper;
-        private readonly MicrosoftAppCredentials appCredentials;
+        private readonly IAppSettings appSettings;
+        private readonly ISecretsProvider secretsProvider;
         private readonly TelemetryClient telemetryClient;
-        private readonly string botDisplayName;
-        private readonly bool disableTenantFilter;
-        private readonly HashSet<string> allowedTenantIds;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBot"/> class.
         /// </summary>
         /// <param name="dataProvider">The data provider to use</param>
         /// <param name="conversationHelper">Conversation helper instance to notify team members</param>
-        /// <param name="appCredentials">Microsoft app credentials to use.</param>
+        /// <param name="appSettings">App Settings.</param>
+        /// <param name="secretsProvider">Microsoft app credentials to use.</param>
         /// <param name="telemetryClient">The telemetry client to use</param>
-        public IcebreakerBot(IBotDataProvider dataProvider, ConversationHelper conversationHelper, MicrosoftAppCredentials appCredentials, TelemetryClient telemetryClient)
+        public IcebreakerBot(
+            IBotDataProvider dataProvider,
+            ConversationHelper conversationHelper,
+            IAppSettings appSettings,
+            ISecretsProvider secretsProvider,
+            TelemetryClient telemetryClient)
         {
-            this.dataProvider = dataProvider;
-            this.conversationHelper = conversationHelper;
-            this.appCredentials = appCredentials;
-            this.telemetryClient = telemetryClient;
-            this.botDisplayName = CloudConfigurationManager.GetSetting("BotDisplayName");
-            this.disableTenantFilter = Convert.ToBoolean(CloudConfigurationManager.GetSetting("DisableTenantFilter"), CultureInfo.InvariantCulture);
-            var allowedTenants = CloudConfigurationManager.GetSetting("AllowedTenants");
-            this.allowedTenantIds = allowedTenants
-                ?.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries)
-                ?.Select(p => p.Trim())
-                .ToHashSet();
+            this.dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
+            this.conversationHelper = conversationHelper ?? throw new ArgumentNullException(nameof(conversationHelper));
+            this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            this.secretsProvider = secretsProvider ?? throw new ArgumentNullException(nameof(secretsProvider));
+            this.telemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(telemetryClient));
         }
 
         /// <summary>
@@ -74,8 +70,7 @@ namespace Icebreaker.Bot
             {
                 this.LogActivityTelemetry(turnContext.Activity);
 
-                var isAllowedTenant = this.ValidateTenant(turnContext);
-                if (!isAllowedTenant)
+                if (!this.IsTenantWhitelisted(turnContext))
                 {
                     return;
                 }
@@ -366,7 +361,7 @@ namespace Icebreaker.Bot
 
             if (userThatJustJoined != null)
             {
-                var welcomeMessageCard = WelcomeNewMemberAdaptiveCard.GetCard(teamName, userThatJustJoined.Name, this.botDisplayName, installedTeam.InstallerName);
+                var welcomeMessageCard = WelcomeNewMemberAdaptiveCard.GetCard(teamName, userThatJustJoined.Name, this.appSettings.BotDisplayName, installedTeam.InstallerName);
                 await this.conversationHelper.NotifyUserAsync(turnContext, MessageFactory.Attachment(welcomeMessageCard), userThatJustJoined, tenantId, cancellationToken);
             }
             else
@@ -491,12 +486,13 @@ namespace Icebreaker.Bot
                     ChannelData = new TeamsChannelData { Channel = new ChannelInfo(teamId) },
                 };
 
+                var appCredentials = await this.secretsProvider.GetAppCredentialsAsync();
                 await ((BotFrameworkAdapter)turnContext.Adapter).CreateConversationAsync(
-                    null,
-                    turnContext.Activity.ServiceUrl,
-                    this.appCredentials,
-                    conversationParameters,
-                    null,
+                    channelId: null,
+                    serviceUrl: turnContext.Activity.ServiceUrl,
+                    credentials: appCredentials,
+                    conversationParameters: conversationParameters,
+                    callback: null,
                     cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -533,21 +529,22 @@ namespace Icebreaker.Bot
             this.telemetryClient.TrackEvent("UserActivity", properties);
         }
 
-        private bool ValidateTenant(ITurnContext turnContext)
+        private bool IsTenantWhitelisted(ITurnContext turnContext)
         {
-            if (this.disableTenantFilter)
+            if (this.appSettings.DisableTenantFilter)
             {
                 return true;
             }
 
-            if (this.allowedTenantIds == null || !this.allowedTenantIds.Any())
+            var allowedTenantIds = this.appSettings.AllowedTenantIds;
+            if (allowedTenantIds == null || !allowedTenantIds.Any())
             {
                 var exceptionMessage = "AllowedTenants setting is not set properly in the configuration file.";
                 throw new ApplicationException(exceptionMessage);
             }
 
             var tenantId = turnContext?.Activity?.Conversation?.TenantId;
-            return this.allowedTenantIds.Contains(tenantId);
+            return allowedTenantIds.Contains(tenantId);
         }
     }
 }

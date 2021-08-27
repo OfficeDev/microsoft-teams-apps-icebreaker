@@ -32,13 +32,11 @@ namespace Icebreaker.Tests.ControllersTests
         {
             this.apiKey = Guid.NewGuid().ToString();
             var matchingService = new Mock<IMatchingService>();
-            var secretsHelper = new Mock<ISecretsHelper>();
-            secretsHelper.Setup(x => x.Key).Returns(this.apiKey);
-            var appCredentials =
-                new Mock<MicrosoftAppCredentials>(MockBehavior.Default, string.Empty, string.Empty);
+            var secretsProvider = new Mock<ISecretsProvider>();
+            secretsProvider.Setup(x => x.GetLogicAppKey()).Returns(this.apiKey);
 
             // Create and initialize controller
-            this.sut = new ProcessNowController(matchingService.Object, appCredentials.Object, secretsHelper.Object)
+            this.sut = new ProcessNowController(matchingService.Object, secretsProvider.Object)
             {
                 Request = new HttpRequestMessage(),
                 Configuration = new HttpConfiguration(),
