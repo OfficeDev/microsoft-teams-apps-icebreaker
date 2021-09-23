@@ -262,3 +262,6 @@ __pycache__/
 
 # Having the pubxml files be ignored
 /Source/v3Net/Icebreaker/Properties/PublishProfiles
+
+#Jquery files
+/Source/Icebreaker/lib

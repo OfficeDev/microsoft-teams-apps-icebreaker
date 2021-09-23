@@ -7,14 +7,14 @@ namespace Icebreaker.Controllers
 {
     using System.Net.Http;
     using System.Threading.Tasks;
-    using System.Web.Http;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Bot.Builder;
-    using Microsoft.Bot.Builder.Integration.AspNet.WebApi;
+    using Microsoft.Bot.Builder.Integration.AspNet.Core;
 
     /// <summary>
     /// Controller for the bot messaging endpoint
     /// </summary>
-    public class MessagesController : ApiController
+    public class MessagesController : ControllerBase
     {
         private readonly IBotFrameworkHttpAdapter adapter;
         private readonly IBot bot;
@@ -34,13 +34,14 @@ namespace Icebreaker.Controllers
         /// Action to process bot messages
         /// </summary>
         /// <returns>Bot compliant message card</returns>
+        [HttpPost]
         public async Task<HttpResponseMessage> PostAsync()
         {
             var response = new HttpResponseMessage();
 
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.
-            await this.adapter.ProcessAsync(this.Request, response, this.bot);
+            await this.adapter.ProcessAsync(httpRequest: this.Request, httpResponse: this.Response, this.bot);
             return response;
         }
     }

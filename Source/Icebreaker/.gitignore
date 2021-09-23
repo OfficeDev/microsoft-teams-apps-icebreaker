@@ -4,3 +4,5 @@ wwwroot/lib/microsoft-teams/
 wwwroot/lib/bootstrap
 wwwroot/lib/jquery-validation
 wwwroot/lib/jquery-validation-unobtrusive
+lib/jquery/
+lib/microsoft-teams/

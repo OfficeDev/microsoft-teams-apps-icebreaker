@@ -7,7 +7,7 @@ namespace Icebreaker.Controllers
 {
     using System.Globalization;
     using System.Threading;
-    using System.Web.Mvc;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Azure;
 
     /// <summary>

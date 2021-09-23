@@ -8,7 +8,6 @@ namespace Icebreaker.Tests.ControllersTests
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Web.Http;
     using Icebreaker.Controllers;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Builder.Integration.AspNet.WebApi;

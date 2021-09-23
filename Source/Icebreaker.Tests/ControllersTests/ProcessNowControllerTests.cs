@@ -9,8 +9,6 @@ namespace Icebreaker.Tests.ControllersTests
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using System.Web.Http;
-    using System.Web.Http.Results;
     using Icebreaker.Controllers;
     using Icebreaker.Interfaces;
     using Microsoft.Bot.Connector.Authentication;
