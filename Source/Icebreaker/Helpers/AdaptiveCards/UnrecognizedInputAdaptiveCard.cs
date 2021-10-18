@@ -23,16 +23,14 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// Generates the adaptive card string for the unrecognized input.
         /// </summary>
         /// <returns>The adaptive card for the unrecognized input</returns>
-        public static Attachment GetCard()
+        public static Attachment GetCard(string appBaseDomain, string manifestAppId)
         {
-            var baseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain");
             var tourTitle = Resources.WelcomeTourTitle;
-            var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
 
             var cardData = new
             {
                 messageContent = Resources.UnrecognizedInput,
-                tourUrl = GetTourFullUrl(appId, GetTourUrl(baseDomain), tourTitle),
+                tourUrl = GetTourFullUrl(manifestAppId, GetTourUrl(appBaseDomain), tourTitle),
                 tourButtonText = Resources.TakeATourButtonText,
             };
 

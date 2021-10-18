@@ -10,17 +10,17 @@
     /// <summary>
     /// BackgroundQueueHelper
     /// </summary>
-    public class BackgroundQueueHelper : BackgroundService
+    public class BackgroundQueueService : BackgroundService
     {
 
-        private readonly ILogger<BackgroundQueueHelper> logger;
+        private readonly ILogger<BackgroundQueueService> logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BackgroundQueueHelper"/> class.
+        /// Initializes a new instance of the <see cref="BackgroundQueueService"/> class.
         /// </summary>
         /// <param name="taskQueue">tasks</param>
         /// <param name="logger">logger</param>
-        public BackgroundQueueHelper(IBackgroundTaskQueue taskQueue, ILogger<BackgroundQueueHelper> logger)
+        public BackgroundQueueService(IBackgroundTaskQueue taskQueue, ILogger<BackgroundQueueService> logger)
         {
             this.TaskQueue = taskQueue ?? throw new ArgumentNullException(nameof(taskQueue));
             this.logger = logger;
@@ -34,6 +34,7 @@
         /// <inheritdoc/>
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+            this.logger.LogInformation("Executing background service task");
             while (!cancellationToken.IsCancellationRequested)
             {
                 try

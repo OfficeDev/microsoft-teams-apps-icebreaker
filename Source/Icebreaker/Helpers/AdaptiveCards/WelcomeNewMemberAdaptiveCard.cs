@@ -27,7 +27,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <param name="botDisplayName">The bot name</param>
         /// <param name="botInstaller">The person that installed the bot to the team</param>
         /// <returns>The welcome new member card</returns>
-        public static Attachment GetCard(string teamName, string personFirstName, string botDisplayName, string botInstaller)
+        public static Attachment GetCard(string teamName, string personFirstName, string botDisplayName, string botInstaller, string appBaseDomain, string manifestAppId)
         {
             string introMessagePart1;
             string introMessagePart2;
@@ -46,9 +46,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 introMessagePart3 = Resources.InstallMessageKnownInstallerPart3;
             }
 
-            var baseDomain = CloudConfigurationManager.GetSetting("AppBaseDomain");
             var tourTitle = Resources.WelcomeTourTitle;
-            var appId = CloudConfigurationManager.GetSetting("ManifestAppId");
 
             var welcomeData = new
             {
@@ -58,9 +56,9 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 introMessagePart2,
                 introMessagePart3,
                 team = teamName,
-                welcomeCardImageUrl = $"https://{baseDomain}/Content/welcome-card-image.png",
+                welcomeCardImageUrl = $"https://{appBaseDomain}/Content/welcome-card-image.png",
                 pauseMatchesText = Resources.PausePairingsButtonText,
-                tourUrl = GetTourFullUrl(appId, GetTourUrl(baseDomain), tourTitle),
+                tourUrl = GetTourFullUrl(manifestAppId, GetTourUrl(appBaseDomain), tourTitle),
                 salutationText = Resources.SalutationTitleText,
                 tourButtonText = Resources.TakeATourButtonText,
             };

@@ -23,7 +23,13 @@ namespace Icebreaker
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Identity.Web;
+    using Newtonsoft.Json.Converters;
+    using Newtonsoft.Json.Serialization;
 
+    /// <summary>
+    /// Startup
+    /// </summary>
     public class Startup
     {
         private readonly IConfiguration configuration;
@@ -46,6 +52,12 @@ namespace Icebreaker
         {
             services.AddLocalization(this.configuration);
             services.AddApplicationInsightsTelemetry();
+
+            // Authentication - Identity.Web, Graph SDK
+            services
+                .AddMicrosoftIdentityWebApiAuthentication(this.configuration);
+
+        
 
             var appInsightsInstrumentationKey = this.configuration.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY");
             var keyVaultUri = this.configuration.GetValue<string>("KeyVaultUri");
@@ -94,12 +106,25 @@ namespace Icebreaker
             };
             services.AddSingleton<IAppSettings>(appSettings);
             services.AddTransient<ISecretsProvider, SecretsProvider>();
-            // New Item - To implement middleware and BotFrameworkHttpAdapter services.AddSingleton<BotFrameworkHttpAdapter>();
+
+            services.AddTransient<IcebreakerBot>();
+            services.AddTransient<IceBreakerBotMiddleware>();
+            services.AddSingleton<BotHttpAdapter>();
+            services.AddSingleton<BotFrameworkHttpAdapter>();
             services.AddTransient<IBot, IcebreakerBot>();
+
             services.AddTransient<ConversationHelper>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.AddHostedService<BackgroundQueueService>();
+
+            // Controllers
+            services.AddControllers()
+                .AddNewtonsoftJson(options =>
+                   options.SerializerSettings.Converters
+                   .Add(new StringEnumConverter(new DefaultNamingStrategy(), false)));
             services.AddTransient<IMatchingService, MatchingService>();
             services.AddTransient<IBotDataProvider, IcebreakerBotDataProvider>();
-            services.AddTransient<IBackgroundTaskQueue, BackgroundTaskQueue>();
+
         }
 
         /// <summary>
@@ -117,17 +142,16 @@ namespace Icebreaker
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
+            app.UseDefaultFiles();
             app.UseStaticFiles();
 
             app.UseRouting();
-
-            app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

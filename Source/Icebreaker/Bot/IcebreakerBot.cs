@@ -54,43 +54,7 @@ namespace Icebreaker.Bot
             this.secretsProvider = secretsProvider ?? throw new ArgumentNullException(nameof(secretsProvider));
             this.telemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(telemetryClient));
         }
-
-        /// <summary>
-        /// Handles an incoming activity.
-        /// </summary>
-        /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
-        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>
-        /// Reference link: https://docs.microsoft.com/en-us/dotnet/api/microsoft.bot.builder.activityhandler.onturnasync?view=botbuilder-dotnet-stable.
-        /// </remarks>
-        public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            try
-            {
-                this.LogActivityTelemetry(turnContext.Activity);
-
-                if (!this.IsTenantWhitelisted(turnContext))
-                {
-                    return;
-                }
-
-                // Get the current culture info to use in resource files
-                string locale = turnContext?.Activity.Entities?.FirstOrDefault(entity => entity.Type == "clientInfo")?.Properties["locale"]?.ToString();
-
-                if (!string.IsNullOrEmpty(locale))
-                {
-                    CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(locale);
-                }
-
-                await base.OnTurnAsync(turnContext, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                this.telemetryClient.TrackException(ex);
-            }
-        }
-
+        
         /// <summary>
         /// Invoked when a conversation update activity is received from the channel.
         /// Conversation update activities are useful when it comes to responding to users being added to or removed from the channel.
@@ -215,18 +179,11 @@ namespace Icebreaker.Bot
         }
 
         /// <summary>
-        /// Provide logic specific to
-        /// <see cref="ActivityTypes.Message"/> activities, such as the conversational logic.
-        /// Specifically the opt in and out operations.
+        /// Handles Message activity
         /// </summary>
-        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>
-        /// When the <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
-        /// method receives a message activity, it calls this method.
-        /// </remarks>
+        /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
+        /// <returns>A Task after handling the message activity</returns>
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             await this.HandleMessageActivityAsync(turnContext, cancellationToken);
@@ -361,7 +318,7 @@ namespace Icebreaker.Bot
 
             if (userThatJustJoined != null)
             {
-                var welcomeMessageCard = WelcomeNewMemberAdaptiveCard.GetCard(teamName, userThatJustJoined.Name, this.appSettings.BotDisplayName, installedTeam.InstallerName);
+                var welcomeMessageCard = WelcomeNewMemberAdaptiveCard.GetCard(teamName, userThatJustJoined.Name, this.appSettings.BotDisplayName, installedTeam.InstallerName, this.appSettings.AppBaseDomain, this.appSettings.MicrosoftAppId);
                 await this.conversationHelper.NotifyUserAsync(turnContext, MessageFactory.Attachment(welcomeMessageCard), userThatJustJoined, tenantId, cancellationToken);
             }
             else
@@ -383,7 +340,7 @@ namespace Icebreaker.Bot
             this.telemetryClient.TrackTrace($"Sending welcome message for team {teamId}");
 
             var teamName = turnContext.Activity.TeamsGetTeamInfo().Name;
-            var welcomeTeamMessageCard = WelcomeTeamAdaptiveCard.GetCard(teamName, botInstaller);
+            var welcomeTeamMessageCard = WelcomeTeamAdaptiveCard.GetCard(teamName, botInstaller, this.appSettings.AppBaseDomain, this.appSettings.MicrosoftAppId);
             await this.NotifyTeamAsync(turnContext, MessageFactory.Attachment(welcomeTeamMessageCard), teamId, cancellationToken);
         }
 
@@ -396,7 +353,7 @@ namespace Icebreaker.Bot
         /// <returns>Tracking task</returns>
         private async Task SendUnrecognizedInputMessageAsync(ITurnContext turnContext, Activity replyActivity, CancellationToken cancellationToken)
         {
-            replyActivity.Attachments = new List<Attachment> { UnrecognizedInputAdaptiveCard.GetCard() };
+            replyActivity.Attachments = new List<Attachment> { UnrecognizedInputAdaptiveCard.GetCard(this.appSettings.AppBaseDomain, this.appSettings.MicrosoftAppId) };
             await turnContext.SendActivityAsync(replyActivity, cancellationToken);
         }
 
@@ -527,24 +484,6 @@ namespace Icebreaker.Bot
                 { "Platform", clientInfoEntity?.Properties["platform"]?.ToString() },
             };
             this.telemetryClient.TrackEvent("UserActivity", properties);
-        }
-
-        private bool IsTenantWhitelisted(ITurnContext turnContext)
-        {
-            if (this.appSettings.DisableTenantFilter)
-            {
-                return true;
-            }
-
-            var allowedTenantIds = this.appSettings.AllowedTenantIds;
-            if (allowedTenantIds == null || !allowedTenantIds.Any())
-            {
-                var exceptionMessage = "AllowedTenants setting is not set properly in the configuration file.";
-                throw new ApplicationException(exceptionMessage);
-            }
-
-            var tenantId = turnContext?.Activity?.Conversation?.TenantId;
-            return allowedTenantIds.Contains(tenantId);
         }
     }
 }

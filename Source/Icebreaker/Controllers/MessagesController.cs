@@ -16,7 +16,7 @@ namespace Icebreaker.Controllers
     /// </summary>
     public class MessagesController : ControllerBase
     {
-        private readonly IBotFrameworkHttpAdapter adapter;
+        private readonly BotFrameworkHttpAdapter adapter;
         private readonly IBot bot;
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Icebreaker.Controllers
         /// </summary>
         /// <param name="adapter">Bot adapter.</param>
         /// <param name="bot">The Icebreaker bot instance</param>
-        public MessagesController(IBotFrameworkHttpAdapter adapter, IBot bot)
+        public MessagesController(BotFrameworkHttpAdapter adapter, IBot bot)
         {
             this.adapter = adapter ?? throw new System.ArgumentNullException(nameof(adapter));
             this.bot = bot ?? throw new System.ArgumentNullException(nameof(bot));
@@ -34,7 +34,7 @@ namespace Icebreaker.Controllers
         /// Action to process bot messages
         /// </summary>
         /// <returns>Bot compliant message card</returns>
-        [HttpPost]
+        [HttpPost("api/messages")]
         public async Task<HttpResponseMessage> PostAsync()
         {
             var response = new HttpResponseMessage();

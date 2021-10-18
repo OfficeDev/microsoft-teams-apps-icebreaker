@@ -5,11 +5,11 @@
 
 namespace Icebreaker.BackgroundTasks
 {
-    using Icebreaker.Interfaces;
     using System;
     using System.Collections.Concurrent;
     using System.Threading;
     using System.Threading.Tasks;
+    using Icebreaker.Interfaces;
 
     /// <summary>
     /// BackgroundTaskQueue
@@ -37,9 +37,9 @@ namespace Icebreaker.BackgroundTasks
                 this.tasks.Enqueue(task);
                 this.semaphore.Release();
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -56,9 +56,9 @@ namespace Icebreaker.BackgroundTasks
                 this.tasks.TryDequeue(out var task);
                 return task;
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
         }
     }
