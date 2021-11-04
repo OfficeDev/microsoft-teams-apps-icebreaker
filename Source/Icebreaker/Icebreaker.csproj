@@ -39,6 +39,9 @@
     <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
+    <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="..\.editorconfig">
       <Link>.editorconfig</Link>
     </Content>

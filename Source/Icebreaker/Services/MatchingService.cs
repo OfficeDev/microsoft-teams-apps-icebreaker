@@ -10,13 +10,11 @@ namespace Icebreaker.Services
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Icebreaker.Bot;
     using Icebreaker.Helpers;
     using Icebreaker.Helpers.AdaptiveCards;
     using Icebreaker.Interfaces;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;
-    using Microsoft.Azure;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Builder.Integration.AspNet.Core;
     using Microsoft.Bot.Schema;
@@ -31,7 +29,7 @@ namespace Icebreaker.Services
         private readonly IBotDataProvider dataProvider;
         private readonly ConversationHelper conversationHelper;
         private readonly TelemetryClient telemetryClient;
-        private readonly BotFrameworkHttpAdapter botAdapter;
+        private readonly BotAdapter botAdapter;
         private readonly IAppSettings appSettings;
 
         /// <summary>
@@ -46,7 +44,7 @@ namespace Icebreaker.Services
             IBotDataProvider dataProvider,
             ConversationHelper conversationHelper,
             TelemetryClient telemetryClient,
-            BotFrameworkHttpAdapter botAdapter,
+            BotAdapter botAdapter,
             IAppSettings appSettings)
         {
             this.dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(this.dataProvider));

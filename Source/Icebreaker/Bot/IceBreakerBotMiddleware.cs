@@ -1,5 +1,6 @@
-﻿// <copyright file="IceBreakerBotMiddleware.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
+﻿// <copyright file="IceBreakerBotMiddleware.cs" company="Microsoft">
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 // </copyright>
 
 namespace Icebreaker.Bot
@@ -11,6 +12,7 @@ namespace Icebreaker.Bot
     using System.Threading.Tasks;
     using Icebreaker.Interfaces;
     using Microsoft.Bot.Builder;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// IceBreakerBotMiddleware
@@ -18,14 +20,16 @@ namespace Icebreaker.Bot
     public class IceBreakerBotMiddleware : IMiddleware
     {
         private readonly IAppSettings appSettings;
+        private readonly ILogger<IceBreakerBotMiddleware> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IceBreakerBotMiddleware"/> class.
         /// </summary>
         /// <param name="appSettings">appSettings</param>
-        public IceBreakerBotMiddleware(IAppSettings appSettings)
+        public IceBreakerBotMiddleware(IAppSettings appSettings, ILogger<IceBreakerBotMiddleware> logger)
         {
             this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
@@ -33,9 +37,9 @@ namespace Icebreaker.Bot
         {
             try
             {
-                // ToDo - add Ilogger
                 if (!this.IsTenantAllowed(turnContext))
                 {
+                    this.logger.LogInformation("The current tenant is not allowed to proceed.");
                     return;
                 }
 
@@ -51,7 +55,8 @@ namespace Icebreaker.Bot
             }
             catch (Exception ex)
             {
-                // this.telemetryClient.TrackException(ex);
+                this.logger.LogError($"Exception {ex} occured in the middleware.");
+                throw;
             }
         }
 
@@ -59,14 +64,15 @@ namespace Icebreaker.Bot
         {
             if (this.appSettings.DisableTenantFilter)
             {
+                this.logger.LogInformation("Tenant filter is disabled.");
                 return true;
             }
 
             var allowedTenantIds = this.appSettings.AllowedTenantIds;
             if (allowedTenantIds == null || !allowedTenantIds.Any())
             {
-                var exceptionMessage = "AllowedTenants setting is not set properly in the configuration file.";
-                throw new ApplicationException(exceptionMessage);
+                this.logger.LogError("AllowedTenants setting is not set properly in the configuration file.");
+                return false;
             }
 
             var tenantId = turnContext?.Activity?.Conversation?.TenantId;

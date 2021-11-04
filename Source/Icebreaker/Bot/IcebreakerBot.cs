@@ -7,7 +7,6 @@ namespace Icebreaker.Bot
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -54,7 +53,31 @@ namespace Icebreaker.Bot
             this.secretsProvider = secretsProvider ?? throw new ArgumentNullException(nameof(secretsProvider));
             this.telemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(telemetryClient));
         }
-        
+
+        /// <summary>
+        /// Handles an incoming activity.
+        /// </summary>
+        /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// Reference link: https://docs.microsoft.com/en-us/dotnet/api/microsoft.bot.builder.activityhandler.onturnasync?view=botbuilder-dotnet-stable.
+        /// </remarks>
+        public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            try
+            {
+                turnContext = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
+                this.LogActivityTelemetry(turnContext.Activity);
+                await base.OnTurnAsync(turnContext, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                this.telemetryClient.TrackException(ex);
+                throw;
+            }
+        }
+
         /// <summary>
         /// Invoked when a conversation update activity is received from the channel.
         /// Conversation update activities are useful when it comes to responding to users being added to or removed from the channel.
@@ -179,11 +202,18 @@ namespace Icebreaker.Bot
         }
 
         /// <summary>
-        /// Handles Message activity
+        /// Provide logic specific to
+        /// <see cref="ActivityTypes.Message"/> activities, such as the conversational logic.
+        /// Specifically the opt in and out operations.
         /// </summary>
-        /// <param name="turnContext">Context object containing information cached for a single turn of conversation with a user.</param>
-        /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
-        /// <returns>A Task after handling the message activity</returns>
+        /// <param name="turnContext">A strongly-typed context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>
+        /// When the <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/>
+        /// method receives a message activity, it calls this method.
+        /// </remarks>
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             await this.HandleMessageActivityAsync(turnContext, cancellationToken);

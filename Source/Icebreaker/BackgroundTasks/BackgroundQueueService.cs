@@ -1,4 +1,9 @@
-﻿namespace Icebreaker.BackgroundTasks
+﻿// <copyright file="BackgroundQueueService.cs" company="Microsoft">
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+// </copyright>
+
+namespace Icebreaker.BackgroundTasks
 {
     using System;
     using System.Threading;
@@ -12,7 +17,6 @@
     /// </summary>
     public class BackgroundQueueService : BackgroundService
     {
-
         private readonly ILogger<BackgroundQueueService> logger;
 
         /// <summary>

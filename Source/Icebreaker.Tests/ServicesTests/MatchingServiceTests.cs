@@ -7,7 +7,6 @@ namespace Icebreaker.Tests.ServicesTests
 {
     using System;
     using System.Collections.Generic;
-    using System.Configuration;
     using System.Threading.Tasks;
     using Icebreaker.Helpers;
     using Icebreaker.Interfaces;
@@ -30,7 +29,6 @@ namespace Icebreaker.Tests.ServicesTests
         private readonly TestAdapter botAdapter;
         private readonly Mock<IBotDataProvider> dataProvider;
         private readonly Mock<ConversationHelper> conversationHelper;
-        private readonly string maxPairsSettingsKey = "MaxPairUpsPerTeam";
         private readonly Mock<ISecretsProvider> secretsProvider;
         private readonly string apiKey;
         private readonly Mock<IAppSettings> appSettings;
@@ -51,18 +49,27 @@ namespace Icebreaker.Tests.ServicesTests
                 },
             };
             var telemetryClient = new TelemetryClient();
-            this.conversationHelper = new Mock<ConversationHelper>(MockBehavior.Loose, new MicrosoftAppCredentials(string.Empty, string.Empty), telemetryClient);
-            this.conversationHelper.Setup(x => x.GetTeamNameByIdAsync(this.botAdapter, It.IsAny<TeamInstallInfo>()))
-                .Returns(() => Task.FromResult("IceBreakerTeam"));
+            this.appSettings = new Mock<IAppSettings>();
+            this.appSettings.Setup(x => x.BotDisplayName).Returns(() => "Icebreaker");
+            this.appSettings.Setup(x => x.DisableTenantFilter).Returns(() => true);
+            this.appSettings.Setup(x => x.AllowedTenantIds).Returns(() => new HashSet<string>());
 
+            this.secretsProvider = new Mock<ISecretsProvider>();
+            this.secretsProvider.Setup(x => x.GetAppCredentialsAsync()).Returns(() => Task.FromResult(
+                new MicrosoftAppCredentials(string.Empty, string.Empty) as AppCredentials));
+
+            this.conversationHelper = new Mock<ConversationHelper>(this.appSettings.Object, this.secretsProvider.Object, telemetryClient);
             this.dataProvider = new Mock<IBotDataProvider>();
             this.dataProvider.Setup(x => x.GetInstalledTeamAsync(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(new TeamInstallInfo()));
+
+            this.appSettings = new Mock<IAppSettings>();
+            this.appSettings.Setup(x => x.MaxPairUpsPerTeam).Returns(() => 5000);
+            this.appSettings.Setup(x => x.BotDisplayName).Returns(() => "IceBreakerServicePrincipal");
             this.apiKey = Guid.NewGuid().ToString();
             var secretsProvider = new Mock<ISecretsProvider>();
             secretsProvider.Setup(x => x.GetLogicAppKey()).Returns(this.apiKey);
-            var appSettings = new Mock<IAppSettings>();
-            this.sut = new MatchingService(this.dataProvider.Object, this.conversationHelper.Object, telemetryClient, this.botAdapter, appSettings);
+            this.sut = new MatchingService(this.dataProvider.Object, this.conversationHelper.Object, telemetryClient, this.botAdapter, this.appSettings.Object);
         }
 
         [Fact]
@@ -346,18 +353,15 @@ namespace Icebreaker.Tests.ServicesTests
                     },
                 }));
 
-            var maxPairUpsPerTeam = ConfigurationManager.AppSettings[this.maxPairsSettingsKey];
-            ConfigurationManager.AppSettings[this.maxPairsSettingsKey] = "0";
-            var sut = new MatchingService(this.dataProvider.Object, this.conversationHelper.Object, new TelemetryClient(), this.botAdapter);
+            var currAppSettings = this.appSettings;
+            currAppSettings.Setup(x => x.MaxPairUpsPerTeam).Returns(() => 0);
+
+            var sut = new MatchingService(this.dataProvider.Object, this.conversationHelper.Object, new TelemetryClient(), this.botAdapter, this.appSettings.Object);
 
             // Act
 
             // Send the message activity to the bot.
             var pairsNotifiedCount = await sut.MakePairsAndNotifyAsync();
-
-            // Set original value back
-            ConfigurationManager.AppSettings[this.maxPairsSettingsKey] = maxPairUpsPerTeam;
-
             // Assert GetInstalledTeamsAsync is called once
             this.dataProvider.Verify(m => m.GetInstalledTeamsAsync(), Times.Once);
 

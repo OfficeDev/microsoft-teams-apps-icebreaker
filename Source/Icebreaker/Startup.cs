@@ -16,7 +16,6 @@ namespace Icebreaker
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Azure;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Builder.Integration.AspNet.Core;
     using Microsoft.Bot.Connector.Authentication;
@@ -56,8 +55,6 @@ namespace Icebreaker
             // Authentication - Identity.Web, Graph SDK
             services
                 .AddMicrosoftIdentityWebApiAuthentication(this.configuration);
-
-        
 
             var appInsightsInstrumentationKey = this.configuration.GetValue<string>("APPINSIGHTS_INSTRUMENTATIONKEY");
             var keyVaultUri = this.configuration.GetValue<string>("KeyVaultUri");
@@ -106,13 +103,14 @@ namespace Icebreaker
             };
             services.AddSingleton<IAppSettings>(appSettings);
             services.AddTransient<ISecretsProvider, SecretsProvider>();
-
             services.AddTransient<IcebreakerBot>();
             services.AddTransient<IceBreakerBotMiddleware>();
-            services.AddSingleton<BotHttpAdapter>();
-            services.AddSingleton<BotFrameworkHttpAdapter>();
-            services.AddTransient<IBot, IcebreakerBot>();
+            services.AddSingleton<IceBreakerBotHttpAdapter>();
 
+            services.AddSingleton<BotAdapter>(x => x.GetRequiredService<IceBreakerBotHttpAdapter>());
+            services.AddSingleton<BotFrameworkHttpAdapter>(x => x.GetRequiredService<IceBreakerBotHttpAdapter>());
+
+            services.AddTransient<IBot, IcebreakerBot>();
             services.AddTransient<ConversationHelper>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddHostedService<BackgroundQueueService>();
@@ -124,7 +122,6 @@ namespace Icebreaker
                    .Add(new StringEnumConverter(new DefaultNamingStrategy(), false)));
             services.AddTransient<IMatchingService, MatchingService>();
             services.AddTransient<IBotDataProvider, IcebreakerBotDataProvider>();
-
         }
 
         /// <summary>

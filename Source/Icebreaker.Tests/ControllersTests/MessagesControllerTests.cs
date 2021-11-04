@@ -5,12 +5,12 @@
 
 namespace Icebreaker.Tests.ControllersTests
 {
-    using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
     using Icebreaker.Controllers;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Bot.Builder;
-    using Microsoft.Bot.Builder.Integration.AspNet.WebApi;
+    using Microsoft.Bot.Builder.Integration.AspNet.Core;
     using Moq;
     using Xunit;
 
@@ -25,12 +25,11 @@ namespace Icebreaker.Tests.ControllersTests
             this.bot = new Mock<IBot>();
             this.botAdapter = new Mock<IBotFrameworkHttpAdapter>();
             this.botAdapter
-                .Setup(x => x.ProcessAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<HttpResponseMessage>(), It.IsAny<IBot>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.ProcessAsync(It.IsAny<HttpRequest>(), It.IsAny<HttpResponse>(), It.IsAny<IBot>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             // Create and initialize controller
-            this.sut = new MessagesController(this.botAdapter.Object, this.bot.Object)
-                { Request = new HttpRequestMessage(), Configuration = new HttpConfiguration() };
+            this.sut = new MessagesController(this.botAdapter.Object, this.bot.Object);
         }
 
         [Fact]
@@ -42,8 +41,8 @@ namespace Icebreaker.Tests.ControllersTests
             // Assert
             this.botAdapter.Verify(
                 x => x.ProcessAsync(
-                    It.IsAny<HttpRequestMessage>(),
-                    It.IsAny<HttpResponseMessage>(),
+                    It.IsAny<HttpRequest>(),
+                    It.IsAny<HttpResponse>(),
                     It.Is<IBot>(o => o == this.bot.Object),
                     It.IsAny<CancellationToken>()),
                 Times.Once);

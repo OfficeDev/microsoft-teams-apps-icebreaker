@@ -15,34 +15,32 @@ namespace Icebreaker.Bot
     /// <summary>
     /// BotHttpAdapter
     /// </summary>
-    public class BotHttpAdapter : BotFrameworkHttpAdapter
+    public class IceBreakerBotHttpAdapter : BotFrameworkHttpAdapter
     {
         private readonly ISecretsProvider secretsProvider;
-        private readonly ILogger<BotHttpAdapter> logger;
+        private readonly ILogger<IceBreakerBotHttpAdapter> logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BotHttpAdapter"/> class.
+        /// Initializes a new instance of the <see cref="IceBreakerBotHttpAdapter"/> class.
         /// </summary>
-        /// <param name="appSettings">appSettings</param>
         /// <param name="credentialProvider">credentialProvider</param>
         /// <param name="secretsProvider">secretsProvider</param>
-        /// <param name="botMiddleWare">botMiddleWare</param>
-        public BotHttpAdapter(
-            IAppSettings appSettings,
+        /// <param name="botMiddleware">botMiddleWare</param>
+        public IceBreakerBotHttpAdapter(
             ICredentialProvider credentialProvider,
             ISecretsProvider secretsProvider,
-            IceBreakerBotMiddleware botMiddleWare)
+            IceBreakerBotMiddleware botMiddleware)
            : base(credentialProvider)
         {
-            if (botMiddleWare is null)
+            if (botMiddleware is null)
             {
-                throw new ArgumentNullException(nameof(botMiddleWare));
+                throw new ArgumentNullException(nameof(botMiddleware));
             }
 
             this.secretsProvider = secretsProvider ?? throw new ArgumentNullException(nameof(secretsProvider));
 
             // Middleware
-            this.Use(botMiddleWare);
+            this.Use(botMiddleware);
         }
 
         /// <inheritdoc/>

@@ -7,7 +7,6 @@ namespace Icebreaker.Tests.BotTests
 {
     using System;
     using System.Collections.Generic;
-    using System.Configuration;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -15,6 +14,7 @@ namespace Icebreaker.Tests.BotTests
     using Icebreaker.Helpers;
     using Icebreaker.Interfaces;
     using Microsoft.ApplicationInsights;
+    using Microsoft.Bot.Builder;
     using Microsoft.Bot.Builder.Adapters;
     using Microsoft.Bot.Connector;
     using Microsoft.Bot.Connector.Authentication;
@@ -29,9 +29,6 @@ namespace Icebreaker.Tests.BotTests
     /// </summary>
     public class IceBreakerBotTests
     {
-        private const string DisableTenantFilterKey = "DisableTenantFilter";
-        private const string AllowedTenantsKey = "AllowedTenants";
-
         private readonly IcebreakerBot sut;
         private readonly TestAdapter botAdapter;
         private readonly TeamsChannelAccount userAccount;
@@ -39,10 +36,14 @@ namespace Icebreaker.Tests.BotTests
         private readonly TeamsChannelData teamsChannelData;
         private readonly Mock<IBotDataProvider> dataProvider;
         private readonly TelemetryClient telemetryClient;
-        private readonly ConversationHelperMock conversationHelper;
-        private readonly IAppSettings appSettings;
-        private readonly ISecretsProvider secretsProvider;
+        private readonly Mock<ConversationHelper> conversationHelper;
+        private readonly Mock<IAppSettings> appSettings;
+        private readonly Mock<ISecretsProvider> secretsProvider;
+        private readonly Mock<ITurnContext> mockContext;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IceBreakerBotTests"/> class.
+        /// </summary>
         public IceBreakerBotTests()
         {
             this.botAdapter = new TestAdapter(Channels.Msteams)
@@ -55,14 +56,26 @@ namespace Icebreaker.Tests.BotTests
                     },
                 },
             };
-            ConfigurationManager.AppSettings[DisableTenantFilterKey] = true.ToString().ToLower();
             this.telemetryClient = new TelemetryClient();
-            this.conversationHelper = new ConversationHelperMock();
+            this.appSettings = new Mock<IAppSettings>();
+            this.appSettings.Setup(x => x.BotDisplayName).Returns(() => "Icebreaker");
+            this.appSettings.Setup(x => x.DisableTenantFilter).Returns(() => true);
+            this.appSettings.Setup(x => x.AllowedTenantIds).Returns(() => new HashSet<string>());
+
+            this.secretsProvider = new Mock<ISecretsProvider>();
+            this.secretsProvider.Setup(x => x.GetAppCredentialsAsync()).Returns(() => Task.FromResult(
+                new MicrosoftAppCredentials(string.Empty, string.Empty) as AppCredentials));
+
+            this.conversationHelper = new Mock<ConversationHelper>(this.appSettings.Object, this.secretsProvider.Object, this.telemetryClient);
+            this.conversationHelper.Setup(x => x.GetMemberAsync(It.IsAny<ITurnContext>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(() => Task.FromResult(
+                new TeamsChannelAccount()));
+
             this.dataProvider = new Mock<IBotDataProvider>();
 
             this.dataProvider.Setup(x => x.GetInstalledTeamAsync(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(new TeamInstallInfo()));
-            this.sut = new IcebreakerBot(this.dataProvider.Object, this.conversationHelper, this.appSettings, this.secretsProvider, this.telemetryClient);
+
+            this.sut = new IcebreakerBot(this.dataProvider.Object, this.conversationHelper.Object, this.appSettings.Object, this.secretsProvider.Object, this.telemetryClient);
             this.userAccount = new TeamsChannelAccount { Id = Guid.NewGuid().ToString(), Properties = JObject.FromObject(new { Id = Guid.NewGuid().ToString() }) };
             this.botAccount = new TeamsChannelAccount { Id = "bot", Properties = JObject.FromObject(new { Id = "bot" }) };
             this.teamsChannelData = new TeamsChannelData
@@ -73,6 +86,7 @@ namespace Icebreaker.Tests.BotTests
                 },
                 Tenant = new TenantInfo(),
             };
+            this.mockContext = new Mock<ITurnContext>();
         }
 
         [Fact]
@@ -271,126 +285,6 @@ namespace Icebreaker.Tests.BotTests
             // Assert UpdateTeamInstallStatusAsync is called once
             this.dataProvider.Verify(
                 m => m.UpdateTeamInstallStatusAsync(It.IsAny<TeamInstallInfo>(), false),
-                Times.Exactly(1));
-        }
-
-        [Fact]
-        public async Task NewBotMessage_TenantsAllowedAreEmpty_NoResponse()
-        {
-            // Arrange: Create activity
-            var appInstalledActivity = new Activity
-            {
-                MembersAdded = new List<ChannelAccount>
-                {
-                    this.botAccount,
-                },
-                Type = ActivityTypes.ConversationUpdate,
-                ChannelId = Channels.Msteams,
-                Recipient = this.botAccount,
-                ChannelData = this.teamsChannelData,
-            };
-
-            // Tenant filter is active
-            ConfigurationManager.AppSettings[DisableTenantFilterKey] = false.ToString().ToLower();
-            var sut = new IcebreakerBot(this.dataProvider.Object, this.conversationHelper, MicrosoftAppCredentials.Empty, this.telemetryClient);
-
-            // Act
-            // Send the message activity to the bot.
-            await this.botAdapter.ProcessActivityAsync(appInstalledActivity, sut.OnTurnAsync, CancellationToken.None);
-
-            var reply = this.botAdapter.GetNextReply();
-
-            // No reply should be received
-            Assert.Null(reply);
-
-            // Assert UpdateTeamInstallStatusAsync is never called
-            this.dataProvider.Verify(
-                m => m.UpdateTeamInstallStatusAsync(It.IsAny<TeamInstallInfo>(), true),
-                Times.Exactly(0));
-        }
-
-        [Fact]
-        public async Task NewBotMessage_CurrentTenantNotAllowed_NoResponse()
-        {
-            // Arrange: Create activity
-            var appInstalledActivity = new Activity
-            {
-                MembersAdded = new List<ChannelAccount>
-                {
-                    this.botAccount,
-                },
-                Type = ActivityTypes.ConversationUpdate,
-                ChannelId = Channels.Msteams,
-                Recipient = this.botAccount,
-                ChannelData = this.teamsChannelData,
-                Conversation = new ConversationAccount(tenantId: Guid.NewGuid().ToString()), // Source tenant is different from allowed tenant
-            };
-
-            // Tenant filter is active
-            ConfigurationManager.AppSettings[DisableTenantFilterKey] = false.ToString().ToLower();
-
-            // Only 1 tenant is allowed
-            ConfigurationManager.AppSettings[AllowedTenantsKey] = Guid.Empty.ToString();
-
-            var sut = new IcebreakerBot(this.dataProvider.Object, this.conversationHelper, MicrosoftAppCredentials.Empty, this.telemetryClient);
-
-            // Source tenant is different from allowed tenant
-            this.botAdapter.Conversation =
-                new ConversationReference(conversation: new ConversationAccount(tenantId: Guid.NewGuid().ToString()));
-
-            // Act
-            // Send the message activity to the bot.
-            await this.botAdapter.ProcessActivityAsync(appInstalledActivity, sut.OnTurnAsync, CancellationToken.None);
-
-            var reply = this.botAdapter.GetNextReply();
-
-            // No reply should be received
-            Assert.Null(reply);
-
-            // Assert UpdateTeamInstallStatusAsync is never called
-            this.dataProvider.Verify(
-                m => m.UpdateTeamInstallStatusAsync(It.IsAny<TeamInstallInfo>(), true),
-                Times.Exactly(0));
-        }
-
-        [Fact]
-        public async Task NewBotMessage_CurrentTenantIsAllowed_ChannelSaved()
-        {
-            // Arrange: Create activity
-            var appInstalledActivity = new Activity
-            {
-                MembersAdded = new List<ChannelAccount>
-                {
-                    this.botAccount,
-                },
-                Type = ActivityTypes.ConversationUpdate,
-                ChannelId = Channels.Msteams,
-                Recipient = this.botAccount,
-                From = this.userAccount,
-                ChannelData = this.teamsChannelData,
-                Conversation = new ConversationAccount(tenantId: Guid.Empty.ToString()),
-            };
-
-            // Tenant filter is active
-            ConfigurationManager.AppSettings[DisableTenantFilterKey] = false.ToString().ToLower();
-
-            // Only 1 tenant is allowed
-            ConfigurationManager.AppSettings[AllowedTenantsKey] = Guid.Empty.ToString();
-
-            var sut = new IcebreakerBot(this.dataProvider.Object, this.conversationHelper, MicrosoftAppCredentials.Empty, this.telemetryClient);
-
-            // Source tenant is same as allowed tenant in settings
-            this.botAdapter.Conversation.Conversation = appInstalledActivity.Conversation;
-
-            // Act
-            // Send the message activity to the bot.
-            await this.botAdapter.ProcessActivityAsync(appInstalledActivity, sut.OnTurnAsync, CancellationToken.None);
-
-            var reply = this.botAdapter.GetNextReply();
-
-            // Assert UpdateTeamInstallStatusAsync is called once
-            this.dataProvider.Verify(
-                m => m.UpdateTeamInstallStatusAsync(It.IsAny<TeamInstallInfo>(), true),
                 Times.Exactly(1));
         }
     }

@@ -6,12 +6,11 @@
 namespace Icebreaker.Tests.ControllersTests
 {
     using System;
-    using System.Collections.Generic;
-    using System.Net.Http;
     using System.Threading.Tasks;
     using Icebreaker.Controllers;
     using Icebreaker.Interfaces;
-    using Microsoft.Bot.Connector.Authentication;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
     using Moq;
     using Xunit;
 
@@ -31,13 +30,16 @@ namespace Icebreaker.Tests.ControllersTests
             this.apiKey = Guid.NewGuid().ToString();
             var matchingService = new Mock<IMatchingService>();
             var secretsProvider = new Mock<ISecretsProvider>();
+            var backgroundQueue = new Mock<IBackgroundTaskQueue>();
             secretsProvider.Setup(x => x.GetLogicAppKey()).Returns(this.apiKey);
 
             // Create and initialize controller
-            this.sut = new ProcessNowController(matchingService.Object, secretsProvider.Object)
+            this.sut = new ProcessNowController(matchingService.Object, secretsProvider.Object, backgroundQueue.Object)
             {
-                Request = new HttpRequestMessage(),
-                Configuration = new HttpConfiguration(),
+                ControllerContext = new ControllerContext
+                {
+                    HttpContext = new DefaultHttpContext(),
+                },
             };
         }
 
@@ -54,7 +56,7 @@ namespace Icebreaker.Tests.ControllersTests
         [Fact]
         public async Task GetAsync_InvalidKeyPassed_ReturnsUnAuthorized()
         {
-            this.sut.Request.Headers.Add("X-Key", new List<string> { Guid.Empty.ToString() });
+            this.sut.Request.Headers.Add("X-Key",  Guid.Empty.ToString());
 
             // Act: Invoke the controller
             var response = await this.sut.GetAsync();
@@ -66,7 +68,7 @@ namespace Icebreaker.Tests.ControllersTests
         [Fact]
         public async Task GetAsync_ValidKeyPassed_AppCredentialsThrowsException()
         {
-            this.sut.Request.Headers.Add("X-Key", new List<string> { this.apiKey });
+            this.sut.Request.Headers.Add("X-Key",  this.apiKey );
 
             // Act: Invoke the controller
             await Assert.ThrowsAsync<NullReferenceException>(async () => await this.sut.GetAsync());

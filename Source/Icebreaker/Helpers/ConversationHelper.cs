@@ -55,11 +55,11 @@ namespace Icebreaker.Helpers
         /// <returns>True/False operation status</returns>
         public async Task<bool> NotifyUserAsync(ITurnContext turnContext, IMessageActivity cardToSend, ChannelAccount user, string tenantId, CancellationToken cancellationToken)
         {
-            var botFrameworkAdapter = (BotFrameworkHttpAdapter)turnContext.Adapter;
+            var botAdapter = turnContext.Adapter;
             var teamsChannelId = turnContext.Activity.TeamsGetChannelId();
             var serviceUrl = turnContext.Activity.ServiceUrl;
 
-            return await this.NotifyUserAsync(botFrameworkAdapter, serviceUrl, teamsChannelId, cardToSend, user, tenantId, cancellationToken);
+            return await this.NotifyUserAsync(botAdapter, serviceUrl, teamsChannelId, cardToSend, user, tenantId, cancellationToken);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Icebreaker.Helpers
         /// <param name="tenantId">Tenant id</param>
         /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
         /// <returns>True/False operation status</returns>
-        public async Task<bool> NotifyUserAsync(BotFrameworkHttpAdapter botFrameworkAdapter, string serviceUrl, string teamsChannelId, IMessageActivity cardToSend, ChannelAccount user, string tenantId, CancellationToken cancellationToken)
+        public async Task<bool> NotifyUserAsync(BotAdapter botFrameworkAdapter, string serviceUrl, string teamsChannelId, IMessageActivity cardToSend, ChannelAccount user, string tenantId, CancellationToken cancellationToken)
         {
             this.telemetryClient.TrackTrace($"Sending notification to user {user.Id}");
 
@@ -157,7 +157,7 @@ namespace Icebreaker.Helpers
         /// <param name="botAdapter">Bot adapter.</param>
         /// <param name="teamInfo">DB team model info.</param>
         /// <returns>The name of the team</returns>
-        public virtual async Task<string> GetTeamNameByIdAsync(BotFrameworkHttpAdapter botAdapter, TeamInstallInfo teamInfo)
+        public virtual async Task<string> GetTeamNameByIdAsync(BotAdapter botAdapter, TeamInstallInfo teamInfo)
         {
             TeamDetails teamDetails = null;
             await this.ExecuteInNewTurnContext(botAdapter, teamInfo, async (newTurnContext, newCancellationToken) =>
