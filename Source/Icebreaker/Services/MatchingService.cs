@@ -151,8 +151,8 @@ namespace Icebreaker.Services
 
             // Send notifications and return the number that was successful
             var notifyResults = await Task.WhenAll(
-                this.conversationHelper.NotifyUserAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, MessageFactory.Attachment(cardForPerson1), teamsPerson1, teamModel.TenantId, cancellationToken),
-                this.conversationHelper.NotifyUserAsync(this.botAdapter, teamModel.ServiceUrl, teamModel.TeamId, MessageFactory.Attachment(cardForPerson2), teamsPerson2, teamModel.TenantId, cancellationToken));
+                this.conversationHelper.NotifyUserAsync(this.botAdapter, teamModel.ServiceUrl, MessageFactory.Attachment(cardForPerson1), teamsPerson1, teamModel.TenantId, cancellationToken),
+                this.conversationHelper.NotifyUserAsync(this.botAdapter, teamModel.ServiceUrl, MessageFactory.Attachment(cardForPerson2), teamsPerson2, teamModel.TenantId, cancellationToken));
             return notifyResults.Count(wasNotified => wasNotified);
         }
 

@@ -20,17 +20,22 @@ namespace Icebreaker.Bot
     using Microsoft.Bot.Builder.Teams;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
+    using Microsoft.Extensions.Logging;
+    using Polly.Retry;
 
     /// <summary>
     /// Implements the core logic for Icebreaker bot
     /// </summary>
     public class IcebreakerBot : TeamsActivityHandler
     {
+        private const string MsTeamsBotFrameworkChannelId = "msteams";
         private readonly IBotDataProvider dataProvider;
         private readonly ConversationHelper conversationHelper;
         private readonly IAppSettings appSettings;
         private readonly ISecretsProvider secretsProvider;
         private readonly TelemetryClient telemetryClient;
+        private readonly ILogger<IcebreakerBot> logger;
+        private readonly AsyncRetryPolicy retryPolicy;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBot"/> class.
@@ -40,18 +45,22 @@ namespace Icebreaker.Bot
         /// <param name="appSettings">App Settings.</param>
         /// <param name="secretsProvider">Microsoft app credentials to use.</param>
         /// <param name="telemetryClient">The telemetry client to use</param>
+        /// <param name="logger">Logger to use</param>
         public IcebreakerBot(
             IBotDataProvider dataProvider,
             ConversationHelper conversationHelper,
             IAppSettings appSettings,
             ISecretsProvider secretsProvider,
-            TelemetryClient telemetryClient)
+            TelemetryClient telemetryClient, // TODO - Replace telemetry with logger 
+            ILogger<IcebreakerBot> logger)
         {
             this.dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
             this.conversationHelper = conversationHelper ?? throw new ArgumentNullException(nameof(conversationHelper));
             this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             this.secretsProvider = secretsProvider ?? throw new ArgumentNullException(nameof(secretsProvider));
             this.telemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(telemetryClient));
+            this.logger = logger;
+            this.retryPolicy = RetryPolicyHelper.GetRetryPolicy(logger: this.logger);
         }
 
         /// <summary>
@@ -267,7 +276,7 @@ namespace Icebreaker.Bot
                         }.ToAttachment(),
                     };
 
-                    await turnContext.SendActivityAsync(optOutReply, cancellationToken).ConfigureAwait(false);
+                    await this.retryPolicy.ExecuteAsync(() => turnContext.SendActivityAsync(optOutReply, cancellationToken));
                 }
                 else if (string.Equals(activity.Text, MatchingActions.OptIn, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -301,8 +310,7 @@ namespace Icebreaker.Bot
                             },
                         }.ToAttachment(),
                     };
-
-                    await turnContext.SendActivityAsync(optInReply, cancellationToken).ConfigureAwait(false);
+                    await this.retryPolicy.ExecuteAsync(() => turnContext.SendActivityAsync(optInReply, cancellationToken));
                 }
                 else
                 {
@@ -384,7 +392,7 @@ namespace Icebreaker.Bot
         private async Task SendUnrecognizedInputMessageAsync(ITurnContext turnContext, Activity replyActivity, CancellationToken cancellationToken)
         {
             replyActivity.Attachments = new List<Attachment> { UnrecognizedInputAdaptiveCard.GetCard(this.appSettings.AppBaseDomain, this.appSettings.MicrosoftAppId) };
-            await turnContext.SendActivityAsync(replyActivity, cancellationToken);
+            await this.retryPolicy.ExecuteAsync(() => turnContext.SendActivityAsync(replyActivity, cancellationToken));
         }
 
         /// <summary>
@@ -475,7 +483,7 @@ namespace Icebreaker.Bot
 
                 var appCredentials = await this.secretsProvider.GetAppCredentialsAsync();
                 await ((BotFrameworkAdapter)turnContext.Adapter).CreateConversationAsync(
-                    channelId: null,
+                    channelId: MsTeamsBotFrameworkChannelId,
                     serviceUrl: turnContext.Activity.ServiceUrl,
                     credentials: appCredentials,
                     conversationParameters: conversationParameters,

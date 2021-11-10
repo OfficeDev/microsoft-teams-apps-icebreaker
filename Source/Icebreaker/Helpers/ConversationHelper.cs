@@ -9,24 +9,27 @@ namespace Icebreaker.Helpers
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Icebreaker.Bot;
     using Icebreaker.Interfaces;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.DataContracts;
     using Microsoft.Bot.Builder;
-    using Microsoft.Bot.Builder.Integration.AspNet.Core;
     using Microsoft.Bot.Builder.Teams;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
+    using Microsoft.Extensions.Logging;
+    using Polly.Retry;
 
     /// <summary>
     /// Contains shared logic to notify team members
     /// </summary>
     public class ConversationHelper
     {
+        private const string MsTeamsBotFrameworkChannelId = "msteams";
         private readonly IAppSettings appSettings;
         private readonly ISecretsProvider secretsProvider;
         private readonly TelemetryClient telemetryClient;
+        private readonly AsyncRetryPolicy retryPolicy;
+        private readonly ILogger<ConversationHelper> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConversationHelper"/> class.
@@ -34,14 +37,18 @@ namespace Icebreaker.Helpers
         /// <param name="appSettings">App Settings.</param>
         /// <param name="secretsProvider">To fetch secrets</param>
         /// <param name="telemetryClient">The telemetry client to use</param>
+        /// <param name="logger">logger to use</param>
         public ConversationHelper(
             IAppSettings appSettings,
             ISecretsProvider secretsProvider,
-            TelemetryClient telemetryClient)
+            TelemetryClient telemetryClient,
+            ILogger<ConversationHelper> logger)
         {
             this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(appSettings));
             this.secretsProvider = secretsProvider ?? throw new ArgumentNullException(nameof(secretsProvider));
             this.telemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(this.telemetryClient));
+            this.logger = logger;
+            this.retryPolicy = RetryPolicyHelper.GetRetryPolicy(logger: this.logger);
         }
 
         /// <summary>
@@ -56,10 +63,9 @@ namespace Icebreaker.Helpers
         public async Task<bool> NotifyUserAsync(ITurnContext turnContext, IMessageActivity cardToSend, ChannelAccount user, string tenantId, CancellationToken cancellationToken)
         {
             var botAdapter = turnContext.Adapter;
-            var teamsChannelId = turnContext.Activity.TeamsGetChannelId();
             var serviceUrl = turnContext.Activity.ServiceUrl;
 
-            return await this.NotifyUserAsync(botAdapter, serviceUrl, teamsChannelId, cardToSend, user, tenantId, cancellationToken);
+            return await this.NotifyUserAsync(botAdapter, serviceUrl, cardToSend, user, tenantId, cancellationToken);
         }
 
         /// <summary>
@@ -67,13 +73,12 @@ namespace Icebreaker.Helpers
         /// </summary>
         /// <param name="botFrameworkAdapter">Bot adapter</param>
         /// <param name="serviceUrl">Service url</param>
-        /// <param name="teamsChannelId">Team channel id where the bot is installed</param>
         /// <param name="cardToSend">The actual welcome card (for the team)</param>
         /// <param name="user">User channel account</param>
         /// <param name="tenantId">Tenant id</param>
         /// <param name="cancellationToken">Propagates notification that operations should be canceled.</param>
         /// <returns>True/False operation status</returns>
-        public async Task<bool> NotifyUserAsync(BotAdapter botFrameworkAdapter, string serviceUrl, string teamsChannelId, IMessageActivity cardToSend, ChannelAccount user, string tenantId, CancellationToken cancellationToken)
+        public async Task<bool> NotifyUserAsync(BotAdapter botFrameworkAdapter, string serviceUrl, IMessageActivity cardToSend, ChannelAccount user, string tenantId, CancellationToken cancellationToken)
         {
             this.telemetryClient.TrackTrace($"Sending notification to user {user.Id}");
 
@@ -93,14 +98,18 @@ namespace Icebreaker.Helpers
                 var appCredentials = await this.secretsProvider.GetAppCredentialsAsync();
                 if (!this.appSettings.IsTesting)
                 {
-                    // shoot the activity over
-                    await ((BotFrameworkAdapter)botFrameworkAdapter).CreateConversationAsync(
-                        teamsChannelId,
-                        serviceUrl,
-                        appCredentials,
-                        conversationParameters,
-                        async (newTurnContext, newCancellationToken) =>
+                    await this.retryPolicy.ExecuteAsync(async () =>
+                    {
+                        try
                         {
+                            // shoot the activity over
+                            await ((BotFrameworkAdapter)botFrameworkAdapter).CreateConversationAsync(
+                                MsTeamsBotFrameworkChannelId,
+                                serviceUrl,
+                                appCredentials,
+                                conversationParameters,
+                                async (newTurnContext, newCancellationToken) =>
+                                {
                             // Get the conversationReference
                             var conversationReference = newTurnContext.Activity.GetConversationReference();
 
@@ -112,8 +121,15 @@ namespace Icebreaker.Helpers
                                     await conversationTurnContext.SendActivityAsync(cardToSend, conversationCancellationToken);
                                 },
                                 cancellationToken);
-                        },
-                        cancellationToken).ConfigureAwait(false);
+                                },
+                                cancellationToken).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            this.logger.LogError(ex, $"Error sending notification to user: {user.Id}.");
+                            throw;
+                        }
+                    });
                 }
 
                 return true;
