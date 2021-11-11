@@ -5,6 +5,7 @@
 
 namespace Icebreaker.Interfaces
 {
+    using Icebreaker.BackgroundTasks;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
@@ -17,15 +18,15 @@ namespace Icebreaker.Interfaces
         /// <summary>
         /// EnqueueTask
         /// </summary>
-        /// <param name="task">task to enqueue</param>
-        void EnqueueTask(Func<CancellationToken, Task> task);
+        /// <param name="item">task to enqueue</param>
+        void EnqueueTask(BackgroundWorkItem item);
 
         /// <summary>
         /// DequeueTaskAsync
         /// </summary>
         /// <param name="cancellationToken">cancellation</param>
         /// <returns>Task</returns>
-        Task<Func<CancellationToken, Task>> DequeueTaskAsync(
+        Task<BackgroundWorkItem> DequeueTaskAsync(
             CancellationToken cancellationToken);
     }
 }

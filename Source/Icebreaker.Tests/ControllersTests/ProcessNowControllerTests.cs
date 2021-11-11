@@ -11,6 +11,7 @@ namespace Icebreaker.Tests.ControllersTests
     using Icebreaker.Interfaces;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -32,9 +33,10 @@ namespace Icebreaker.Tests.ControllersTests
             var secretsProvider = new Mock<ISecretsProvider>();
             var backgroundQueue = new Mock<IBackgroundTaskQueue>();
             secretsProvider.Setup(x => x.GetLogicAppKey()).Returns(this.apiKey);
+            var logger = new Mock<ILogger<ProcessNowController>>();
 
             // Create and initialize controller
-            this.sut = new ProcessNowController(matchingService.Object, secretsProvider.Object, backgroundQueue.Object)
+            this.sut = new ProcessNowController(matchingService.Object, secretsProvider.Object, backgroundQueue.Object, logger.Object)
             {
                 ControllerContext = new ControllerContext
                 {

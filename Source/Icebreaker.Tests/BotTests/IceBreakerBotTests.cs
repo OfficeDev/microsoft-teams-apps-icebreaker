@@ -20,6 +20,7 @@ namespace Icebreaker.Tests.BotTests
     using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using Newtonsoft.Json.Linq;
     using Xunit;
@@ -66,7 +67,8 @@ namespace Icebreaker.Tests.BotTests
             this.secretsProvider.Setup(x => x.GetAppCredentialsAsync()).Returns(() => Task.FromResult(
                 new MicrosoftAppCredentials(string.Empty, string.Empty) as AppCredentials));
 
-            this.conversationHelper = new Mock<ConversationHelper>(this.appSettings.Object, this.secretsProvider.Object, this.telemetryClient);
+            var conversationHelperLogger = new Mock<ILogger<ConversationHelper>>();
+            this.conversationHelper = new Mock<ConversationHelper>(this.appSettings.Object, this.secretsProvider.Object, this.telemetryClient, conversationHelperLogger.Object);
             this.conversationHelper.Setup(x => x.GetMemberAsync(It.IsAny<ITurnContext>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(() => Task.FromResult(
                 new TeamsChannelAccount()));
 
@@ -75,7 +77,8 @@ namespace Icebreaker.Tests.BotTests
             this.dataProvider.Setup(x => x.GetInstalledTeamAsync(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(new TeamInstallInfo()));
 
-            this.sut = new IcebreakerBot(this.dataProvider.Object, this.conversationHelper.Object, this.appSettings.Object, this.secretsProvider.Object, this.telemetryClient);
+            var icebreakerLogger = new Mock<ILogger<IcebreakerBot>>();
+            this.sut = new IcebreakerBot(this.dataProvider.Object, this.conversationHelper.Object, this.appSettings.Object, this.secretsProvider.Object, this.telemetryClient, icebreakerLogger.Object);
             this.userAccount = new TeamsChannelAccount { Id = Guid.NewGuid().ToString(), Properties = JObject.FromObject(new { Id = Guid.NewGuid().ToString() }) };
             this.botAccount = new TeamsChannelAccount { Id = "bot", Properties = JObject.FromObject(new { Id = "bot" }) };
             this.teamsChannelData = new TeamsChannelData

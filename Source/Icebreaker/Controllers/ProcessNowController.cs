@@ -8,8 +8,10 @@ namespace Icebreaker.Controllers
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using Icebreaker.BackgroundTasks;
     using Icebreaker.Interfaces;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// API controller to process matches.
@@ -20,6 +22,7 @@ namespace Icebreaker.Controllers
         private readonly IMatchingService matchingService;
         private readonly ISecretsProvider secretsProvider;
         private readonly IBackgroundTaskQueue backgroundQueue;
+        private readonly ILogger<ProcessNowController> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProcessNowController"/> class.
@@ -27,18 +30,19 @@ namespace Icebreaker.Controllers
         /// <param name="matchingService">Matching service contains logic to pair and match users</param>
         /// <param name="secretsProvider">To fetch secrets</param>
         /// <param name="backgroundQueue">To enqueue the matching task</param>
-        public ProcessNowController(IMatchingService matchingService, ISecretsProvider secretsProvider, IBackgroundTaskQueue backgroundQueue)
+        /// <param name="logger">Logger to use</param>
+        public ProcessNowController(IMatchingService matchingService, ISecretsProvider secretsProvider, IBackgroundTaskQueue backgroundQueue, ILogger<ProcessNowController> logger)
         {
             this.matchingService = matchingService ?? throw new ArgumentNullException(nameof(matchingService));
             this.secretsProvider = secretsProvider ?? throw new ArgumentNullException(nameof(secretsProvider));
             this.backgroundQueue = backgroundQueue;
+            this.logger = logger;
         }
 
         /// <summary>
         /// Action to process matches
         /// </summary>
         /// <returns>Success (1) or failure (-1) code</returns>
-
         [HttpGet("api/processnow")]
         public async Task<ActionResult> GetAsync()
         {
@@ -48,12 +52,17 @@ namespace Icebreaker.Controllers
                 if (isKeyMatch)
                 {
                     await this.RefreshToken();
-                    this.backgroundQueue.EnqueueTask(async token =>
+                    var correlationId = Guid.NewGuid().ToString();
+                    this.logger.LogInformation($"Queueing the make pairs background task with id {correlationId}");
+                    var item = new BackgroundWorkItem(
+                        async token =>
                     {
                         await this.MakePairsAsync().ConfigureAwait(false);
-                    });
+                    }, correlationId);
 
-                    return new OkObjectResult("Queued the matching pairs task for background processing");
+                    this.backgroundQueue.EnqueueTask(item);
+                    this.Response.Headers.Add("X-Correlation-Id", correlationId);
+                    return new OkObjectResult($"Queued the matching pairs task for background processing.");
                 }
             }
 

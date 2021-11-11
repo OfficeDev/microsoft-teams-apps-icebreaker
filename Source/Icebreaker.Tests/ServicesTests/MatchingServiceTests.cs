@@ -17,6 +17,7 @@ namespace Icebreaker.Tests.ServicesTests
     using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using Xunit;
 
@@ -58,7 +59,8 @@ namespace Icebreaker.Tests.ServicesTests
             this.secretsProvider.Setup(x => x.GetAppCredentialsAsync()).Returns(() => Task.FromResult(
                 new MicrosoftAppCredentials(string.Empty, string.Empty) as AppCredentials));
 
-            this.conversationHelper = new Mock<ConversationHelper>(this.appSettings.Object, this.secretsProvider.Object, telemetryClient);
+            var conversationHelperLogger = new Mock<ILogger<ConversationHelper>>();
+            this.conversationHelper = new Mock<ConversationHelper>(this.appSettings.Object, this.secretsProvider.Object, telemetryClient, conversationHelperLogger.Object);
             this.dataProvider = new Mock<IBotDataProvider>();
             this.dataProvider.Setup(x => x.GetInstalledTeamAsync(It.IsAny<string>()))
                 .Returns(() => Task.FromResult(new TeamInstallInfo()));

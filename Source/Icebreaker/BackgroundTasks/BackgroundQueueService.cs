@@ -31,7 +31,7 @@ namespace Icebreaker.BackgroundTasks
         }
 
         /// <summary>
-        /// Gets taskQueue
+        /// Gets a TaskQueue interface object. This's used to enqueue and dequeue work items.
         /// </summary>
         public IBackgroundTaskQueue TaskQueue { get; }
 
@@ -41,16 +41,22 @@ namespace Icebreaker.BackgroundTasks
             this.logger.LogInformation("Executing background service task");
             while (!cancellationToken.IsCancellationRequested)
             {
-                try
+                var backgroundItem = await this.TaskQueue.DequeueTaskAsync(cancellationToken);
+                if (backgroundItem != null)
                 {
-                    this.logger.LogInformation("Dequeuing the task");
-                    var currentTask = await this.TaskQueue.DequeueTaskAsync(cancellationToken);
-                    await currentTask(cancellationToken);
-                    this.logger.LogInformation("Completed Executing the task");
-                }
-                catch (Exception ex)
-                {
-                    this.logger.LogError($"Exception {ex.Message} occured while dequeuing the task.", ex);
+                    using (this.logger.BeginScope($"Correlation Id: {backgroundItem.CorrelationId}"))
+                    {
+                        try
+                        {
+                            this.logger.LogInformation($"Executing the task.");
+                            await backgroundItem.WorkItem(cancellationToken);
+                            this.logger.LogInformation("Completed executing the task");
+                        }
+                        catch (Exception ex)
+                        {
+                            this.logger.LogError($"Exception {ex.Message} occured while executing the task.", ex);
+                        }
+                    }
                 }
             }
         }

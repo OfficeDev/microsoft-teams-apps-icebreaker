@@ -55,7 +55,7 @@ namespace Icebreaker.Bot
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"Exception {ex} occured in the middleware.");
+                this.logger.LogError($"Exception occured in the middleware.", ex);
                 throw;
             }
         }
