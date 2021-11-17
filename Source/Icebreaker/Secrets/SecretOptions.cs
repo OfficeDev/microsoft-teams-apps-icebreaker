@@ -3,7 +3,7 @@
 // Licensed under the MIT License.
 // </copyright>
 
-namespace Icebreaker.Helpers
+namespace Icebreaker.Secrets
 {
     /// <summary>
     /// Secret options.

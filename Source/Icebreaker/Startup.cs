@@ -11,6 +11,7 @@ namespace Icebreaker
     using Icebreaker.Helpers;
     using Icebreaker.Interfaces;
     using Icebreaker.Localization;
+    using Icebreaker.Secrets;
     using Icebreaker.Services;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.Extensibility;
@@ -100,9 +101,14 @@ namespace Icebreaker
                 AppInsightsInstrumentationKey = appInsightsInstrumentationKey,
                 DefaultCulture = this.configuration.GetValue<string>("DefaultCulture"),
                 MaxPairUpsPerTeam = int.Parse(this.configuration.GetValue<string>("MaxPairUpsPerTeam")),
+                CosmosDBKeyName = this.configuration.GetValue<string>("CosmosDBKeyName"),
+                ParingKeyName = this.configuration.GetValue<string>("ParingKeyName"),
+                MicrosoftAppPasswordKeyName = this.configuration.GetValue<string>("MicrosoftAppPasswordKeyName"),
             };
             services.AddSingleton<IAppSettings>(appSettings);
             services.AddTransient<ISecretsProvider, SecretsProvider>();
+            services.AddSecretsProvider(this.configuration);
+
             services.AddTransient<IcebreakerBot>();
             services.AddTransient<IceBreakerBotMiddleware>();
             services.AddSingleton<IceBreakerBotHttpAdapter>();

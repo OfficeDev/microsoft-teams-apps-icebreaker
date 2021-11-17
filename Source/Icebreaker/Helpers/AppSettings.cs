@@ -57,5 +57,14 @@ namespace Icebreaker.Helpers
 
         /// <inheritdoc/>
         public bool IsTesting { get; set; }
+
+        /// <inheritdoc/>
+        public string CosmosDBKeyName { get; set; }
+
+        /// <inheritdoc/>
+        public string ParingKeyName { get; set; }
+
+        /// <inheritdoc/>
+        public string MicrosoftAppPasswordKeyName { get; set; }
     }
 }

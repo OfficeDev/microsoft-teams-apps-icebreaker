@@ -3,7 +3,7 @@
 // Licensed under the MIT License.
 // </copyright>
 
-namespace Icebreaker.Helpers
+namespace Icebreaker.Secrets
 {
     using System;
     using System.Security.Cryptography.X509Certificates;
@@ -61,7 +61,7 @@ namespace Icebreaker.Helpers
             }
 
             // else read from KV
-            return this.ReadSecretsFromKV(nameof(this.options.CosmosDBKey));
+            return this.ReadSecretsFromKV(this.appSettings.CosmosDBKeyName);
         }
 
         /// <inheritdoc/>
@@ -73,7 +73,7 @@ namespace Icebreaker.Helpers
             }
 
             // else read from KV
-            return this.ReadSecretsFromKV(nameof(this.options.Key));
+            return this.ReadSecretsFromKV(this.appSettings.ParingKeyName);
         }
 
         /// <inheritdoc/>
@@ -102,7 +102,7 @@ namespace Icebreaker.Helpers
             }
 
             // else read from KV
-            return this.ReadSecretsFromKV(nameof(this.options.MicrosoftAppPassword));
+            return this.ReadSecretsFromKV(this.appSettings.MicrosoftAppPasswordKeyName);
         }
 
         private string ReadSecretsFromKV(string key)
@@ -122,7 +122,6 @@ namespace Icebreaker.Helpers
         {
             try
             {
-                // TODO(Bhavya): Cache certificate.
                 this.telemetryClient.TrackTrace($"About to download the certificate from the KeyVault with uri {this.options.KeyVaultUri}, CertName: {this.appSettings.BotCertName}");
                 var cert = await this.certificateClient.DownloadCertificateAsync(this.appSettings.BotCertName);
                 return cert.Value;

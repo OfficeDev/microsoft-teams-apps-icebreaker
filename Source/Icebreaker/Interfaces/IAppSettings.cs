@@ -86,5 +86,20 @@ namespace Icebreaker.Interfaces
         /// Gets AllowedTenant Ids.
         /// </summary>
         HashSet<string> AllowedTenantIds { get; }
+
+        /// <summary>
+        /// Gets CosmosDB KV key's name.
+        /// </summary>
+        string CosmosDBKeyName { get; }
+
+        /// <summary>
+        /// Gets LogicApp's KV key name.
+        /// </summary>
+        string ParingKeyName { get; }
+
+        /// <summary>
+        /// Gets App passowrd's KV key name.
+        /// </summary>
+        string MicrosoftAppPasswordKeyName { get; }
     }
 }
