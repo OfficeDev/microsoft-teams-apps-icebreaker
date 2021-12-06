@@ -78,6 +78,11 @@ namespace Icebreaker.Interfaces
         string DefaultCulture { get; }
 
         /// <summary>
+        /// Gets ManifestAppId
+        /// </summary>
+        string ManifestAppId { get; }
+
+        /// <summary>
         /// Gets a value indicating whether tenant filter is disabled.
         /// </summary>
         bool DisableTenantFilter { get; }

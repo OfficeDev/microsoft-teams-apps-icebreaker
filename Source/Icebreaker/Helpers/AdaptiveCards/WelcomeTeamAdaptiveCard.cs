@@ -51,7 +51,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 teamIntroPart1,
                 teamIntroPart2,
                 teamIntroPart3,
-                welcomeCardImageUrl = $"https://{appBaseDomain}/images/welcome-card-image.png",
+                welcomeCardImageUrl = $"https://{appBaseDomain}/Content/welcome-card-image.png",
                 tourUrl = GetTourFullUrl(manifestAppId, GetTourUrl(appBaseDomain), tourTitle),
                 salutationText = Resources.SalutationTitleText,
                 tourButtonText = Resources.TakeATourButtonText,

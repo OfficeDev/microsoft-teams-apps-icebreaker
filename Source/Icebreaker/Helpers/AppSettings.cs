@@ -53,6 +53,9 @@ namespace Icebreaker.Helpers
         public string DefaultCulture { get; set; }
 
         /// <inheritdoc/>
+        public string ManifestAppId { get; set; }
+
+        /// <inheritdoc/>
         public HashSet<string> AllowedTenantIds { get; set; }
 
         /// <inheritdoc/>

@@ -356,7 +356,7 @@ namespace Icebreaker.Bot
 
             if (userThatJustJoined != null)
             {
-                var welcomeMessageCard = WelcomeNewMemberAdaptiveCard.GetCard(teamName, userThatJustJoined.Name, this.appSettings.BotDisplayName, installedTeam.InstallerName, this.appSettings.AppBaseDomain, this.appSettings.MicrosoftAppId);
+                var welcomeMessageCard = WelcomeNewMemberAdaptiveCard.GetCard(teamName, userThatJustJoined.Name, this.appSettings.BotDisplayName, installedTeam.InstallerName, this.appSettings.AppBaseDomain, this.appSettings.ManifestAppId);
                 await this.conversationHelper.NotifyUserAsync(turnContext, MessageFactory.Attachment(welcomeMessageCard), userThatJustJoined, tenantId, cancellationToken);
             }
             else
@@ -378,7 +378,7 @@ namespace Icebreaker.Bot
             this.telemetryClient.TrackTrace($"Sending welcome message for team {teamId}");
 
             var teamName = turnContext.Activity.TeamsGetTeamInfo().Name;
-            var welcomeTeamMessageCard = WelcomeTeamAdaptiveCard.GetCard(teamName, botInstaller, this.appSettings.AppBaseDomain, this.appSettings.MicrosoftAppId);
+            var welcomeTeamMessageCard = WelcomeTeamAdaptiveCard.GetCard(teamName, botInstaller, this.appSettings.AppBaseDomain, this.appSettings.ManifestAppId);
             await this.NotifyTeamAsync(turnContext, MessageFactory.Attachment(welcomeTeamMessageCard), teamId, cancellationToken);
         }
 
@@ -391,7 +391,7 @@ namespace Icebreaker.Bot
         /// <returns>Tracking task</returns>
         private async Task SendUnrecognizedInputMessageAsync(ITurnContext turnContext, Activity replyActivity, CancellationToken cancellationToken)
         {
-            replyActivity.Attachments = new List<Attachment> { UnrecognizedInputAdaptiveCard.GetCard(this.appSettings.AppBaseDomain, this.appSettings.MicrosoftAppId) };
+            replyActivity.Attachments = new List<Attachment> { UnrecognizedInputAdaptiveCard.GetCard(this.appSettings.AppBaseDomain, this.appSettings.ManifestAppId) };
             await this.retryPolicy.ExecuteAsync(() => turnContext.SendActivityAsync(replyActivity, cancellationToken));
         }
 

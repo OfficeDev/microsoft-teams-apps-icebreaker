@@ -28,7 +28,7 @@ namespace Icebreaker.Controllers
         /// </summary>
         /// <param name="locale">User locale in MSTeams</param>
         /// <returns>Tour content</returns>
-        [HttpGet]
+        [HttpGet("tour")]
         public ActionResult Index(string locale)
         {
             if (!string.IsNullOrEmpty(locale))
