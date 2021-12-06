@@ -1,7 +1,13 @@
+// <copyright file="Startup.cs" company="Microsoft">
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+// </copyright>
+
 namespace Icebreaker
 {
     using System;
     using System.Globalization;
+    using System.IO;
     using System.Linq;
     using Azure.Identity;
     using Azure.Security.KeyVault.Certificates;
@@ -22,6 +28,7 @@ namespace Icebreaker
     using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.FileProviders;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Identity.Web;
     using Newtonsoft.Json.Converters;
@@ -153,6 +160,14 @@ namespace Icebreaker
             app.UseHttpsRedirection();
             app.UseDefaultFiles();
             app.UseStaticFiles();
+
+            // Loading the images from Content directory
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(env.ContentRootPath, "Content")),
+                RequestPath = "/Content"
+            });
 
             app.UseRouting();
             app.UseEndpoints(endpoints =>
