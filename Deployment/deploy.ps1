@@ -533,7 +533,7 @@ function InstallDependencies {
     }
 
     # Start Deployment.
-    Write-Ascii -InputObject "Ice-Breaker V2" -ForegroundColor Magenta
+    Write-Ascii -InputObject "Ice-Breaker V3" -ForegroundColor Magenta
     WriteInfo "Starting deployment..."
 
     # Initialize connections - Azure Az/CLI/Azure AD

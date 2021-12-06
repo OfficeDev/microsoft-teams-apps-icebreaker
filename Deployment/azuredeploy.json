@@ -131,6 +131,14 @@
                 "description": "The unique key used by the function app to notify the bot to start creating pairings."
             }
         },
+        "botCertName": {
+            "type": "string",
+            "minLength": 1,
+            "defaultValue": "BotCertName",
+            "metadata": {
+                "description": "An optional parameter in Icebreaker V3. Cert based authenticate the bot"
+            }
+        },
         "sku": {
             "type": "string",
             "allowedValues": [
@@ -191,6 +199,7 @@
         "logicAppName":"[concat(variables('baseResourceName'), '-logicapp-', uniqueString(resourceGroup().id))]",
         "keyVaultName":"[concat('keyvault-', uniqueString(resourceGroup().id))]",
         "KeyVaultURI" : "[concat('https://', variables('keyVaultName'), '.vault.azure.net')]",
+        "botCertName":"",
         "appInsightsName": "[variables('baseResourceName')]",
         "appHostingPlanName": "[variables('baseResourceName')]",
         "sharedSkus": [ "Free", "Shared" ],
@@ -345,6 +354,10 @@
                         {
                         "name": "DisableTenantFilter",
                         "value": "false"
+                        },
+                        {
+                        "name": "BotCertName",
+                        "value": "[variables('botCertName')]"
                         }
                     ],
                     "ftpsState": "Disabled"
@@ -536,7 +549,19 @@
             "dependsOn": [
                 "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
             ]
-        }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/BotCertName')]",
+            "apiVersion": "2019-09-01",
+            "properties": {
+                "contentType": "text/plain",
+                "value": "[parameters('botCertName')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+            ]
+        }   
     ],
   "outputs": {
     "appDomain": {
