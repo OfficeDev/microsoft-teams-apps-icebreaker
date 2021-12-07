@@ -165,7 +165,7 @@ namespace Icebreaker
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
-                    Path.Combine(env.ContentRootPath, "Content")),
+                    Path.Combine(env.ContentRootPath, "../repository/Source/Icebreaker/Content")),
                 RequestPath = "/Content"
             });
 
