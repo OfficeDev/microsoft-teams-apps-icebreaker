@@ -555,7 +555,13 @@ function InstallDependencies {
     # Initialize connections - Azure Az/CLI/Azure AD
     WriteInfo "Login with with your Azure subscription account. Launching Azure sign-in window..."
     Connect-AzAccount -Subscription $parameters.subscriptionId.Value -ErrorAction Stop
-    $user = az login --tenant $parameters.subscriptionTenantId.value
+    $user = az login --tenant $parameters.subscriptionTenantId.value -o json
+    
+    # Save user Az CLI output format config (default json) and change it to JSON
+    $outputUserConfig = az config get core.output -o json
+    $savedOutputConfig = ($outputUserConfig | convertfrom-json).value
+    az config set core.output=json
+
     if ($LASTEXITCODE -ne 0) {
         WriteError "Login failed for user..."
         EXIT
@@ -581,6 +587,9 @@ function InstallDependencies {
 
     # Assigning return values to variable. 
     $appdomainName = $deploymentOutput.properties.Outputs.appDomain.Value
+
+    # Restore user Az CLI output settings
+    az config set core.output=$savedOutputConfig
 
     # Log out to avoid tokens caching
     logout
