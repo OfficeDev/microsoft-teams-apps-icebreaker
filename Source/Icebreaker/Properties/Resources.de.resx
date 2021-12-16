@@ -134,55 +134,55 @@
     <comment>This is the done button text</comment>
   </data>
   <data name="ErrorOccured" xml:space="preserve">
-    <value>Fehler bei der Verarbeitung der Anforderung. Wieder holen?</value>
+    <value>Fehler bei der Verarbeitung der Anforderung. Wiederholen?</value>
     <comment>A generic message that is sent when there is an error occurring</comment>
   </data>
   <data name="InstallMessageKnownInstallerPart1" xml:space="preserve">
-    <value>Wenn Sie dies lesen, ist es wahrscheinlich, weil {0} mich zum **{1}-Team** hinzugefügt hat.</value>
+    <value>Wenn du dies liest, ist es wahrscheinlich, weil {0} mich zum **{1}-Team** hinzugefügt hat.</value>
     <comment>Install message and also the welcome message when the app installer is known - {0} is the placeholder for the name of the user that has installed the app to the team, and {1} is the placeholder for the name of the team that the app has been installed to</comment>
   </data>
   <data name="InstallMessageKnownInstallerPart2" xml:space="preserve">
-    <value>Ich kann Ihnen helfen, mehr Menschen in Ihrer Organisation kennenzulernen, indem ich Sie jede Woche zufällig mit jemandem zusammenbringe. Sie lernen mehr Freunde kennen und erfahren mehr über die Menschen, mit denen Sie arbeiten. Es ist eine Win-Win-*Win*-Situation.</value>
+    <value>Ich kann dir helfen, Zeichensetzende in dem Verein kennenzulernen, indem ich dich jede Woche zufällig mit jemandem zusammenbringe. Du lernst neue Menschen kennen und erfährst mehr über andere Zeichensetzende. Das ist eine Win-Win-*Win*-Situation.</value>
     <comment>Part 2 of the install message when the name of the installer is known</comment>
   </data>
   <data name="InstallMessageKnownInstallerPart3" xml:space="preserve">
-    <value>**Um neue Leute kennenzulernen, bleiben Sie einfach dran. Ich werde Ihnen bald eine Einladung senden.**</value>
+    <value>**Um neue Leute kennenzulernen, bleib einfach dran. Ich werde dir bald eine Einladung senden.**</value>
     <comment>Part 3 of the install message with the name of the installer known</comment>
   </data>
   <data name="InstallMessageUnknownInstallerPart1" xml:space="preserve">
-    <value>Wenn Sie dies lesen, ist es, weil ich für das **{0}-Team** installiert wurde. </value>
+    <value>Wenn du dies liest, ist es, weil ich für das **{0}-Team** installiert wurde. </value>
     <comment>Install message and also the welcome message when the app installer is not known - {0} is the placeholder for the name of the team that the app has been installed to</comment>
   </data>
   <data name="InstallMessageUnknownInstallerPart2" xml:space="preserve">
-    <value>Ich kann Ihnen helfen, mehr Menschen in Ihrer Organisation kennenzulernen, indem ich Sie jede Woche zufällig mit jemandem zusammenbringe. Sie lernen mehr Freunde kennen und erfahren mehr über die Menschen, mit denen Sie arbeiten. Es ist eine Win-Win-*Win*-Situation.</value>
+    <value>Ich kann dir helfen, mehr Zeichensetzende des Vereins kennenzulernen, indem ich dich jede Woche zufällig mit jemandem zusammenbringe. Du lernst neue Menschen kennen und erfährst mehr über andere Zeichensetzende. Das ist eine Win-Win-*Win*-Situation.</value>
     <comment>Part 2 of the install message when the name of the installer is not known</comment>
   </data>
   <data name="InstallMessageUnknownInstallerPart3" xml:space="preserve">
-    <value>**Um neue Leute kennenzulernen, bleiben Sie einfach dran. Ich werde Ihnen bald eine Einladung senden.**</value>
+    <value>**Um neue Leute kennenzulernen, bleib einfach dran. Ich werde Ihnen bald eine Einladung senden.**</value>
     <comment>Part 3 of the install message when the name of the installer is not known</comment>
   </data>
   <data name="MatchUpCardContentPart1" xml:space="preserve">
-    <value>Hallo nochmal, ich bin {0} in {1}. Ein Bot, der Sie jede Woche mit einem neuen Mitarbeiter zusammenbringt, den Sie treffen können. Diese Woche ist Ihr Partner {2}.</value>
+    <value>Hallo nochmal, ich bin {0} in {1}. Ein Bot, der dich jede Woche mit jemandem zusammenbringt. Diese Woche ist {2} dein Match.</value>
     <comment>First part of the match up card main content</comment>
   </data>
   <data name="MatchUpCardContentPart2" xml:space="preserve">
-    <value>Wenn Sie die Neigung dazu haben, vereinbaren Sie etwas. Leute zu treffen *ist* einfach!</value>
+    <value>Wenn du möchtest, kontaktiere die andere Person. Leute zu treffen *ist* einfach!</value>
     <comment>Second part of the match up card main content</comment>
   </data>
   <data name="MatchUpCardMatchedText" xml:space="preserve">
-    <value>Sie wurden mit {0} zusammengebracht.</value>
+    <value>Du wurdest mit {0} gematcht.</value>
     <comment>The text saying who the user has been matched up with</comment>
   </data>
   <data name="MatchUpCardTitleContent" xml:space="preserve">
-    <value>Es ist Zeit für eine Übereinstimmung!</value>
+    <value>Es ist Zeit für ein Match!</value>
     <comment>The title text for the pairup notification adaptive card</comment>
   </data>
   <data name="MeetupContent" xml:space="preserve">
-    <value>Hallo, anscheinend haben wir {0} diese Woche abgestimmt. Es ist großartig, sich für ein Kaffee oder ein Mittag essen oder einen Anruf zu treffen, wenn Sie Zeit haben.</value>
+    <value>Hallo, anscheinend wurden wir von {0} diese Woche gematcht. Wenn du Zeit hast, würde ich mich gern mit dir auf einen Kaffee treffen oder zum telefonieren.</value>
     <comment>Content of the Meetup for the propose meeting</comment>
   </data>
   <data name="MeetupTitle" xml:space="preserve">
-    <value>Treffen von {0} / {1}</value>
+    <value>{0} / {1} Meet Up</value>
     <comment>The title for the Meetup - {0} is the name of the first person that user has been matched with and {1} is the name of the user</comment>
   </data>
   <data name="NextButtonText" xml:space="preserve">
@@ -190,23 +190,23 @@
     <comment>This is the next button text</comment>
   </data>
   <data name="OptInConfirmation" xml:space="preserve">
-    <value>Willkommen zurück! Wir haben Sie vermisst. Ich habe Ihre Übereinstimmungen neu gestartet. Viel Spaß!</value>
+    <value>Willkommen zurück! Ich habe dich vermisst. Du wirst bald wieder gematcht. Viel Spaß!</value>
     <comment>The confirmation reply that is sent when the user resumes the matches</comment>
   </data>
   <data name="OptOutConfirmation" xml:space="preserve">
-    <value>Alles bereit. Ich habe Ihre Übereinstimmungen angehalten. Sie können sie wieder fortsetzen, wann immer Sie möchten.</value>
+    <value>Erledigt. Du wirst keine Matches mehr erhalten. Du kannst jederzeit wieder mitmachen!</value>
     <comment>The confirmation reply that is sent when the user pauses all matches</comment>
   </data>
   <data name="PausePairingsButtonText" xml:space="preserve">
-    <value>Alle Übereinstimmungen anhalten</value>
+    <value>Matches stoppen</value>
     <comment>Button text to pause pairings</comment>
   </data>
   <data name="ProposeMeetupButtonText" xml:space="preserve">
-    <value>Treffen vorschlagen</value>
+    <value>Termin erstellen</value>
     <comment>Button text to propose the meetup with the match of the user</comment>
   </data>
   <data name="ResumePairingsButtonText" xml:space="preserve">
-    <value>Übereinstimmungen wieder aufnehmen</value>
+    <value>Matches wieder aktivieren</value>
     <comment>Button text to resume pairings</comment>
   </data>
   <data name="SalutationTitleText" xml:space="preserve">
@@ -222,19 +222,19 @@
     <comment>This is the tour content page title text</comment>
   </data>
   <data name="TourMatchesBodyText" xml:space="preserve">
-    <value>Wenn Sie die Notwendigkeit benötigen, sollten Sie überein stimmen. Die Woche zu stark ausgelastet? Außer Haus? Kein Problem. Klicken Sie einfach auf die Schalt Fläche.</value>
+    <value>Pausiere Matches, wann immer du willst. Aktuell zu viel zu tun? Kein Problem! Klick einfach auf die Schaltfläche, wann immer du willst.</value>
     <comment>This is the tour match task module body text</comment>
   </data>
   <data name="TourMatchesHeaderText" xml:space="preserve">
-    <value>Einfaches Anhalten von Übereinstimmungen wenn erforderlich</value>
+    <value>Matches einfach ausschalten</value>
     <comment>This is the tour match task module header text</comment>
   </data>
   <data name="TourWelcomeBodyText" xml:space="preserve">
-    <value>Jede Woche Koppeln Sie mit einer neuen Person. Wenn Sie über die Inclination dieser Woche verfügen, können Sie eine Mittag essen treffen, oder einen Anruf, wenn Sie an verschiedenen Orten arbeiten. Sehen Sie sich eine andere Nachricht an, in der ich Sie mit Ihrer ersten überein Stimmung gekoppelt.</value>
+    <value>Jede Woche werde ich dich mit einer neuen Person zusammenbringen. Wenn du in dieser Woche Lust hast, könnt ihr euch treffen - zum Mittagessen oder zum Telefonieren, wenn ihr an verschiedenen Orten seid. Achte auf eine weitere Nachricht, in der ich dich mit der ersten Person zusammenbringe.</value>
     <comment>This is the tour welcome body text</comment>
   </data>
   <data name="TourWelcomeHeaderText" xml:space="preserve">
-    <value>Neue Freunde treffen und eine Community mit Ihnen aufbauen</value>
+    <value>Neue Zeichensetzende treffen und eine Community mit Ihnen aufbauen</value>
     <comment>This is the tour welcome header text</comment>
   </data>
   <data name="TourWelcomeImageAltText" xml:space="preserve">
@@ -242,7 +242,7 @@
     <comment>This is the tour welcome image alt text</comment>
   </data>
   <data name="UnrecognizedInput" xml:space="preserve">
-    <value>Ich kann die eingehende Nachricht leider nicht verarbeiten. Sie können jedoch eine Tour machen, um mehr über meine Funktionalität zu erfahren.</value>
+    <value>Ich kann die eingehende Nachricht leider nicht verarbeiten. Du kannst jedoch eine Tour machen, um mehr über meine Funktionalität zu erfahren.</value>
     <comment>The text for the unrecognized input scenario</comment>
   </data>
   <data name="WelcomeTourTitle" xml:space="preserve">
