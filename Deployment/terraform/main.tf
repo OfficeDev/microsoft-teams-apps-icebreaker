@@ -19,7 +19,7 @@ locals {
     botAppID            = azuread_application.icebreaker.application_id
     botAppPassword      = azuread_application_password.icebreaker.value
     appName             = var.name
-    appDescription      = var.appDescription
+    appDescription      = var.description_long
     DefaultCulture      = var.defaultCulture
     pairingWeekInterval = var.pairingWeekInterval
     pairingDayOfWeek    = var.pairingDayOfWeek
@@ -28,6 +28,7 @@ locals {
     sku                 = var.sku
     gitRepoUrl          = var.gitRepoUrl
   }
+  bla = azurerm_resource_group_template_deployment.icebreaker.output_content
 }
 
 resource "azurerm_resource_group" "icebreaker" {

@@ -63,7 +63,13 @@ variable "appDisplayName" {
   description = "The app (and bot) display name."
 }
 
-variable "appDescription" {
+variable "description_short" {
+  type        = string
+  default     = "Icebreaker ist ein Bot, der nach dem Zufallsprinzip Teammitglieder zusammenbringt, um die Einheit des Teams zu stärken."
+  description = "The short description"
+}
+
+variable "description_long" {
   type        = string
   default     = "Icebreaker ist ein niedlicher kleiner Bot, der jede Woche nach dem Zufallsprinzip Zeichensetzende zusammenbringt, um zu helfen, Vertrauen und persönliche Beziehungen aufzubauen."
   description = "The app (and bot) description."
