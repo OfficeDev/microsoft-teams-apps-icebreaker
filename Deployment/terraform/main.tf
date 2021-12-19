@@ -28,18 +28,16 @@ locals {
     sku                 = var.sku
     gitRepoUrl          = var.gitRepoUrl
   }
-  bla = azurerm_resource_group_template_deployment.icebreaker.output_content
 }
 
-resource "azurerm_resource_group" "icebreaker" {
-  name     = "rg-${var.name}-${var.stage}-${var.suffix}"
-  location = "westeurope"
+data "azurerm_resource_group" "icebreaker" {
+  name = "rg-${var.name}-${var.stage}-${var.suffix}"
 }
 
 resource "azurerm_resource_group_template_deployment" "icebreaker" {
   name                = "icebreaker-deployment"
   deployment_mode     = "Complete"
-  resource_group_name = azurerm_resource_group.icebreaker.name
+  resource_group_name = data.azurerm_resource_group.icebreaker.name
   template_content    = file("../azuredeploy.json")
   parameters_content = jsonencode(
     { for parameter, value in local.arm_parameters : parameter => {

@@ -1,0 +1,56 @@
+name: 'Init Terraform WorkFlows'
+description: 'Configures needed stuff'
+inputs:
+  tf_dir:  # id of input
+    description: 'folder of terraform files.Also SET as TF_DIR ENV Variable'
+    default: 'Deployment/terraform'
+  tf_backend_file_name:
+    description: 'File name of backend file in tf_dir'
+    default: 'backend.tf'
+  github_token:
+    description: 'Github Token to set as GITHUB_TOKEN ENV Variable'
+    required: true
+  arm_tenant_id:
+    description: 'Tenant Id to set as ARM_TENANT_ID ENV Variable'
+    required: true
+  arm_subscription_id:
+    description: 'Subscription Id to set as ARM_SUBSCRIPTION_ID ENV Variable'
+    required: true
+  arm_client_id:
+    description: 'Client Id to set as ARM_CLIENT_ID ENV Variable'
+    required: true
+  arm_client_secret:
+    description: 'Client secret to set as ARM_CLIENT_SECRET ENV Variable'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: configure backend
+      run: |
+        echo 'terraform {' > ${{ inputs.tf_backend_file_name }}
+        echo '  backend "azurerm" {' >> ${{ inputs.tf_backend_file_name }}
+        echo 'resource_group_name="rg-Icebreaker-int-01"' >> ${{ inputs.tf_backend_file_name }}
+        echo 'storage_account_name="stzgminttficebreaker01"' >> ${{ inputs.tf_backend_file_name }}
+        echo 'container_name="tfstate"' >> ${{ inputs.tf_backend_file_name }}
+        echo 'key="int.tfstate"' >> ${{ inputs.tf_backend_file_name }}
+        echo 'use_microsoft_graph=true' >> ${{ inputs.tf_backend_file_name }}
+        echo 'use_azuread_auth=true' >> ${{ inputs.tf_backend_file_name }}
+        echo '}' >> backend.tf
+        echo '}' >> backend.tf
+      shell: bash
+
+
+      working-directory: ${{ inputs.tf_dir }}
+    - name: set env variables
+      run: |
+        echo "TF_DIR=${{ inputs.tf_dir }}" >> $GITHUB_ENV
+        echo "GITHUB_TOKEN=${{ inputs.github_token }}" >> $GITHUB_ENV
+        echo "ARM_TENANT_ID=${{ inputs.arm_tenant_id }}" >> $GITHUB_ENV
+        echo "ARM_SUBSCRIPTION_ID=${{ inputs.arm_subscription_id }}" >> $GITHUB_ENV
+        echo "ARM_CLIENT_ID=${{ inputs.arm_client_id }}" >> $GITHUB_ENV
+        echo "ARM_CLIENT_SECRET=${{ inputs.arm_client_secret }}" >> $GITHUB_ENV
+
+        echo "TF_VAR_stage=int" >> $GITHUB_ENV
+      shell: bash
+        
+            

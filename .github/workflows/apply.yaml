@@ -1,0 +1,32 @@
+name: Apply terraform plan
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    name: Apply terraform plan
+    environment: zgm-int
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: init
+      uses: ./.github/actions/init
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        arm_tenant_id: ${{ secrets.ARM_TENANT_ID }}
+        arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        arm_client_id: ${{ secrets.ARM_CLIENT_ID }}
+        arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
+    - name: terraform-apply
+      uses: dflook/terraform-apply@v1
+      with:
+        path: ${{ env.TF_DIR }}
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v2
+      with:
+        name: Manifest-Package
+        path: ${{ steps.tf-apply.outputs.manifest_path }}
