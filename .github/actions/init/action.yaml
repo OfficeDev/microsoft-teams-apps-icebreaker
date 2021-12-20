@@ -29,7 +29,7 @@ runs:
       run: |
         echo 'terraform {' > ${{ inputs.tf_backend_file_name }}
         echo '  backend "azurerm" {' >> ${{ inputs.tf_backend_file_name }}
-        echo 'resource_group_name="rg-Icebreaker-int-01"' >> ${{ inputs.tf_backend_file_name }}
+        echo 'resource_group_name="rg-IcebreakerTf-int-01"' >> ${{ inputs.tf_backend_file_name }}
         echo 'storage_account_name="stzgminttficebreaker01"' >> ${{ inputs.tf_backend_file_name }}
         echo 'container_name="tfstate"' >> ${{ inputs.tf_backend_file_name }}
         echo 'key="int.tfstate"' >> ${{ inputs.tf_backend_file_name }}
