@@ -25,8 +25,13 @@ jobs:
       uses: dflook/terraform-apply@v1
       with:
         path: ${{ env.TF_DIR }}
-    - name: Archive code coverage results
+    - name: Get outputs
+      uses: dflook/terraform-output@v1
+      id: tf-outputs
+      with:
+        path: ${{ env.TF_DIR }}
+    - name: Upload App Package
       uses: actions/upload-artifact@v2
       with:
-        name: Manifest-Package
-        path: ${{ steps.tf-apply.outputs.manifest_path }}
+        name: App-Package
+        path: ${{ steps.tf-outputs.outputs.manifest_path }}
