@@ -34,5 +34,5 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: App-Package
-        path: ${{ env.TF_DIR }}/${{ steps.tf-outputs.outputs.manifest_path }}
+        path: ${{ steps.tf-outputs.outputs.manifest_path }}
         if-no-files-found: error
