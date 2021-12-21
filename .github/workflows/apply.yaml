@@ -35,7 +35,7 @@ jobs:
       working-directory: ${{ env.TF_DIR }}
       run: |
         $path = Resolve-Path ${{ steps.tf-outputs.outputs.manifest_path }}
-        Write-Output "APP_PACKAGE_PATH=path" >> $env:GITHUB_ENV
+        Write-Output "APP_PACKAGE_PATH=$path" >> $env:GITHUB_ENV
     - name: Upload App Package
       uses: actions/upload-artifact@v2
       with:
