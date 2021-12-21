@@ -1,11 +1,11 @@
 resource "local_file" "logo" {
   for_each       = toset(["color.png", "outline.png"])
   content_base64 = filebase64("../../Manifest/${each.key}")
-  filename       = "./tmp/${each.key}"
+  filename       = "${path.module}/tmp/${each.key}"
 }
 
 resource "local_file" "manifest" {
-  filename = "./tmp/manifest.json"
+  filename = "${path.module}/tmp/manifest.json"
   content = jsonencode({
     "$schema"         = "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json"
     "manifestVersion" = "1.5"
@@ -53,8 +53,8 @@ resource "local_file" "manifest" {
 
 data "archive_file" "dotfiles" {
   type        = "zip"
-  output_path = "../manifest.zip"
-  source_dir  = "./tmp"
+  output_path = "${path.module}/../manifest.zip"
+  source_dir  = "${path.module}/tmp"
   depends_on = [
     local_file.logo, local_file.manifest
   ]
