@@ -51,9 +51,9 @@ resource "local_file" "manifest" {
   })
 }
 
-data "archive_file" "dotfiles" {
+data "archive_file" "app_package" {
   type        = "zip"
-  output_path = "${path.module}/../manifest.zip"
+  output_path = "${path.module}/manifest.zip"
   source_dir  = "${path.module}/tmp"
   depends_on = [
     local_file.logo, local_file.manifest
