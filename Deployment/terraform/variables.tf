@@ -65,8 +65,8 @@ variable "appDisplayName" {
 
 variable "description_short" {
   type        = string
-  default     = "Icebreaker ist ein Bot, der nach dem Zufallsprinzip Teammitglieder zusammenbringt, um die Einheit des Teams zu stärken."
-  description = "The short description"
+  default     = "Bringt Zeichensetzende nach dem Zufallsprinzip zusammen."
+  description = "The short description must not be longer than 80 characters"
 }
 
 variable "description_long" {

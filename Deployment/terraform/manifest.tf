@@ -10,7 +10,7 @@ resource "local_file" "manifest" {
     "$schema"         = "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json"
     "manifestVersion" = "1.5"
     "version"         = "1.0.0"
-    "id"              = "8d7f1194-606e-4006-b524-68f836a75022"
+    "id"              = azuread_application.icebreaker.application_id
     "packageName"     = "de.whitetom.zgm.icebreaker"
     "developer" = {
       "name"          = var.companyName
@@ -37,14 +37,14 @@ resource "local_file" "manifest" {
       "full"  = var.description_long
     }
 
-    "accentColor" = "#64A2CC"
+    "accentColor" = "#1037A6"
 
-    "bots" = {
+    "bots" = [{
       "botId"              = azuread_application.icebreaker.application_id
       "scopes"             = ["personal", "team"]
       "supportsFiles"      = false
       "isNotificationOnly" = true
-    }
+    }]
 
     "permissions"  = ["identity", "messageTeamMembers"]
     "validDomains" = [jsondecode(azurerm_resource_group_template_deployment.icebreaker.output_content).appDomain.value]
