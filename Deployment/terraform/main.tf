@@ -6,8 +6,9 @@ provider "azurerm" {
 data "azurerm_client_config" "current" {}
 
 resource "azuread_application" "icebreaker" {
-  display_name = "${var.name}-${var.stage}-${var.suffix}"
-  owners       = [data.azurerm_client_config.current.object_id]
+  display_name     = "${var.name}-${var.stage}-${var.suffix}"
+  owners           = [data.azurerm_client_config.current.object_id]
+  sign_in_audience = "AzureADMultipleOrgs"
 }
 
 resource "azuread_application_password" "icebreaker" {
