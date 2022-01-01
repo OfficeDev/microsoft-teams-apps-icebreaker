@@ -2,8 +2,7 @@ name: Apply terraform plan
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   apply:
