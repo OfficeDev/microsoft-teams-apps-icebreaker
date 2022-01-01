@@ -126,8 +126,13 @@
     <comment>Button text to initiate a chat with the person the user has been matched up with</comment>
   </data>
   <data name="ChatWithMessageGreeting" xml:space="preserve">
-    <value>Hallo</value>
-    <comment>This is the greeting of the chat with matched member message</comment>
+    <value>Hallo!
+{0}</value>
+    <comment>This is the greeting of the chat with matched member message, {0} is a random selected question</comment>
+  </data>
+  <data name="DefaultQuestion" xml:space="preserve">
+    <value>Wie geht es dir?</value>
+    <comment>This is the default question, used if none other is available.</comment>
   </data>
   <data name="DoneButtonText" xml:space="preserve">
     <value>Fertig</value>
@@ -172,6 +177,10 @@
   <data name="MatchUpCardMatchedText" xml:space="preserve">
     <value>Du wurdest mit {0} gematcht.</value>
     <comment>The text saying who the user has been matched up with</comment>
+  </data>
+  <data name="MatchUpCardQuestion" xml:space="preserve">
+    <value>Du weißt nicht wie du starten sollst? Frag doch einfach *{0}*</value>
+    <comment>The text for a icebreaker. {0} is a randomly selectected question.</comment>
   </data>
   <data name="MatchUpCardTitleContent" xml:space="preserve">
     <value>Es ist Zeit für ein Match!</value>

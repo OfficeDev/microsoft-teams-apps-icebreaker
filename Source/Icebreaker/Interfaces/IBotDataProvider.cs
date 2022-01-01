@@ -50,5 +50,20 @@ namespace Icebreaker.Interfaces
         /// <param name="serviceUrl">User service URL</param>
         /// <returns>Tracking task</returns>
         Task SetUserInfoAsync(string tenantId, string userId, bool optedIn, string serviceUrl);
+
+        /// <summary>
+        /// Get questions for language
+        /// </summary>
+        /// <param name="language">Language to get the questions in</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task<string[]> GetQuestionsAsync(string language);
+
+        /// <summary>
+        /// Set questions for language
+        /// </summary>
+        /// <param name="language">Language to create question for</param>
+        /// <param name="questions">Questions to set for language</param>
+        /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+        Task SetQuestionsAsync(string language, string[] questions);
     }
 }

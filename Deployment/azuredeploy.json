@@ -56,17 +56,7 @@
         "type": "String",
         "allowedValues": [
           "en",
-          "ar",
-          "de",
-          "es",
-          "fr",
-          "he",
-          "ja",
-          "ko",
-          "pt-BR",
-          "ru",
-          "zh-CN",
-          "zh-TW"
+          "de"
         ],
         "metadata": {
           "description": "Default culture."
@@ -315,6 +305,10 @@
                         {
                             "name": "CosmosCollectionUsers",
                             "value": "UsersOptInStatus"
+                        },
+						{
+                            "name": "CosmosCollectionQuestions",
+                            "value": "IcebreakerQuestions"
                         },
                         {
                             "name": "MaxPairUpsPerTeam",

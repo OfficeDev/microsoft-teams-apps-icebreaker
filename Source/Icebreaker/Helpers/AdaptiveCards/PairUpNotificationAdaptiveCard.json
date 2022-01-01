@@ -45,6 +45,12 @@
           "text": "${matchUpCardContentPart2}",
           "wrap": true,
           "horizontalAlignment": "${textAlignment}"
+        },
+        {
+          "type": "TextBlock",
+          "text": "${MatchUpCardQuestion}",
+          "wrap": true,
+          "horizontalAlignment": "${textAlignment}"
         }
       ]
     }

@@ -32,6 +32,7 @@ namespace Icebreaker.Helpers
         private Database database;
         private DocumentCollection teamsCollection;
         private DocumentCollection usersCollection;
+        private DocumentCollection questionsCollection;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IcebreakerBotDataProvider"/> class.
@@ -208,6 +209,41 @@ namespace Icebreaker.Helpers
         }
 
         /// <summary>
+        /// Get all saved Questions.
+        /// </summary>
+        /// /// <param name="language">The language to get the questions in</param>
+        /// <returns>List of Questions</returns>
+        public async Task<string[]> GetQuestionsAsync(string language)
+        {
+            await this.EnsureInitializedAsync();
+
+            try
+            {
+                var documentUri = UriFactory.CreateDocumentUri(this.database.Id, this.questionsCollection.Id, language);
+                Question question = await this.documentClient.ReadDocumentAsync<Question>(documentUri, new RequestOptions { PartitionKey = new PartitionKey(language) });
+                return question.Questions;
+            }
+            catch (Exception ex)
+            {
+                this.telemetryClient.TrackException(ex.InnerException);
+                return null;
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task SetQuestionsAsync(string language, string[] questions)
+        {
+            await this.EnsureInitializedAsync();
+
+            var question = new Question
+            {
+                Language = language,
+                Questions = questions,
+            };
+            await this.documentClient.UpsertDocumentAsync(this.questionsCollection.SelfLink, question);
+        }
+
+        /// <summary>
         /// Initializes the database connection.
         /// </summary>
         /// <returns>Tracking task</returns>
@@ -219,6 +255,7 @@ namespace Icebreaker.Helpers
             var databaseName = CloudConfigurationManager.GetSetting("CosmosDBDatabaseName");
             var teamsCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionTeams");
             var usersCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionUsers");
+            var questionsCollectionName = CloudConfigurationManager.GetSetting("CosmosCollectionQuestions");
 
             this.documentClient = new DocumentClient(new Uri(endpointUrl), this.secretsHelper.CosmosDBKey);
 
@@ -245,23 +282,24 @@ namespace Icebreaker.Helpers
                 }
             }
 
-            // Get a reference to the Teams collection, creating it if needed
-            var teamsCollectionDefinition = new DocumentCollection
-            {
-                Id = teamsCollectionName,
-            };
-            teamsCollectionDefinition.PartitionKey.Paths.Add("/id");
-            this.teamsCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, teamsCollectionDefinition, useSharedOffer ? null : requestOptions);
+            requestOptions = useSharedOffer ? null : requestOptions;
 
-            // Get a reference to the Users collection, creating it if needed
-            var usersCollectionDefinition = new DocumentCollection
-            {
-                Id = usersCollectionName,
-            };
-            usersCollectionDefinition.PartitionKey.Paths.Add("/id");
-            this.usersCollection = await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, usersCollectionDefinition, useSharedOffer ? null : requestOptions);
+            // Get a reference to the Teams collection, creating it if needed
+            this.teamsCollection = await this.CreateDocumentCollectionIfNotExistsAsync(teamsCollectionName, requestOptions);
+            this.usersCollection = await this.CreateDocumentCollectionIfNotExistsAsync(usersCollectionName, requestOptions);
+            this.questionsCollection = await this.CreateDocumentCollectionIfNotExistsAsync(questionsCollectionName, requestOptions);
 
             this.telemetryClient.TrackTrace("Data store initialized");
+        }
+
+        private async Task<ResourceResponse<DocumentCollection>> CreateDocumentCollectionIfNotExistsAsync(string collectionname, RequestOptions requestOptions)
+        {
+            var collectionDefinition = new DocumentCollection
+            {
+                Id = collectionname,
+            };
+            collectionDefinition.PartitionKey.Paths.Add("/id");
+            return await this.documentClient.CreateDocumentCollectionIfNotExistsAsync(this.database.SelfLink, collectionDefinition, requestOptions);
         }
 
         private async Task EnsureInitializedAsync()

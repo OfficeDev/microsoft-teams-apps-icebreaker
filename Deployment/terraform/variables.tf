@@ -48,7 +48,7 @@ variable "sku" {
 variable "defaultCulture" {
   type        = string
   default     = "de"
-  description = "Default culture. You can select default culture from the following: en, ar, de, es, fr, he, ja, ko, pt-BR, ru, zh-CN, zh-TW"
+  description = "Default culture. You can select default culture from the following: en, de"
 }
 
 variable "gitRepoUrl" {

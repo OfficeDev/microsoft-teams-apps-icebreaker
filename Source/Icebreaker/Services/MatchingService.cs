@@ -29,6 +29,7 @@ namespace Icebreaker.Services
     {
         private readonly IBotDataProvider dataProvider;
         private readonly ConversationHelper conversationHelper;
+        private readonly QuestionService questionService;
         private readonly TelemetryClient telemetryClient;
         private readonly BotAdapter botAdapter;
         private readonly int maxPairUpsPerTeam;
@@ -39,12 +40,14 @@ namespace Icebreaker.Services
         /// </summary>
         /// <param name="dataProvider">The data provider to use</param>
         /// <param name="conversationHelper">Conversation helper instance to notify team members</param>
+        /// <param name="questionService">Used to fetch icebreaker question</param>
         /// <param name="telemetryClient">The telemetry client to use</param>
         /// <param name="botAdapter">Bot adapter.</param>
-        public MatchingService(IBotDataProvider dataProvider, ConversationHelper conversationHelper, TelemetryClient telemetryClient, BotAdapter botAdapter)
+        public MatchingService(IBotDataProvider dataProvider, ConversationHelper conversationHelper, QuestionService questionService, TelemetryClient telemetryClient, BotAdapter botAdapter)
         {
             this.dataProvider = dataProvider;
             this.conversationHelper = conversationHelper;
+            this.questionService = questionService;
             this.telemetryClient = telemetryClient;
             this.botAdapter = botAdapter;
             this.maxPairUpsPerTeam = Convert.ToInt32(CloudConfigurationManager.GetSetting("MaxPairUpsPerTeam"));
@@ -144,10 +147,10 @@ namespace Icebreaker.Services
             var teamsPerson2 = JObject.FromObject(pair.Item2).ToObject<TeamsChannelAccount>();
 
             // Fill in person2's info in the card for person1
-            var cardForPerson1 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson1, teamsPerson2, this.botDisplayName);
+            var cardForPerson1 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson1, teamsPerson2, this.botDisplayName, await this.questionService.GetRandomOrDefaultQuestion(cultureName));
 
             // Fill in person1's info in the card for person2
-            var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2, teamsPerson1, this.botDisplayName);
+            var cardForPerson2 = PairUpNotificationAdaptiveCard.GetCard(teamName, teamsPerson2, teamsPerson1, this.botDisplayName, await this.questionService.GetRandomOrDefaultQuestion(cultureName));
 
             // Send notifications and return the number that was successful
             var notifyResults = await Task.WhenAll(
