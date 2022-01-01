@@ -6,7 +6,7 @@ on:
 
 jobs:
   apply:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     name: Apply terraform plan
     environment: zgm-int
     steps:
@@ -41,3 +41,30 @@ jobs:
         name: App-Package
         path: ${{ env.APP_PACKAGE_PATH }}
         if-no-files-found: error
+
+    - name: build
+      uses: ./.github/actions/build
+      with:
+        source_path: Source
+    - uses: azure/login@v1
+      with:
+        creds: |
+          {
+            "clientId": "${{ secrets.ARM_CLIENT_ID }}",
+            "clientSecret": "${{ secrets.ARM_CLIENT_SECRET }}",
+            "subscriptionId": "${{ secrets.ARM_SUBSCRIPTION_ID }}",
+            "tenantId": "${{ secrets.ARM_TENANT_ID }}"
+          }
+    - name: 'Deploy to WebApp'
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: ${{ steps.tf-outputs.outputs.app_service_name }}
+        package: 'Source/Icebreaker/bin'
+    - name: Azure CLI script
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.0.72
+        inlineScript: |
+          az logout
+          az cache purge
+          az account clear

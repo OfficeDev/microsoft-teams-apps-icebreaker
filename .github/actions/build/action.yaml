@@ -1,0 +1,22 @@
+name: 'Build App'
+description: 'Build App'
+inputs:
+  source_path:  # id of input
+    description: 'folder of SourceCode'
+    default: 'Source'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup NuGet.exe for use with actions
+      uses: NuGet/setup-nuget@v1.0.5
+    - name: setup-msbuild
+      uses: microsoft/setup-msbuild@v1.1
+    - name: Restore nuget packages
+      working-directory: ${{ inputs.source_path }}
+      run: nuget restore Icebreaker.sln
+      shell: cmd
+    - name: Build
+      working-directory: ${{ inputs.source_path }}
+      run: msbuild Icebreaker.sln /p:Platform="Any CPU" /p:Configuration=Release /p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true
+      shell: cmd

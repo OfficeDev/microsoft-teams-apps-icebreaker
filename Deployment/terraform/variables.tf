@@ -51,11 +51,6 @@ variable "defaultCulture" {
   description = "Default culture. You can select default culture from the following: en, de"
 }
 
-variable "gitRepoUrl" {
-  type        = string
-  default     = "https://github.com/WhiteTomX/microsoft-teams-apps-icebreaker.git"
-  description = "The URL to the GitHub repository to deploy."
-}
 
 variable "appDisplayName" {
   type        = string

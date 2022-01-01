@@ -7,7 +7,7 @@
             "minLength": 36,
             "maxLength": 36,
             "metadata": {
-              "description": "The Microsoft Application ID for the bot, e.g., 123e4567-e89b-12d3-a456-426655440000."
+                "description": "The Microsoft Application ID for the bot, e.g., 123e4567-e89b-12d3-a456-426655440000."
             }
         },
         "botAppPassword": {
@@ -50,18 +50,18 @@
                 "description": "The link to the icon for the bot. It must resolve to a PNG file."
             }
         },
-      "DefaultCulture": {
-        "defaultValue": "en",
-        "minLength": 1,
-        "type": "String",
-        "allowedValues": [
-          "en",
-          "de"
-        ],
-        "metadata": {
-          "description": "Default culture."
-        }
-      },
+        "DefaultCulture": {
+            "defaultValue": "en",
+            "minLength": 1,
+            "type": "String",
+            "allowedValues": [
+                "en",
+                "de"
+            ],
+            "metadata": {
+                "description": "Default culture."
+            }
+        },
         "pairingWeekInterval": {
             "type": "int",
             "minValue": 1,
@@ -71,21 +71,21 @@
             }
         },
         "pairingDayOfWeek": {
-            "type":"string", 
+            "type": "string",
             "allowedValues": [
-                "Sunday", 
-                "Monday", 
-                "Tuesday", 
-                "Wednesday", 
-                "Thursday", 
-                "Friday", 
+                "Sunday",
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
                 "Saturday"
-            ], 
+            ],
             "defaultValue": "Monday",
-            "metadata":{
+            "metadata": {
                 "description": "The day of the week when pairings are created."
             }
-        }, 
+        },
         "pairingHour": {
             "type": "int",
             "allowedValues": [
@@ -120,7 +120,7 @@
             }
         },
         "pairingTimeZone": {
-            "type":"string",
+            "type": "string",
             "minLength": 1,
             "defaultValue": "Pacific Standard Time",
             "metadata": {
@@ -138,27 +138,27 @@
         "sku": {
             "type": "string",
             "allowedValues": [
-              "Free",
-              "Shared",
-              "Basic",
-              "Standard",
-              "Premium"
+                "Free",
+                "Shared",
+                "Basic",
+                "Standard",
+                "Premium"
             ],
             "defaultValue": "Standard",
             "metadata": {
-              "description": "The pricing tier for the hosting plan."
+                "description": "The pricing tier for the hosting plan."
             }
         },
         "planSize": {
             "type": "string",
             "allowedValues": [
-              "1",
-              "2",
-              "3"
+                "1",
+                "2",
+                "3"
             ],
             "defaultValue": "1",
             "metadata": {
-              "description": "The size of the hosting plan (small, medium, or large)."
+                "description": "The size of the hosting plan (small, medium, or large)."
             }
         },
         "location": {
@@ -166,23 +166,7 @@
             "minLength": 1,
             "defaultValue": "[resourceGroup().location]",
             "metadata": {
-              "description": "Location for all resources."
-            }
-        },        
-        "gitRepoUrl": {
-            "type": "string",
-            "minLength": 1,
-            "defaultValue": "https://github.com/OfficeDev/microsoft-teams-icebreaker-app.git",
-            "metadata": {
-              "description": "The URL to the GitHub repository to deploy."
-            }
-        },
-        "gitBranch": {
-            "type": "string",
-            "minLength": 1,
-            "defaultValue": "main",
-            "metadata": {
-              "description": "The branch of the GitHub repository to deploy."
+                "description": "Location for all resources."
             }
         }
     },
@@ -191,10 +175,10 @@
         "botDisplayName": "[parameters('appName')]",
         "botUniqueName": "[concat(variables('baseResourceName'), '-', uniqueString(resourceGroup().id))]",
         "appServiceName": "[concat(variables('baseResourceName'), '-', uniqueString(resourceGroup().id))]",
-        "cosmosDbName":"[concat(variables('baseResourceName'), '-storage-', uniqueString(resourceGroup().id))]",
-        "logicAppName":"[concat(variables('baseResourceName'), '-logicapp-', uniqueString(resourceGroup().id))]",
-        "keyVaultName":"[concat('keyvault-', uniqueString(resourceGroup().id))]",
-        "KeyVaultURI" : "[concat('https://', variables('keyVaultName'), '.vault.azure.net')]",
+        "cosmosDbName": "[concat(variables('baseResourceName'), '-storage-', uniqueString(resourceGroup().id))]",
+        "logicAppName": "[concat(variables('baseResourceName'), '-logicapp-', uniqueString(resourceGroup().id))]",
+        "keyVaultName": "[concat('keyvault-', uniqueString(resourceGroup().id))]",
+        "KeyVaultURI": "[concat('https://', variables('keyVaultName'), '.vault.azure.net')]",
         "appInsightsName": "[variables('baseResourceName')]",
         "appHostingPlanName": "[variables('baseResourceName')]",
         "sharedSkus": [ "Free", "Shared" ],
@@ -226,7 +210,7 @@
                 "description": "[parameters('appDescription')]",
                 "endpoint": "[variables('botMessagingUrl')]",
                 "iconUrl": "[parameters('appIconUrl')]",
-                "msaAppId":"[parameters('botAppID')]",
+                "msaAppId": "[parameters('botAppID')]",
                 "developerAppInsightKey": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2015-05-01').InstrumentationKey]"
             },
             "resources": [
@@ -258,16 +242,16 @@
             "name": "[variables('appHostingPlanName')]",
             "location": "[parameters('location')]",
             "properties": {
-              "name": "[variables('appHostingPlanName')]",
-              "hostingEnvironment": "",
-              "numberOfWorkers": 1
+                "name": "[variables('appHostingPlanName')]",
+                "hostingEnvironment": "",
+                "numberOfWorkers": 1
             },
             "sku": {
-              "name": "[variables('skuName')]",
-              "tier": "[parameters('sku')]",
-              "size": "[variables('skuSize')]",
-              "family": "[variables('skuFamily')]",
-              "capacity": 0
+                "name": "[variables('skuName')]",
+                "tier": "[parameters('sku')]",
+                "size": "[variables('skuSize')]",
+                "family": "[variables('skuFamily')]",
+                "capacity": 0
             }
         },
         {
@@ -306,7 +290,7 @@
                             "name": "CosmosCollectionUsers",
                             "value": "UsersOptInStatus"
                         },
-						{
+                        {
                             "name": "CosmosCollectionQuestions",
                             "value": "IcebreakerQuestions"
                         },
@@ -323,11 +307,11 @@
                             "value": "[variables('botDisplayName')]"
                         },
                         {
-                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY", 
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
                             "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2015-05-01').InstrumentationKey]"
                         },
                         {
-                            "name": "ManifestAppId", 
+                            "name": "ManifestAppId",
                             "value": "[variables('manifestAppId')]"
                         },
                         {
@@ -347,17 +331,17 @@
                             "value": "[parameters('DefaultCulture')]"
                         },
                         {
-                        "name": "AllowedTenants",
-                        "value": "[parameters('tenantId')]"
+                            "name": "AllowedTenants",
+                            "value": "[parameters('tenantId')]"
                         },
                         {
-                        "name": "DisableTenantFilter",
-                        "value": "false"
+                            "name": "DisableTenantFilter",
+                            "value": "false"
                         }
                     ],
                     "ftpsState": "Disabled"
                 },
-                "scmType": "ExternalGit",
+                "scmType": "None",
                 "clientAffinityEnabled": true,
                 "clientCertEnabled": false,
                 "hostNamesDisabled": false,
@@ -367,21 +351,6 @@
             },
             "dependsOn": [
                 "[concat('Microsoft.Web/serverfarms/', variables('appHostingPlanName'))]"
-            ],
-            "resources": [
-                {
-                    "apiVersion": "2015-08-01",
-                    "name": "web",
-                    "type": "sourcecontrols",
-                    "dependsOn": [
-                        "[concat('Microsoft.Web/sites/', variables('appServiceName'))]"
-                    ],
-                    "properties": {
-                        "RepoUrl": "[parameters('gitRepoUrl')]",
-                        "branch": "[parameters('gitBranch')]",
-                        "IsManualIntegration": true
-                    }
-                }
             ]
         },
         {
@@ -415,11 +384,11 @@
             "tags": {
                 "defaultExperience": "Core (SQL)"
             }
-        }, 
+        },
         {
-            "name": "[variables('logicAppName')]", 
-            "type": "Microsoft.Logic/workflows", 
-            "apiVersion": "2016-06-01", 
+            "name": "[variables('logicAppName')]",
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2016-06-01",
             "location": "[parameters('location')]",
             "tags": {},
             "scale": null,
@@ -546,14 +515,14 @@
             ]
         }
     ],
-  "outputs": {
-    "appDomain": {
-      "type": "string",
-      "value": "[variables('appServiceBaseDomain')]"
-    },
-    "appServiceName": {
-      "type": "string",
-      "value": "[variables('appServiceName')]"
+    "outputs": {
+        "appDomain": {
+            "type": "string",
+            "value": "[variables('appServiceBaseDomain')]"
+        },
+        "appServiceName": {
+            "type": "string",
+            "value": "[variables('appServiceName')]"
+        }
     }
-  }
 }

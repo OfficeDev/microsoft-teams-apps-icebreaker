@@ -22,3 +22,13 @@ jobs:
       uses: dflook/terraform-plan@v1
       with:
         path: ${{ env.TF_DIR }}
+  build:
+    name: Build
+    runs-on: Windows-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: build
+      uses: ./.github/actions/build
+      with:
+        source_path: Source

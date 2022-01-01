@@ -27,7 +27,6 @@ locals {
     pairingHour         = var.pairingHour
     pairingTimeZone     = var.pairingTimeZone
     sku                 = var.sku
-    gitRepoUrl          = var.gitRepoUrl
   }
 }
 
