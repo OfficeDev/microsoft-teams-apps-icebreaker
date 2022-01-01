@@ -69,12 +69,4 @@ jobs:
       uses: azure/webapps-deploy@v2
       with: 
         app-name: ${{ needs.apply.outputs.app_service_name }}
-        package: 'Source/Icebreaker/bin'
-    - name: Azure CLI script
-      uses: azure/CLI@v1
-      with:
-        azcliversion: 2.0.72
-        inlineScript: |
-          az logout
-          az cache purge
-          az account clear
+        package: '${{ env.GITHUB_WORKSPACE }}/out/_PublishedWebsites/Icebreaker'
