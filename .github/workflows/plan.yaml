@@ -22,6 +22,7 @@ jobs:
       uses: dflook/terraform-plan@v1
       with:
         path: ${{ env.TF_DIR }}
+
   build:
     name: Build
     runs-on: Windows-latest
