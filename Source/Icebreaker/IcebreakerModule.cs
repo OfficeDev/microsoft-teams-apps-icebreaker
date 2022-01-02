@@ -65,6 +65,9 @@ namespace Icebreaker
             builder.RegisterType<IcebreakerBot>().As<IBot>()
                 .SingleInstance();
 
+            builder.RegisterType<QuestionService>().As<QuestionService>()
+                .SingleInstance();
+
             builder.RegisterType<MatchingService>().As<IMatchingService>()
                 .SingleInstance();
 
