@@ -19,5 +19,15 @@ namespace Icebreaker.Helpers
         /// Opt-out for pairs matching
         /// </summary>
         public const string OptOut = "optout";
+
+        /// <summary>
+        /// Report as inactive
+        /// </summary>
+        public const string ReportInactive = "inactive";
+
+        /// <summary>
+        /// Confirm inactive trigger opt out
+        /// </summary>
+        public const string ConfirmInactive = "confirmInactive";
     }
 }

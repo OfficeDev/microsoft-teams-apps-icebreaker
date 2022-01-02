@@ -214,6 +214,22 @@
     <value>Termin erstellen</value>
     <comment>Button text to propose the meetup with the match of the user</comment>
   </data>
+  <data name="ReportInactiveButtonText" xml:space="preserve">
+    <value>Antwortet nicht</value>
+    <comment>Button text to report as Inactive</comment>
+  </data>
+  <data name="ReportInactiveConfirmButtonText" xml:space="preserve">
+    <value>Bestätigen</value>
+    <comment>Text of Button to confirm inactive report</comment>
+  </data>
+  <data name="ReportInactiveConfirmedOptOutText" xml:space="preserve">
+    <value>Die Person wird nicht mehr gematched.</value>
+    <comment>Text to confirm opt out after reporting inactive</comment>
+  </data>
+  <data name="ReportInactiveConfirmText" xml:space="preserve">
+    <value>Jemanden als inaktiv zu melden sorgt dafür, dass die Person nicht mehr mit anderen gematcht wird. Sie wird darüber informiert und kann es selbst wieder aktivieren.</value>
+    <comment>Confirmation Text to report someone as inactive</comment>
+  </data>
   <data name="ResumePairingsButtonText" xml:space="preserve">
     <value>Matches wieder aktivieren</value>
     <comment>Button text to resume pairings</comment>

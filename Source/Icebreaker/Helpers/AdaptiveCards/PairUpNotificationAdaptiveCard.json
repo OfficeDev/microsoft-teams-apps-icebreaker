@@ -72,8 +72,18 @@
       "data": {
         "msteams": {
           "type": "messageBack",
-          "displayText": "${pauseMatchesButtonText}",
           "text": "optout"
+        }
+      }
+    },
+    {
+      "type": "Action.Submit",
+      "title": "${reportInactiveButtonText}",
+      "data": {
+        "msteams": {
+          "type": "messageBack",
+          "text": "inactive",
+          "value": "${reportAadObjectId}"
         }
       }
     }

@@ -91,6 +91,8 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 chatWithMessageGreeting = Uri.EscapeDataString(string.Format(Resources.ChatWithMessageGreeting, question)),
                 pauseMatchesButtonText = Resources.PausePairingsButtonText,
                 proposeMeetupButtonText = Resources.ProposeMeetupButtonText,
+                reportInactiveButtonText = Resources.ReportInactiveButtonText,
+                reportAadObjectId = recipient.AadObjectId,
                 personUpn = recipientUpn,
                 meetingLink,
                 textAlignment,

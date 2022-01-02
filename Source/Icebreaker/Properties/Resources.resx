@@ -213,6 +213,22 @@
     <value>Propose meetup</value>
     <comment>Button text to propose the meetup with the match of the user</comment>
   </data>
+  <data name="ReportInactiveButtonText" xml:space="preserve">
+    <value>Report Inactive</value>
+    <comment>Button text to report as Inactive</comment>
+  </data>
+  <data name="ReportInactiveConfirmButtonText" xml:space="preserve">
+    <value>Confirm</value>
+    <comment>Text of Button to confirm inactive report</comment>
+  </data>
+  <data name="ReportInactiveConfirmedOptOutText" xml:space="preserve">
+    <value>The person is opted out of Matches.</value>
+    <comment>Text to confirm opt out after reporting inactive</comment>
+  </data>
+  <data name="ReportInactiveConfirmText" xml:space="preserve">
+    <value>Reporting someone as inactive ensures that the person is no longer matched with others. They will be informed about it and can opt in themselves.</value>
+    <comment>Confirmation Text to report someone as inactive</comment>
+  </data>
   <data name="ResumePairingsButtonText" xml:space="preserve">
     <value>Resume matches</value>
     <comment>Button text to resume pairings</comment>

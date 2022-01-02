@@ -266,20 +266,7 @@ namespace Icebreaker.Bot
                     var optOutReply = activity.CreateReply();
                     optOutReply.Attachments = new List<Attachment>
                     {
-                        new HeroCard()
-                        {
-                            Text = Resources.OptOutConfirmation,
-                            Buttons = new List<CardAction>()
-                            {
-                                new CardAction()
-                                {
-                                    Title = Resources.ResumePairingsButtonText,
-                                    DisplayText = Resources.ResumePairingsButtonText,
-                                    Type = ActionTypes.MessageBack,
-                                    Text = MatchingActions.OptIn,
-                                },
-                            },
-                        }.ToAttachment(),
+                        this.GetOptOutCard(),
                     };
 
                     await turnContext.SendActivityAsync(optOutReply, cancellationToken).ConfigureAwait(false);
@@ -319,6 +306,43 @@ namespace Icebreaker.Bot
 
                     await turnContext.SendActivityAsync(optInReply, cancellationToken).ConfigureAwait(false);
                 }
+                else if (string.Equals(activity.Text, MatchingActions.ReportInactive, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    this.telemetryClient.TrackTrace($"User {senderAadId} want to report {activity.Value} as inactive");
+                    var reportReply = activity.CreateReply();
+                    reportReply.Attachments = new List<Attachment>
+                    {
+                        new HeroCard()
+                        {
+                            Text = Resources.ReportInactiveConfirmText,
+                            Buttons = new List<CardAction>()
+                            {
+                                new CardAction()
+                                {
+                                    Title = Resources.ReportInactiveConfirmButtonText,
+                                    Type = ActionTypes.MessageBack,
+                                    Text = MatchingActions.ConfirmInactive,
+                                    Value = activity.Value,
+                                },
+                            },
+                        }.ToAttachment(),
+                    };
+
+                    await turnContext.SendActivityAsync(reportReply, cancellationToken).ConfigureAwait(false);
+                }
+                else if (string.Equals(activity.Text, MatchingActions.ConfirmInactive, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var user = await this.conversationHelper.GetMemberAsync(turnContext, activity.Value.ToString(), cancellationToken);
+                    await this.conversationHelper.NotifyUserAsync(turnContext, MessageFactory.Attachment(this.GetOptOutCard()), user, tenantId, cancellationToken);
+                    await this.OptOutUser(tenantId, activity.Value.ToString(), activity.ServiceUrl);
+                    var card = new HeroCard()
+                    {
+                        Text = Resources.ReportInactiveConfirmedOptOutText,
+                    };
+                    var newActivity = MessageFactory.Attachment(card.ToAttachment());
+                    newActivity.Id = activity.ReplyToId;
+                    await turnContext.UpdateActivityAsync(newActivity, cancellationToken);
+                }
                 else
                 {
                     // Unknown input
@@ -332,6 +356,24 @@ namespace Icebreaker.Bot
                 this.telemetryClient.TrackTrace($"Error while handling message activity: {ex.Message}", SeverityLevel.Warning);
                 this.telemetryClient.TrackException(ex);
             }
+        }
+
+        private Attachment GetOptOutCard()
+        {
+            return new HeroCard()
+            {
+                Text = Resources.OptOutConfirmation,
+                Buttons = new List<CardAction>()
+                {
+                    new CardAction()
+                    {
+                        Title = Resources.ResumePairingsButtonText,
+                        DisplayText = Resources.ResumePairingsButtonText,
+                        Type = ActionTypes.MessageBack,
+                        Text = MatchingActions.OptIn,
+                    },
+                },
+            }.ToAttachment();
         }
 
         /// <summary>

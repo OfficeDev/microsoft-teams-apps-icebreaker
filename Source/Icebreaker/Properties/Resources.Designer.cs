@@ -277,6 +277,42 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Report Inactive.
+        /// </summary>
+        public static string ReportInactiveButtonText {
+            get {
+                return ResourceManager.GetString("ReportInactiveButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm.
+        /// </summary>
+        public static string ReportInactiveConfirmButtonText {
+            get {
+                return ResourceManager.GetString("ReportInactiveConfirmButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The person is opted out of Matches..
+        /// </summary>
+        public static string ReportInactiveConfirmedOptOutText {
+            get {
+                return ResourceManager.GetString("ReportInactiveConfirmedOptOutText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reporting someone as inactive ensures that the person is no longer matched with others. They will be informed about it and can opt in themselves..
+        /// </summary>
+        public static string ReportInactiveConfirmText {
+            get {
+                return ResourceManager.GetString("ReportInactiveConfirmText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Resume matches.
         /// </summary>
         public static string ResumePairingsButtonText {
