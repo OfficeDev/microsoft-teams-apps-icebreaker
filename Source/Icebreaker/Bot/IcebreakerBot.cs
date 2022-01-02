@@ -332,7 +332,7 @@ namespace Icebreaker.Bot
                 }
                 else if (string.Equals(activity.Text, MatchingActions.ConfirmInactive, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    var user = await this.conversationHelper.GetMemberAsync(turnContext, activity.Value.ToString(), cancellationToken);
+                    var user = new ChannelAccount() { Id = activity.Value.ToString() };
                     await this.conversationHelper.NotifyUserAsync(turnContext, MessageFactory.Attachment(this.GetOptOutCard()), user, tenantId, cancellationToken);
                     await this.OptOutUser(tenantId, activity.Value.ToString(), activity.ServiceUrl);
                     var card = new HeroCard()
