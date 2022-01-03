@@ -322,7 +322,7 @@ namespace Icebreaker.Bot
                                     Title = Resources.ReportInactiveConfirmButtonText,
                                     Type = ActionTypes.MessageBack,
                                     Text = MatchingActions.ConfirmInactive,
-                                    Value = activity.Value,
+                                    Value = activity.Value.ToString(),
                                 },
                             },
                         }.ToAttachment(),
