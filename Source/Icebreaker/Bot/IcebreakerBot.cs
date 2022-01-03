@@ -333,28 +333,35 @@ namespace Icebreaker.Bot
                 }
                 else if (string.Equals(activity.Text, MatchingActions.ConfirmInactive, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    var id = (activity.Value as JObject)["Id"].Value<string>();
                     bool notified = false;
                     var card = new HeroCard();
-                    if (string.IsNullOrEmpty(id))
+                    card.Text = Resources.Failure;
+                    try
                     {
-                        this.telemetryClient.TrackTrace($"Id NullOrEmpty. Not opting out.", SeverityLevel.Error);
+                        var id = (activity.Value as JObject)["id"].Value<string>();
+                        if (string.IsNullOrEmpty(id))
+                        {
+                            this.telemetryClient.TrackTrace($"Id NullOrEmpty. Not opting out.", SeverityLevel.Error);
+                        }
+                        else
+                        {
+                            var user = new ChannelAccount() { Id = id };
+                            notified = await this.conversationHelper.NotifyUserAsync(turnContext, MessageFactory.Attachment(this.GetOptOutCard()), user, tenantId, cancellationToken);
+                            if (notified)
+                            {
+                                await this.OptOutUser(tenantId, id, activity.ServiceUrl);
+                                card.Text = Resources.ReportInactiveConfirmedOptOutText;
+                            }
+                            else
+                            {
+                                this.telemetryClient.TrackTrace($"Tried to notify {id} about OptOut. But wasn't notified. Doing nothing.", SeverityLevel.Error);
+                            }
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        var user = new ChannelAccount() { Id = id };
-                        notified = await this.conversationHelper.NotifyUserAsync(turnContext, MessageFactory.Attachment(this.GetOptOutCard()), user, tenantId, cancellationToken);
-                    }
-
-                    if (notified)
-                    {
-                        await this.OptOutUser(tenantId, activity.Value.ToString(), activity.ServiceUrl);
-                        card.Text = Resources.ReportInactiveConfirmedOptOutText;
-                    }
-                    else
-                    {
-                        this.telemetryClient.TrackTrace($"Tried to notify {activity.Value} about OptOut. But wasn't notified. Doing nothing.", SeverityLevel.Error);
-                        card.Text = Resources.Failure;
+                        this.telemetryClient.TrackTrace($"Encountered Error {MatchingActions.ConfirmInactive}", SeverityLevel.Error);
+                        this.telemetryClient.TrackException(ex);
                     }
 
                     var newActivity = MessageFactory.Attachment(card.ToAttachment());

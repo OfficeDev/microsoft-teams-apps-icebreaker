@@ -93,7 +93,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 pauseMatchesButtonText = Resources.PausePairingsButtonText,
                 proposeMeetupButtonText = Resources.ProposeMeetupButtonText,
                 reportInactiveButtonText = Resources.ReportInactiveButtonText,
-                reportValue = new { Id = recipient.Id },
+                reportValue = new { id = recipient.Id },
                 personUpn = recipientUpn,
                 meetingLink,
                 textAlignment,
