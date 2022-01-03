@@ -7,6 +7,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
 {
     using System;
     using System.Globalization;
+    using System.Web.Helpers;
     using global::AdaptiveCards;
     using global::AdaptiveCards.Templating;
     using Icebreaker.Properties;
@@ -92,7 +93,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
                 pauseMatchesButtonText = Resources.PausePairingsButtonText,
                 proposeMeetupButtonText = Resources.ProposeMeetupButtonText,
                 reportInactiveButtonText = Resources.ReportInactiveButtonText,
-                reportId = recipient.Id,
+                reportValue = new { Id = recipient.Id },
                 personUpn = recipientUpn,
                 meetingLink,
                 textAlignment,

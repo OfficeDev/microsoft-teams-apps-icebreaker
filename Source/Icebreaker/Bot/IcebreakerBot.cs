@@ -23,6 +23,7 @@ namespace Icebreaker.Bot
     using Microsoft.Bot.Connector.Authentication;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Implements the core logic for Icebreaker bot
@@ -322,7 +323,7 @@ namespace Icebreaker.Bot
                                     Title = Resources.ReportInactiveConfirmButtonText,
                                     Type = ActionTypes.MessageBack,
                                     Text = MatchingActions.ConfirmInactive,
-                                    Value = activity.Value.ToString(),
+                                    Value = activity.Value,
                                 },
                             },
                         }.ToAttachment(),
@@ -332,9 +333,19 @@ namespace Icebreaker.Bot
                 }
                 else if (string.Equals(activity.Text, MatchingActions.ConfirmInactive, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    var user = new ChannelAccount() { Id = activity.Value.ToString() };
-                    var notified = await this.conversationHelper.NotifyUserAsync(turnContext, MessageFactory.Attachment(this.GetOptOutCard()), user, tenantId, cancellationToken);
+                    var id = (activity.Value as JObject)["Id"].Value<string>();
+                    bool notified = false;
                     var card = new HeroCard();
+                    if (string.IsNullOrEmpty(id))
+                    {
+                        this.telemetryClient.TrackTrace($"Id NullOrEmpty. Not opting out.", SeverityLevel.Error);
+                    }
+                    else
+                    {
+                        var user = new ChannelAccount() { Id = id };
+                        notified = await this.conversationHelper.NotifyUserAsync(turnContext, MessageFactory.Attachment(this.GetOptOutCard()), user, tenantId, cancellationToken);
+                    }
+
                     if (notified)
                     {
                         await this.OptOutUser(tenantId, activity.Value.ToString(), activity.ServiceUrl);
