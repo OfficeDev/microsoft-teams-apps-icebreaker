@@ -83,7 +83,7 @@
         "msteams": {
           "type": "messageBack",
           "text": "inactive",
-          "value": "${reportAadObjectId}"
+          "value": "${reportId}"
         }
       }
     }
