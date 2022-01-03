@@ -333,12 +333,19 @@ namespace Icebreaker.Bot
                 else if (string.Equals(activity.Text, MatchingActions.ConfirmInactive, StringComparison.InvariantCultureIgnoreCase))
                 {
                     var user = new ChannelAccount() { Id = activity.Value.ToString() };
-                    await this.conversationHelper.NotifyUserAsync(turnContext, MessageFactory.Attachment(this.GetOptOutCard()), user, tenantId, cancellationToken);
-                    await this.OptOutUser(tenantId, activity.Value.ToString(), activity.ServiceUrl);
-                    var card = new HeroCard()
+                    var notified = await this.conversationHelper.NotifyUserAsync(turnContext, MessageFactory.Attachment(this.GetOptOutCard()), user, tenantId, cancellationToken);
+                    var card = new HeroCard();
+                    if (notified)
                     {
-                        Text = Resources.ReportInactiveConfirmedOptOutText,
-                    };
+                        await this.OptOutUser(tenantId, activity.Value.ToString(), activity.ServiceUrl);
+                        card.Text = Resources.ReportInactiveConfirmedOptOutText;
+                    }
+                    else
+                    {
+                        this.telemetryClient.TrackTrace($"Tried to notify {activity.Value} about OptOut. But wasn't notified. Doing nothing.", SeverityLevel.Error);
+                        card.Text = Resources.Failure;
+                    }
+
                     var newActivity = MessageFactory.Attachment(card.ToAttachment());
                     newActivity.Id = activity.ReplyToId;
                     await turnContext.UpdateActivityAsync(newActivity, cancellationToken);
