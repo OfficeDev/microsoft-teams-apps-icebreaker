@@ -313,7 +313,7 @@ namespace Icebreaker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reporting someone as inactive ensures that the person is no longer matched with others. They will be informed about it and can opt in themselves..
+        ///   Looks up a localized string similar to Confirm that a person is inactive. This means that the person will no longer receive an automatic match. If the person wants to become active again, they can reactivate it themselves..
         /// </summary>
         public static string ReportInactiveConfirmText {
             get {
