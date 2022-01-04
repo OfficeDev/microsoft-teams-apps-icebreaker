@@ -267,7 +267,7 @@ namespace Icebreaker.Bot
                     var optOutReply = activity.CreateReply();
                     optOutReply.Attachments = new List<Attachment>
                     {
-                        this.GetOptOutCard(),
+                        this.GetOptOutCard(Resources.OptOutConfirmation),
                     };
 
                     await turnContext.SendActivityAsync(optOutReply, cancellationToken).ConfigureAwait(false);
@@ -346,7 +346,7 @@ namespace Icebreaker.Bot
                         else
                         {
                             var user = new ChannelAccount() { Id = id };
-                            notified = await this.conversationHelper.NotifyUserAsync(turnContext, MessageFactory.Attachment(this.GetOptOutCard()), user, tenantId, cancellationToken);
+                            notified = await this.conversationHelper.NotifyUserAsync(turnContext, MessageFactory.Attachment(this.GetOptOutCard(Resources.OptOutForcedConfirmation)), user, tenantId, cancellationToken);
                             if (notified)
                             {
                                 await this.OptOutUser(tenantId, id, activity.ServiceUrl);
@@ -383,11 +383,11 @@ namespace Icebreaker.Bot
             }
         }
 
-        private Attachment GetOptOutCard()
+        private Attachment GetOptOutCard(string returnMessage)
         {
             return new HeroCard()
             {
-                Text = Resources.OptOutConfirmation,
+                Text = returnMessage,
                 Buttons = new List<CardAction>()
                 {
                     new CardAction()
