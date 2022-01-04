@@ -235,7 +235,7 @@
     <comment>Text to confirm opt out after reporting inactive</comment>
   </data>
   <data name="ReportInactiveConfirmText" xml:space="preserve">
-    <value>Bestätige, dass eine Person inaktiv ist. Somit bekommt die Person kein automatisches Match mehr. Wenn die Person wieder aktiv werden will, kann sie es selbst wieder aktivieren</value>
+    <value>Bestätige, dass die Person inaktiv ist. Somit bekommt sie keine Matches mehr. Wenn die Person wieder aktiv werden will, kann sie es selbst wieder aktivieren</value>
     <comment>Confirmation Text to report someone as inactive</comment>
   </data>
   <data name="ResumePairingsButtonText" xml:space="preserve">
