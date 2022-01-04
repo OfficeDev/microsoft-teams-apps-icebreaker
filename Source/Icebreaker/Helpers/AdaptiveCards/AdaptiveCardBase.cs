@@ -62,7 +62,7 @@ namespace Icebreaker.Helpers.AdaptiveCards
         /// <returns>Tour content url</returns>
         protected static string GetTourUrl(string baseDomain)
         {
-            return $"https://{baseDomain}/tour?theme={{theme}}&locale={{locale}}";
+            return $"https://{baseDomain}/content/tour?theme={{theme}}&locale={{locale}}";
         }
     }
 }
