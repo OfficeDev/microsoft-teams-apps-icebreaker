@@ -55,13 +55,16 @@ namespace Icebreaker.Bot
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"Exception occured in the middleware.", ex);
+                this.logger.LogError($"Exception occured in the middleware.", ex.ToString());
                 throw;
             }
         }
 
         private bool IsTenantAllowed(ITurnContext turnContext)
         {
+            var tenantId = turnContext?.Activity?.Conversation?.TenantId;
+            this.logger.LogInformation($"TeanantId {tenantId}");
+
             if (this.appSettings.DisableTenantFilter)
             {
                 this.logger.LogInformation("Tenant filter is disabled.");
@@ -75,8 +78,6 @@ namespace Icebreaker.Bot
                 return false;
             }
 
-            var tenantId = turnContext?.Activity?.Conversation?.TenantId;
-            this.logger.LogInformation($"TeanantId {tenantId}");
             return allowedTenantIds.Contains(tenantId);
         }
     }
