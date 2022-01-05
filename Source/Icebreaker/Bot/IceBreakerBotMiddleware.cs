@@ -37,6 +37,7 @@ namespace Icebreaker.Bot
         {
             try
             {
+                this.logger.LogInformation("Calling OnTurnAsync");
                 if (!this.IsTenantAllowed(turnContext))
                 {
                     this.logger.LogInformation("The current tenant is not allowed to proceed.");
@@ -55,7 +56,7 @@ namespace Icebreaker.Bot
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"Exception occured in the middleware.", ex);
+                this.logger.LogError($"Exception occured in the middleware.", ex.ToString());
                 throw;
             }
         }
