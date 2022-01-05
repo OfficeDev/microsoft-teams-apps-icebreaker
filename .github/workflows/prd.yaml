@@ -1,4 +1,4 @@
-name: Deploy to Integration
+name: Deploy to Production
 
 on:
   push:
