@@ -99,3 +99,9 @@ variable "app_version" {
   default     = "1.1.0"
   description = "The version String of the App. Used in Manifest."
 }
+
+variable "cosmosEnableFreeTier" {
+  type        = bool
+  default     = false
+  description = "Enable free Tier for DocumentDB. not compatible with Serverless."
+}

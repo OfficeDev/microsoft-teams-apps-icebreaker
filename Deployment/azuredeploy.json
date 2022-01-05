@@ -168,6 +168,13 @@
             "metadata": {
                 "description": "Location for all resources."
             }
+        },
+        "cosmosEnableFreeTier": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Use FreeTier for Cosmos DB. Not compatible with serverless."
+            }
         }
     },
     "variables": {
@@ -361,6 +368,7 @@
             "kind": "GlobalDocumentDB",
             "scale": null,
             "properties": {
+                "enableFreeTier": "[parameters('cosmosEnableFreeTier')]",
                 "ipRangeFilter": "",
                 "enableAutomaticFailover": false,
                 "enableMultipleWriteLocations": true,

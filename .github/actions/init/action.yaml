@@ -28,6 +28,10 @@ inputs:
   name:
     description: 'name to give to terraform as variable'
     default: 'Icebreaker'
+  cosmosEnableFreeTier:
+    description: 'cosmosEnableFreeTier to give to terraform as variable'
+    default: false
+
 runs:
   using: "composite"
   steps:
@@ -58,6 +62,7 @@ runs:
 
         echo "TF_VAR_stage=${{ inputs.stage }}" >> $GITHUB_ENV
         echo "TF_VAR_name=${{ inputs.name }}" >> $GITHUB_ENV
+        echo "TF_VAR_cosmosEnableFreeTier=${{ inputs.cosmosEnableFreeTier }}" >> $GITHUB_ENV
       shell: bash
         
             
