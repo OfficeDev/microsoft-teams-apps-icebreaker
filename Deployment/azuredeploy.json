@@ -45,7 +45,7 @@
         "appIconUrl": {
             "type": "string",
             "minLength": 1,
-            "defaultValue": "https://raw.githubusercontent.com/OfficeDev/microsoft-teams-icebreaker-app/main/Manifest/color.png",
+            "defaultValue": "https://raw.githubusercontent.com/WhiteTomX/microsoft-teams-apps-icebreaker/main/Manifest/color.png",
             "metadata": {
                 "description": "The link to the icon for the bot. It must resolve to a PNG file."
             }
