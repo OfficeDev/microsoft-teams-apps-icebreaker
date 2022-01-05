@@ -118,6 +118,7 @@ namespace Icebreaker.Secrets
             }
             catch (Exception exception)
             {
+                this.telemetryClient.TrackTrace("Exception while reading secrets from KV" + exception.ToString());
                 this.telemetryClient.TrackException(exception.InnerException);
                 throw;
             }
