@@ -1,0 +1,6 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
+  "name.short": "Icebreaker",
+  "description.short": "Icebreaker هو روبوت يقرن بين أعضاء الفريق عشوائياً لتكوين وحدة بين الفريق.",
+  "description.full": "Icebreaker هو روبوت بسيط يقرن بين أعضاء الفريق عشوائياً كل أسبوع لمساعدة فريقك على بناء الثقة وتكوين معارف شخصية."
+}

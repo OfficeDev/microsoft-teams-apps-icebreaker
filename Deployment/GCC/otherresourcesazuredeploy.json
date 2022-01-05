@@ -1,0 +1,503 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "botAppID": {
+            "type": "string",
+            "minLength": 36,
+            "maxLength": 36,
+            "metadata": {
+              "description": "The Microsoft Application ID for the bot, e.g., 123e4567-e89b-12d3-a456-426655440000."
+            }
+        },
+        "botAppPassword": {
+            "type": "securestring",
+            "minLength": 1,
+            "metadata": {
+                "description": "The Microsoft Application Password for the bot."
+            }
+        },
+        "appName": {
+            "type": "string",
+            "minLength": 1,
+            "defaultValue": "Icebreaker",
+            "metadata": {
+                "description": "The app name to use for the resources that will be provisioned."
+            }
+        },
+        "tenantId": {
+            "type": "string",
+            "defaultValue": "[subscription().tenantId]",
+            "minLength": 1,
+            "maxLength": 36,
+            "metadata": {
+                "description": "The ID of the tenant to which the app will be used."
+            }
+        },
+		"botAppInsightsKey": {
+      		"type": "securestring",
+      		"minLength": 1,
+      		"metadata": {
+        		"description": "The instrumentation key for the app insights created for the bot."
+      		}
+    	},
+        "appDescription": {
+            "type": "string",
+            "minLength": 1,
+            "defaultValue": "Icebreaker is a cute little bot that randomly pairs team members up every week to help the team build trust and personal connections.",
+            "metadata": {
+                "description": "The description for the app."
+            }
+        },
+        "appIconUrl": {
+            "type": "string",
+            "minLength": 1,
+            "defaultValue": "https://raw.githubusercontent.com/OfficeDev/microsoft-teams-icebreaker-app/main/Manifest/color.png",
+            "metadata": {
+                "description": "The link to the icon for the bot. It must resolve to a PNG file."
+            }
+        },
+        "DefaultCulture": {
+            "defaultValue": "en-US",
+            "minLength": 1,
+            "type": "String",
+            "metadata": {
+                "description": "Default culture."
+            }
+        },
+        "pairingWeekInterval": {
+            "type": "int",
+            "minValue": 1,
+            "defaultValue": 1,
+            "metadata": {
+                "description": "The number of weeks between pairings."
+            }
+        },
+        "pairingDayOfWeek": {
+            "type":"string", 
+            "allowedValues": [
+                "Sunday", 
+                "Monday", 
+                "Tuesday", 
+                "Wednesday", 
+                "Thursday", 
+                "Friday", 
+                "Saturday"
+            ], 
+            "defaultValue": "Monday",
+            "metadata":{
+                "description": "The day of the week when pairings are created."
+            }
+        }, 
+        "pairingHour": {
+            "type": "int",
+            "allowedValues": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23
+            ],
+            "defaultValue": 10,
+            "metadata": {
+                "description": "The hour at which pairings are created."
+            }
+        },
+        "pairingTimeZone": {
+            "type":"string",
+            "minLength": 1,
+            "defaultValue": "Pacific Standard Time",
+            "metadata": {
+                "description": "The time zone for the hour at which pairings are created."
+            }
+        },
+        "pairingStartKey": {
+            "type": "string",
+            "minLength": 1,
+            "defaultValue": "[newGuid()]",
+            "metadata": {
+                "description": "The unique key used by the function app to notify the bot to start creating pairings."
+            }
+        },
+        "sku": {
+            "type": "string",
+            "allowedValues": [
+              "Free",
+              "Shared",
+              "Basic",
+              "Standard",
+              "Premium"
+            ],
+            "defaultValue": "Standard",
+            "metadata": {
+              "description": "The pricing tier for the hosting plan."
+            }
+        },
+        "planSize": {
+            "type": "string",
+            "allowedValues": [
+              "1",
+              "2",
+              "3"
+            ],
+            "defaultValue": "1",
+            "metadata": {
+              "description": "The size of the hosting plan (small, medium, or large)."
+            }
+        },
+        "location": {
+            "type": "string",
+            "minLength": 1,
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+              "description": "Location for all resources."
+            }
+        },        
+        "gitRepoUrl": {
+            "type": "string",
+            "minLength": 1,
+            "defaultValue": "https://github.com/OfficeDev/microsoft-teams-icebreaker-app.git",
+            "metadata": {
+              "description": "The URL to the GitHub repository to deploy."
+            }
+        },
+        "gitBranch": {
+            "type": "string",
+            "minLength": 1,
+            "defaultValue": "main",
+            "metadata": {
+              "description": "The branch of the GitHub repository to deploy."
+            }
+        }
+    },
+  "variables": {
+    "baseResourceName": "[toLower(parameters('appName'))]",
+    "botDisplayName": "[parameters('appName')]",
+    "botUniqueName": "[concat(variables('baseResourceName'), '-', uniqueString(resourceGroup().id))]",
+    "appServiceName": "[concat(variables('baseResourceName'))]",
+    "cosmosDbName": "[concat(variables('baseResourceName'), '-storage-', uniqueString(resourceGroup().id))]",
+    "logicAppName": "[concat(variables('baseResourceName'), '-logicapp-', uniqueString(resourceGroup().id))]",
+    "keyVaultName": "[concat('keyvault-', uniqueString(resourceGroup().id))]",
+    "KeyVaultURI": "[concat('https://', variables('keyVaultName'), '.vault.usgovcloudapi.net/')]",
+    "appHostingPlanName": "[variables('baseResourceName')]",
+    "sharedSkus": [ "Free", "Shared" ],
+    "isSharedPlan": "[contains(variables('sharedSkus'), parameters('sku'))]",
+    "skuFamily": "[if(equals(parameters('sku'), 'Shared'), 'D', take(parameters('sku'), 1))]",
+    "skuName": "[if(variables('isSharedPlan'), concat(variables('skuFamily'),'1'), concat(variables('skuFamily'), parameters('planSize')))]",
+    "skuSize": "[concat(variables('skuFamily'), parameters('planSize'))]",
+    "appServiceBaseDomain": "[concat(variables('appServiceName'), '.azurewebsites.us')]",
+    "appServiceBaseUrl": "[concat('https://', variables('appServiceBaseDomain'))]",
+    "botMessagingUrl": "[concat(variables('appServiceBaseUrl'), '/api/messages')]",
+    "pairingStartUrl": "[concat(variables('appServiceBaseUrl'), '/api/processnow')]",
+    "pairingFrequency": "Week",
+    "pairingMinute": 0,
+    "manifestAppId": "d55d08d9-bacb-4567-942f-afd85d632dcc"
+  },
+    "resources": [
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2016-09-01",
+            "name": "[variables('appHostingPlanName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+              "name": "[variables('appHostingPlanName')]",
+              "hostingEnvironment": "",
+              "numberOfWorkers": 1
+            },
+            "sku": {
+              "name": "[variables('skuName')]",
+              "tier": "[parameters('sku')]",
+              "size": "[variables('skuSize')]",
+              "family": "[variables('skuFamily')]",
+              "capacity": 0
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "kind": "app",
+            "name": "[variables('appServiceName')]",
+            "apiVersion": "2018-02-01",
+            "location": "[parameters('location')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "scale": null,
+            "properties": {
+                "enabled": true,
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', variables('appHostingPlanName'))]",
+                "reserved": false,
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "MicrosoftAppId",
+                            "value": "[parameters('botAppID')]"
+                        },
+                        {
+                            "name": "CosmosDBEndpointUrl",
+                            "value": "[reference(concat('Microsoft.DocumentDb/databaseAccounts/', variables('cosmosDbName'))).documentEndpoint]"
+                        },
+                        {
+                            "name": "CosmosDBDatabaseName",
+                            "value": "[variables('cosmosDbName')]"
+                        },
+                        {
+                            "name": "CosmosCollectionTeams",
+                            "value": "TeamsInstalled"
+                        },
+                        {
+                            "name": "CosmosCollectionUsers",
+                            "value": "UsersOptInStatus"
+                        },
+                        {
+                            "name": "MaxPairUpsPerTeam",
+                            "value": "5000"
+                        },
+                        {
+                            "name": "Testing",
+                            "value": "false"
+                        },
+                        {
+                            "name": "BotDisplayName",
+                            "value": "[variables('botDisplayName')]"
+                        },
+                        {
+                            "name": "ManifestAppId", 
+                            "value": "[variables('manifestAppId')]"
+                        },
+                        {
+                            "name": "AppBaseDomain",
+                            "value": "[variables('appServiceBaseDomain')]"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY", 
+                            "value": "[parameters('botAppInsightsKey')]"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "8.9.4"
+                        },
+                        {
+                            "name": "KeyVaultURI",
+                            "value": "[variables('KeyVaultURI')]"
+                        },
+                        {
+                            "name": "DefaultCulture",
+                            "value": "[parameters('DefaultCulture')]"
+                        },
+                        {
+                        "name": "AllowedTenants",
+                        "value": "[parameters('tenantId')]"
+                        },
+                        {
+                        "name": "DisableTenantFilter",
+                        "value": "false"
+                        }
+                    ],
+                    "ftpsState": "Disabled"
+                },
+                "scmType": "ExternalGit",
+                "clientAffinityEnabled": true,
+                "clientCertEnabled": false,
+                "hostNamesDisabled": false,
+                "containerSize": 0,
+                "dailyMemoryTimeQuota": 0,
+                "httpsOnly": true
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Web/serverfarms/', variables('appHostingPlanName'))]"
+            ],
+            "resources": [
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "web",
+                    "type": "sourcecontrols",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/sites/', variables('appServiceName'))]"
+                    ],
+                    "properties": {
+                        "RepoUrl": "[parameters('gitRepoUrl')]",
+                        "branch": "[parameters('gitBranch')]",
+                        "IsManualIntegration": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "[variables('cosmosDbName')]",
+            "type": "Microsoft.DocumentDB/databaseAccounts",
+            "apiVersion": "2015-04-08",
+            "location": "[parameters('location')]",
+            "kind": "GlobalDocumentDB",
+            "scale": null,
+            "properties": {
+                "ipRangeFilter": "",
+                "enableAutomaticFailover": false,
+                "enableMultipleWriteLocations": true,
+                "isVirtualNetworkFilterEnabled": false,
+                "virtualNetworkRules": [],
+                "databaseAccountOfferType": "Standard",
+                "consistencyPolicy": {
+                    "defaultConsistencyLevel": "Session",
+                    "maxIntervalInSeconds": 5,
+                    "maxStalenessPrefix": 100
+                },
+                "locations": [
+                    {
+                        "locationName": "[parameters('location')]",
+                        "provisioningState": "Succeeded",
+                        "failoverPriority": 0
+                    }
+                ],
+                "capabilities": []
+            },
+            "tags": {
+                "defaultExperience": "Core (SQL)"
+            }
+        }, 
+        {
+            "name": "[variables('logicAppName')]", 
+            "type": "Microsoft.Logic/workflows", 
+            "apiVersion": "2016-06-01", 
+            "location": "[parameters('location')]",
+            "tags": {},
+            "scale": null,
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "triggers": {
+                        "Recurrence": {
+                            "recurrence": {
+                                "frequency": "[variables('pairingFrequency')]",
+                                "interval": "[parameters('pairingWeekInterval')]",
+                                "schedule": {
+                                    "hours": [
+                                        "[parameters('pairingHour')]"
+                                    ],
+                                    "minutes": [
+                                        "[variables('pairingMinute')]"
+                                    ],
+                                    "weekDays": [
+                                        "[parameters('pairingDayOfWeek')]"
+                                    ]
+                                },
+                                "timeZone": "[parameters('pairingTimeZone')]"
+                            },
+                            "type": "Recurrence"
+                        }
+                    },
+                    "actions": {
+                        "HTTP": {
+                            "runAfter": {},
+                            "type": "Http",
+                            "inputs": {
+                                "method": "GET",
+                                "uri": "[variables('pairingStartUrl')]",
+                                "headers": {
+                                    "X-Key": "[parameters('pairingStartKey')]"
+                                }
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {}
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "name": "[variables('keyVaultName')]",
+            "apiVersion": "2019-09-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "Standard"
+                },
+                "tenantId": "[subscription().tenantId]",
+                "enabledForTemplateDeployment": true,
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[reference(resourceId('Microsoft.Web/sites', variables('appServiceName')), '2018-11-01', 'Full').identity.principalId]",
+                        "permissions": {
+                            "secrets": [
+                                "get"
+                            ]
+                        }
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Web/sites/', variables('appServiceName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/Key')]",
+            "apiVersion": "2019-09-01",
+            "properties": {
+                "contentType": "text/plain",
+                "value": "[parameters('pairingStartKey')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/MicrosoftAppPassword')]",
+            "apiVersion": "2019-09-01",
+            "properties": {
+                "contentType": "text/plain",
+                "value": "[parameters('botAppPassword')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "name": "[concat(variables('keyVaultName'), '/CosmosDBKey')]",
+            "apiVersion": "2019-09-01",
+            "properties": {
+                "value": "[listKeys(concat('Microsoft.DocumentDB/databaseAccounts/', variables('cosmosDbName')), '2015-04-08').primaryMasterKey]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+            ]
+        }
+    ],
+  "outputs": {
+    "appDomain": {
+      "type": "string",
+      "value": "[variables('appServiceBaseDomain')]"
+    },
+    "appServiceName": {
+      "type": "string",
+      "value": "[variables('appServiceName')]"
+    }
+  }
+}
