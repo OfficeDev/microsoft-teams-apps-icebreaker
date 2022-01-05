@@ -46,7 +46,6 @@ namespace Icebreaker.Bot
         /// <inheritdoc/>
         protected override async Task<AppCredentials> BuildCredentialsAsync(string appId, string oAuthScope = null)
         {
-            this.logger.LogInformation("GetAppCredentials from IceBreakerBotHttpAdapter");
             var appCredentials = await this.secretsProvider.GetAppCredentialsAsync();
             return appCredentials;
         }
