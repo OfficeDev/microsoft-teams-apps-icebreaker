@@ -25,6 +25,9 @@ inputs:
   stage:
     description: 'stage to give to terraform as variable'
     required: true
+  name:
+    description: 'name to give to terraform as variable'
+    default: 'Icebreaker'
 runs:
   using: "composite"
   steps:
@@ -54,6 +57,7 @@ runs:
         echo "ARM_CLIENT_SECRET=${{ inputs.arm_client_secret }}" >> $GITHUB_ENV
 
         echo "TF_VAR_stage=${{ inputs.stage }}" >> $GITHUB_ENV
+        echo "TF_VAR_name=${{ inputs.name }}" >> $GITHUB_ENV
       shell: bash
         
             
