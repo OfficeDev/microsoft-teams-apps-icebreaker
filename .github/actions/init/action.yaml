@@ -39,10 +39,10 @@ runs:
       run: |
         echo 'terraform {' > ${{ inputs.tf_backend_file_name }}
         echo '  backend "azurerm" {' >> ${{ inputs.tf_backend_file_name }}
-        echo 'resource_group_name="rg-IcebreakerTf-int-01"' >> ${{ inputs.tf_backend_file_name }}
-        echo 'storage_account_name="stzgminttficebreaker01"' >> ${{ inputs.tf_backend_file_name }}
-        echo 'container_name="tfstate"' >> ${{ inputs.tf_backend_file_name }}
-        echo 'key="int.tfstate"' >> ${{ inputs.tf_backend_file_name }}
+        echo 'resource_group_name="rg-TerraformBackend-prd-01"' >> ${{ inputs.tf_backend_file_name }}
+        echo 'storage_account_name="stzgmtficebreaker01"' >> ${{ inputs.tf_backend_file_name }}
+        echo 'container_name="tfstate${{ inputs.stage }}"' >> ${{ inputs.tf_backend_file_name }}
+        echo 'key="${{ inputs.stage }}.tfstate"' >> ${{ inputs.tf_backend_file_name }}
         echo 'use_microsoft_graph=true' >> ${{ inputs.tf_backend_file_name }}
         echo 'use_azuread_auth=true' >> ${{ inputs.tf_backend_file_name }}
         echo '}' >> backend.tf
