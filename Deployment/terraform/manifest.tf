@@ -9,9 +9,9 @@ resource "local_file" "manifest" {
   content = jsonencode({
     "$schema"         = "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json"
     "manifestVersion" = "1.5"
-    "version"         = "1.0.0"
+    "version"         = var.version
     "id"              = azuread_application.icebreaker.application_id
-    "packageName"     = "de.whitetom.zgm.icebreaker"
+    "packageName"     = "de.whitetom.zgm.icebreaker${var.stage}"
     "developer" = {
       "name"          = var.companyName
       "websiteUrl"    = var.websiteUrl
@@ -29,7 +29,7 @@ resource "local_file" "manifest" {
     }
 
     "name" = {
-      "short" = "Icebreaker"
+      "short" = var.name
     }
 
     "description" = {
