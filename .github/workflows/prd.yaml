@@ -24,6 +24,7 @@ jobs:
         arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
         stage: "prd"
         cosmosEnableFreeTier: true
+        documentDbServerless: false
     - name: terraform-apply
       uses: dflook/terraform-apply@v1
       with:
