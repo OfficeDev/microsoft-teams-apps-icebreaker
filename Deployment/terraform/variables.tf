@@ -94,8 +94,8 @@ variable "termsOfUseUrl" {
   description = "The https:// URL to the company's terms of use."
 }
 
-variable "version" {
+variable "app_version" {
   type        = string
-  default     = "1.0.0"
+  default     = "1.1.0"
   description = "The version String of the App. Used in Manifest."
 }

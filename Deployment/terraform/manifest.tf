@@ -9,7 +9,7 @@ resource "local_file" "manifest" {
   content = jsonencode({
     "$schema"         = "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json"
     "manifestVersion" = "1.5"
-    "version"         = var.version
+    "version"         = var.app_version
     "id"              = azuread_application.icebreaker.application_id
     "packageName"     = "de.whitetom.zgm.icebreaker${var.stage}"
     "developer" = {
