@@ -38,6 +38,7 @@ namespace Icebreaker.Bot
             try
             {
                 this.logger.LogInformation("Calling OnTurnAsync");
+
                 if (!this.IsTenantAllowed(turnContext))
                 {
                     this.logger.LogInformation("The current tenant is not allowed to proceed.");
@@ -63,6 +64,8 @@ namespace Icebreaker.Bot
 
         private bool IsTenantAllowed(ITurnContext turnContext)
         {
+            var tenantId = turnContext?.Activity?.Conversation?.TenantId;
+            this.logger.LogInformation($"TeanantId {tenantId}");
             if (this.appSettings.DisableTenantFilter)
             {
                 this.logger.LogInformation("Tenant filter is disabled.");
@@ -76,8 +79,6 @@ namespace Icebreaker.Bot
                 return false;
             }
 
-            var tenantId = turnContext?.Activity?.Conversation?.TenantId;
-            this.logger.LogInformation($"TeanantId {tenantId}");
             return allowedTenantIds.Contains(tenantId);
         }
     }

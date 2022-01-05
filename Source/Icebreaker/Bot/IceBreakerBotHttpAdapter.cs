@@ -49,7 +49,7 @@ namespace Icebreaker.Bot
             this.logger.LogInformation("GetAppCredentials from IceBreakerBotHttpAdapter");
             var appCredentials = await this.secretsProvider.GetAppCredentialsAsync();
             var token = await appCredentials.GetTokenAsync();
-            this.logger.LogInformation(String.IsNullOrEmpty(token).ToString());
+            this.logger.LogInformation("Token null or empty ? "+string.IsNullOrEmpty(token).ToString());
 
             return appCredentials;
         }
