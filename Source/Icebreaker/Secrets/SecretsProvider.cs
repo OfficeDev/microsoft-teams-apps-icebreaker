@@ -98,10 +98,12 @@ namespace Icebreaker.Secrets
         {
             if (!this.readFromKV)
             {
+                this.telemetryClient.TrackTrace("Reading app password from appSettings");
                 return this.options.MicrosoftAppPassword;
             }
 
             // else read from KV
+            this.telemetryClient.TrackTrace("Reading app password from KV");
             return this.ReadSecretsFromKV(this.appSettings.MicrosoftAppPasswordKeyName);
         }
 
@@ -109,7 +111,10 @@ namespace Icebreaker.Secrets
         {
             try
             {
-                return this.secretClient.GetSecret(key).Value?.Value;
+                this.telemetryClient.TrackTrace($"Reading {key} from Secrets");
+                var secretValue = this.secretClient.GetSecret(key).Value?.Value;
+                this.telemetryClient.TrackTrace("Secret value null or empty ? " + String.IsNullOrEmpty(secretValue) + "\n" + "Secret value null or whitespace ? " + String.IsNullOrWhiteSpace(secretValue));
+                return secretValue;
             }
             catch (Exception exception)
             {
