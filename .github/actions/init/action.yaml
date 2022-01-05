@@ -22,6 +22,9 @@ inputs:
   arm_client_secret:
     description: 'Client secret to set as ARM_CLIENT_SECRET ENV Variable'
     required: true
+  stage:
+    description: 'stage to give to terraform as variable'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -50,7 +53,7 @@ runs:
         echo "ARM_CLIENT_ID=${{ inputs.arm_client_id }}" >> $GITHUB_ENV
         echo "ARM_CLIENT_SECRET=${{ inputs.arm_client_secret }}" >> $GITHUB_ENV
 
-        echo "TF_VAR_stage=int" >> $GITHUB_ENV
+        echo "TF_VAR_stage=${{ inputs.stage }}" >> $GITHUB_ENV
       shell: bash
         
             

@@ -1,13 +1,11 @@
-name: Deploy to Production
+name: Deploy to Integration
 
-on:
-  push:
-    branches: [ main ]
+on: [pull_request]
 
 jobs:
   apply:
     runs-on: ubuntu-latest
-    name: Apply terraform plan
+    name: Apply terraform
     environment: zgm-int
     outputs:
       app_service_name: ${{ steps.tf-outputs.outputs.app_service_name }}
@@ -22,10 +20,12 @@ jobs:
         arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
         arm_client_id: ${{ secrets.ARM_CLIENT_ID }}
         arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
+        stage: "int"
     - name: terraform-apply
       uses: dflook/terraform-apply@v1
       with:
         path: ${{ env.TF_DIR }}
+        auto_approve: true
     - name: Get outputs
       uses: dflook/terraform-output@v1
       id: tf-outputs
