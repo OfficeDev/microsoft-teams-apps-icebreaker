@@ -76,6 +76,7 @@ namespace Icebreaker.Bot
             }
 
             var tenantId = turnContext?.Activity?.Conversation?.TenantId;
+            this.logger.LogInformation($"TeanantId {tenantId}");
             return allowedTenantIds.Contains(tenantId);
         }
     }

@@ -112,7 +112,10 @@ namespace Icebreaker.Secrets
             try
             {
                 this.telemetryClient.TrackTrace($"Reading {key} from Secrets");
-                var secretValue = this.secretClient.GetSecret(key).Value?.Value;
+                var secret = this.secretClient.GetSecret(key);
+                var secretValue = secret.Value?.Value;
+                
+
                 this.telemetryClient.TrackTrace("Secret value null or empty ? " + String.IsNullOrEmpty(secretValue) + "\n" + "Secret value null or whitespace ? " + String.IsNullOrWhiteSpace(secretValue));
                 return secretValue;
             }
