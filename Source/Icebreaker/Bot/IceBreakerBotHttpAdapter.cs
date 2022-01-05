@@ -29,7 +29,8 @@ namespace Icebreaker.Bot
         public IceBreakerBotHttpAdapter(
             ICredentialProvider credentialProvider,
             ISecretsProvider secretsProvider,
-            IceBreakerBotMiddleware botMiddleware)
+            IceBreakerBotMiddleware botMiddleware,
+            ILogger<IceBreakerBotHttpAdapter> logger)
            : base(credentialProvider)
         {
             if (botMiddleware is null)
@@ -38,7 +39,7 @@ namespace Icebreaker.Bot
             }
 
             this.secretsProvider = secretsProvider ?? throw new ArgumentNullException(nameof(secretsProvider));
-
+            this.logger = logger;
             // Middleware
             this.Use(botMiddleware);
         }
