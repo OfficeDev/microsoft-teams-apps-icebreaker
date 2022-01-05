@@ -169,11 +169,18 @@
                 "description": "Location for all resources."
             }
         },
-        "cosmosEnableFreeTier": {
+        "documentDbEnableFreeTier": {
             "type": "bool",
             "defaultValue": false,
             "metadata": {
-                "description": "Use FreeTier for Cosmos DB. Not compatible with serverless."
+                "description": "Use FreeTier for DocumentDB. Not compatible with serverless."
+            }
+        },
+        "documentDbServerless": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Use a serverless for DocumentDB. Not compatible with Free Tier."
             }
         }
     },
@@ -344,6 +351,10 @@
                         {
                             "name": "DisableTenantFilter",
                             "value": "false"
+                        },
+                        {
+                            "name": "DocumentDbServerless",
+                            "value": "[parameters('documentDbServerless')]"
                         }
                     ],
                     "ftpsState": "Disabled"
@@ -368,7 +379,7 @@
             "kind": "GlobalDocumentDB",
             "scale": null,
             "properties": {
-                "enableFreeTier": "[parameters('cosmosEnableFreeTier')]",
+                "enableFreeTier": "[parameters('documentDbEnableFreeTier')]",
                 "ipRangeFilter": "",
                 "enableAutomaticFailover": false,
                 "enableMultipleWriteLocations": true,
@@ -387,7 +398,7 @@
                         "failoverPriority": 0
                     }
                 ],
-                "capabilities": []
+                "capabilities": "[if(parameters('documentDbServerless'),createArray(createObject('name', 'EnableServerless')),createArray())]"
             },
             "tags": {
                 "defaultExperience": "Core (SQL)"

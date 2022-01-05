@@ -259,8 +259,19 @@ namespace Icebreaker.Helpers
 
             this.documentClient = new DocumentClient(new Uri(endpointUrl), this.secretsHelper.CosmosDBKey);
 
-            var requestOptions = new RequestOptions { OfferThroughput = DefaultRequestThroughput };
-            bool useSharedOffer = true;
+            RequestOptions requestOptions;
+            bool useSharedOffer;
+            if (CloudConfigurationManager.GetSetting("DocumentDbServerless").Equals("True", StringComparison.OrdinalIgnoreCase))
+            {
+                // ServerLess doesnt support Throughput
+                requestOptions = null;
+                useSharedOffer = false;
+            }
+            else
+            {
+                requestOptions = new RequestOptions { OfferThroughput = DefaultRequestThroughput };
+                useSharedOffer = true;
+            }
 
             // Create the database if needed
             try

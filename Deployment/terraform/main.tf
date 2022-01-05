@@ -17,17 +17,18 @@ resource "azuread_application_password" "icebreaker" {
 
 locals {
   arm_parameters = {
-    botAppID             = azuread_application.icebreaker.application_id
-    botAppPassword       = azuread_application_password.icebreaker.value
-    appName              = var.name
-    appDescription       = var.description_long
-    DefaultCulture       = var.defaultCulture
-    pairingWeekInterval  = var.pairingWeekInterval
-    pairingDayOfWeek     = var.pairingDayOfWeek
-    pairingHour          = var.pairingHour
-    pairingTimeZone      = var.pairingTimeZone
-    sku                  = var.sku
-    cosmosEnableFreeTier = var.cosmosEnableFreeTier
+    botAppID                 = azuread_application.icebreaker.application_id
+    botAppPassword           = azuread_application_password.icebreaker.value
+    appName                  = var.name
+    appDescription           = var.description_long
+    DefaultCulture           = var.defaultCulture
+    pairingWeekInterval      = var.pairingWeekInterval
+    pairingDayOfWeek         = var.pairingDayOfWeek
+    pairingHour              = var.pairingHour
+    pairingTimeZone          = var.pairingTimeZone
+    sku                      = var.sku
+    documentDbEnableFreeTier = var.documentDbEnableFreeTier
+    documentDbServerless     = var.documentDbServerless
   }
 }
 
