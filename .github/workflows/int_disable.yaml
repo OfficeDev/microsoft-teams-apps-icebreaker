@@ -1,0 +1,29 @@
+name: Destroy testing workspace
+
+on:
+  pull_request:
+    types: [closed] 
+
+jobs:
+  cleanup_tests:
+    runs-on: ubuntu-latest
+    name: Cleanup after integration tests
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: init
+      uses: ./.github/actions/init
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        arm_tenant_id: ${{ secrets.ARM_TENANT_ID }}
+        arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        arm_client_id: ${{ secrets.ARM_CLIENT_ID }}
+        arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
+        stage: 'int'
+        name: 'IcebreakerTest'
+    - name: terraform destroy LogicApp
+      run: |
+        az login --service-principal -u ${{ secrets.ARM_CLIENT_ID }} -p ${{ secrets.ARM_CLIENT_SECRET }} --tenant ${{ secrets.ARM_TENANT_ID }}
+        az account set --subscription ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        az resource invoke-action --action disable --ids $(az logic workflow list --query "[].id" -o tsv --resource-group 'rg-Icebreaker-int-01')
+      shell: bash
