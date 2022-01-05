@@ -116,7 +116,7 @@ namespace Icebreaker.Secrets
                 var secretValue = secret.Value?.Value;
                 
 
-                this.telemetryClient.TrackTrace("Secret value null or empty ? " + String.IsNullOrEmpty(secretValue) + "\n" + "Secret value null or whitespace ? " + String.IsNullOrWhiteSpace(secretValue));
+                this.telemetryClient.TrackTrace($"Secret value {key} null or empty ? " + String.IsNullOrEmpty(secretValue) + "\n" + "Secret value null or whitespace ? " + String.IsNullOrWhiteSpace(secretValue));
                 return secretValue;
             }
             catch (Exception exception)
