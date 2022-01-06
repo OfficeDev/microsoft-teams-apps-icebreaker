@@ -49,6 +49,9 @@ namespace Icebreaker.Helpers
             this.telemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(this.telemetryClient));
             this.logger = logger;
             this.retryPolicy = RetryPolicyHelper.GetRetryPolicy(logger: this.logger);
+            this.telemetryClient.TrackTrace("Allowed tenant ids "+ this.appSettings.AllowedTenantIds.Count.ToString());
+            this.telemetryClient.TrackTrace("Allowed tenant ids " + string.Join("," , this.appSettings.AllowedTenantIds));
+
         }
 
         /// <summary>
@@ -64,7 +67,8 @@ namespace Icebreaker.Helpers
         {
             var botAdapter = turnContext.Adapter;
             var serviceUrl = turnContext.Activity.ServiceUrl;
-
+            this.telemetryClient.TrackTrace("tenant id " + tenantId);
+           
             return await this.NotifyUserAsync(botAdapter, serviceUrl, cardToSend, user, tenantId, cancellationToken);
         }
 

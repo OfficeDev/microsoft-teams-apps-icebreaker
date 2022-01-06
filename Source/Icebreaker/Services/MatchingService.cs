@@ -92,8 +92,13 @@ namespace Icebreaker.Services
                     try
                     {
                         var teamName = await this.conversationHelper.GetTeamNameByIdAsync(this.botAdapter, team);
+                        this.telemetryClient.TrackTrace($"Pairing members of team {teamName}");
+
                         var optedInUsers = await this.GetOptedInUsersAsync(dbMembersLookup, team);
+                        this.telemetryClient.TrackTrace($"Pairing members of team {team.Id}");
+
                         var maxPairUpsPerTeam = this.appSettings.MaxPairUpsPerTeam;
+                        this.telemetryClient.TrackTrace($"Pairing members of team {team.Id}");
 
                         foreach (var pair in this.MakePairs(optedInUsers).Take(maxPairUpsPerTeam))
                         {

@@ -242,7 +242,7 @@ namespace Icebreaker.Bot
                 var activity = turnContext.Activity;
                 var senderAadId = activity.From.AadObjectId;
                 var tenantId = activity.GetChannelData<TeamsChannelData>().Tenant.Id;
-
+                this.telemetryClient.TrackTrace("tenant id from opted out status " + tenantId);
                 if (string.Equals(activity.Text, MatchingActions.OptOut, StringComparison.InvariantCultureIgnoreCase))
                 {
                     // User opted out
