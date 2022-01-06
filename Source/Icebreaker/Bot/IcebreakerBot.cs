@@ -78,6 +78,12 @@ namespace Icebreaker.Bot
             {
                 turnContext = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
                 this.LogActivityTelemetry(turnContext.Activity);
+                var isAllowedTenant = this.IsTenantAllowed(turnContext);
+                if (!isAllowedTenant)
+                {
+                    return;
+                }
+
                 await base.OnTurnAsync(turnContext, cancellationToken);
             }
             catch (Exception ex)
@@ -522,6 +528,26 @@ namespace Icebreaker.Bot
                 { "Platform", clientInfoEntity?.Properties["platform"]?.ToString() },
             };
             this.telemetryClient.TrackEvent("UserActivity", properties);
+        }
+
+        private bool IsTenantAllowed(ITurnContext turnContext)
+        {
+            var tenantId = turnContext?.Activity?.Conversation?.TenantId;
+            this.telemetryClient.TrackTrace($"TeanantId {tenantId}");
+            if (this.appSettings.DisableTenantFilter)
+            {
+                this.logger.LogInformation("Tenant filter is disabled.");
+                return true;
+            }
+
+            var allowedTenantIds = this.appSettings.AllowedTenantIds;
+            if (allowedTenantIds == null || !allowedTenantIds.Any())
+            {
+                this.telemetryClient.TrackTrace("AllowedTenants setting is not set properly in the configuration file.");
+                return false;
+            }
+
+            return allowedTenantIds.Contains(tenantId);
         }
     }
 }
