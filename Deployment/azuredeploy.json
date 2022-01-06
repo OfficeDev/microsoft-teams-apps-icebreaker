@@ -382,7 +382,7 @@
                 "enableFreeTier": "[parameters('documentDbEnableFreeTier')]",
                 "ipRangeFilter": "",
                 "enableAutomaticFailover": false,
-                "enableMultipleWriteLocations": true,
+                "enableMultipleWriteLocations": "[not(parameters('documentDbServerless'))]",
                 "isVirtualNetworkFilterEnabled": false,
                 "virtualNetworkRules": [],
                 "databaseAccountOfferType": "Standard",
