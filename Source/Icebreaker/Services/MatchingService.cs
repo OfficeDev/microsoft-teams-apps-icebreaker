@@ -30,6 +30,8 @@ namespace Icebreaker.Services
         private readonly ConversationHelper conversationHelper;
         private readonly TelemetryClient telemetryClient;
         private readonly BotAdapter botAdapter;
+        private readonly BotFrameworkAdapter botAdapter2;
+
         private readonly IAppSettings appSettings;
 
         /// <summary>
@@ -45,6 +47,7 @@ namespace Icebreaker.Services
             ConversationHelper conversationHelper,
             TelemetryClient telemetryClient,
             BotAdapter botAdapter,
+            BotFrameworkAdapter botAdapter2,
             IAppSettings appSettings)
         {
             this.dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(this.dataProvider));
@@ -52,6 +55,7 @@ namespace Icebreaker.Services
             this.telemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(this.telemetryClient));
             this.botAdapter = botAdapter ?? throw new ArgumentNullException(nameof(this.botAdapter));
             this.appSettings = appSettings ?? throw new ArgumentNullException(nameof(this.appSettings));
+            this.botAdapter2 = botAdapter2 ?? throw new ArgumentNullException(nameof(this.botAdapter2));
         }
 
         /// <summary>
@@ -92,13 +96,16 @@ namespace Icebreaker.Services
                     try
                     {
                         var teamName = await this.conversationHelper.GetTeamNameByIdAsync(this.botAdapter, team);
-                        this.telemetryClient.TrackTrace($"Pairing members of team {teamName}");
+                        this.telemetryClient.TrackTrace($"Pairing members of teamname {teamName}");
+
+                        var teamName2 = await this.conversationHelper.GetTeamNameByIdAsync2(this.botAdapter2, team);
+                        this.telemetryClient.TrackTrace($"Pairing members of teamname {teamName2}");
 
                         var optedInUsers = await this.GetOptedInUsersAsync(dbMembersLookup, team);
-                        this.telemetryClient.TrackTrace($"Pairing members of team {team.Id}");
+                        this.telemetryClient.TrackTrace($"OptedIn Pairing members of team {optedInUsers.Count}");
 
                         var maxPairUpsPerTeam = this.appSettings.MaxPairUpsPerTeam;
-                        this.telemetryClient.TrackTrace($"Pairing members of team {team.Id}");
+                        this.telemetryClient.TrackTrace($"Max Pairing members of team {maxPairUpsPerTeam}");
 
                         foreach (var pair in this.MakePairs(optedInUsers).Take(maxPairUpsPerTeam))
                         {

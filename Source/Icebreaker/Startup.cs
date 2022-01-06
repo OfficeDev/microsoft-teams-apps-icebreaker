@@ -121,6 +121,8 @@ namespace Icebreaker
             services.AddSingleton<IceBreakerBotHttpAdapter>();
 
             services.AddSingleton<BotAdapter>(x => x.GetRequiredService<IceBreakerBotHttpAdapter>());
+            services.AddSingleton<BotFrameworkAdapter>(x => x.GetRequiredService<IceBreakerBotHttpAdapter>());
+
             services.AddSingleton<IBotFrameworkHttpAdapter>(x => x.GetRequiredService<IceBreakerBotHttpAdapter>());
 
             services.AddTransient<IBot, IcebreakerBot>();

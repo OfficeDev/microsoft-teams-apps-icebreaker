@@ -68,7 +68,7 @@ namespace Icebreaker.Helpers
             var botAdapter = turnContext.Adapter;
             var serviceUrl = turnContext.Activity.ServiceUrl;
             this.telemetryClient.TrackTrace("tenant id " + tenantId);
-           
+
             return await this.NotifyUserAsync(botAdapter, serviceUrl, cardToSend, user, tenantId, cancellationToken);
         }
 
@@ -180,13 +180,28 @@ namespace Icebreaker.Helpers
         public virtual async Task<string> GetTeamNameByIdAsync(BotAdapter botAdapter, TeamInstallInfo teamInfo)
         {
             TeamDetails teamDetails = null;
+            this.telemetryClient.TrackTrace("Team Name by Id " + teamInfo.TeamId);
             await this.ExecuteInNewTurnContext(botAdapter, teamInfo, async (newTurnContext, newCancellationToken) =>
             {
                 teamDetails = await this.GetTeamDetailsAsync(newTurnContext, teamInfo.TeamId, newCancellationToken);
             });
+            this.telemetryClient.TrackTrace("Team details ? " + teamDetails?.Name + "-name");
+
             return teamDetails?.Name;
         }
 
+        public virtual async Task<string> GetTeamNameByIdAsync2(BotFrameworkAdapter botAdapter, TeamInstallInfo teamInfo)
+        {
+            TeamDetails teamDetails = null;
+            this.telemetryClient.TrackTrace("Team Name by Id " + teamInfo.TeamId);
+            await this.ExecuteInNewTurnContext(botAdapter, teamInfo, async (newTurnContext, newCancellationToken) =>
+            {
+                teamDetails = await this.GetTeamDetailsAsync(newTurnContext, teamInfo.TeamId, newCancellationToken);
+            });
+            this.telemetryClient.TrackTrace("Team details ? " + teamDetails?.Name + "-name");
+
+            return teamDetails?.Name;
+        }
         /// <summary>
         /// Get team members.
         /// </summary>
