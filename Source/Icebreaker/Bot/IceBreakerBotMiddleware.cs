@@ -12,6 +12,7 @@ namespace Icebreaker.Bot
     using System.Threading.Tasks;
     using Icebreaker.Interfaces;
     using Microsoft.Bot.Builder;
+    using Microsoft.Bot.Schema;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -37,7 +38,7 @@ namespace Icebreaker.Bot
         {
             try
             {
-                if (!this.IsTenantAllowed(turnContext))
+                if (turnContext.Activity.Type != ActivityTypes.Event && !this.IsTenantAllowed(turnContext))
                 {
                     this.logger.LogInformation("The current tenant is not allowed to proceed.");
                     return;
