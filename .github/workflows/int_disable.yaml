@@ -8,6 +8,7 @@ jobs:
   cleanup_tests:
     runs-on: ubuntu-latest
     name: Cleanup after integration tests
+    environment: zgm-int
     steps:
     - name: Checkout
       uses: actions/checkout@v2
