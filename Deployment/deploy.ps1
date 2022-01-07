@@ -6,7 +6,6 @@
     
     .EXAMPLE
     .\deploy.ps1
-
 -----------------------------------------------------------------------------------------------------------------------------------
 Script name : deploy.ps1
 Version : 1.0
@@ -91,6 +90,17 @@ function IsValidParameter {
     return -not([string]::IsNullOrEmpty($param.Value)) -and ($param.Value -ne '<<value>>')
 }
 
+function IsValidCulture {
+    [OutputType([bool])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("en", "ar", "de", "es", "fr", "he", "ja", "ko", "pt-BR", "ru", "zh-CN", "zh-TW")]
+        [String]$param
+    )
+    return -not([string]::IsNullOrEmpty($param)) -and ($param -ne '<<value>>')
+}
+
 # Validate input parameters.
 function ValidateParameters {
     $isValid = $true
@@ -119,8 +129,13 @@ function ValidateParameters {
         $isValid = $false;
     }
 
+    if (-not (IsValidCulture($parameters.defaultCulture.Value))) {
+        WriteError "Invalid defaultCulture."
+        $isValid = $false;
+    }
+
     if (-not(IsValidParameter($parameters.tenantId)) -or -not(IsValidGuid -ObjectGuid $parameters.tenantId.Value)) {
-        WriteE -message "Invalid tenantId. This should be a GUID."
+        WriteError "Invalid tenantId. This should be a GUID."
         $isValid = $false;
     }
 
