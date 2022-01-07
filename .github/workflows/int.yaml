@@ -1,0 +1,73 @@
+name: Deploy to Integration
+
+on: [pull_request]
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    name: Apply terraform
+    environment: zgm-int
+    outputs:
+      app_service_name: ${{ steps.tf-outputs.outputs.app_service_name }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: init
+      uses: ./.github/actions/init
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        arm_tenant_id: ${{ secrets.ARM_TENANT_ID }}
+        arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        arm_client_id: ${{ secrets.ARM_CLIENT_ID }}
+        arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
+        stage: 'int'
+        name: 'IcebreakerTest'
+    - name: terraform-apply
+      uses: dflook/terraform-apply@v1
+      with:
+        path: ${{ env.TF_DIR }}
+        auto_approve: true
+    - name: Get outputs
+      uses: dflook/terraform-output@v1
+      id: tf-outputs
+      with:
+        path: ${{ env.TF_DIR }}
+    - name: Resolve Path
+      shell: pwsh
+      working-directory: ${{ env.TF_DIR }}
+      run: |
+        $path = Resolve-Path ${{ steps.tf-outputs.outputs.manifest_path }}
+        Write-Output "APP_PACKAGE_PATH=$path" >> $env:GITHUB_ENV
+    - name: Upload App Package
+      uses: actions/upload-artifact@v2
+      with:
+        name: App-Package
+        path: ${{ env.APP_PACKAGE_PATH }}
+        if-no-files-found: error
+
+  deploy:
+    needs: apply
+    runs-on: windows-latest
+    name: Deploy to WebApp
+    environment: zgm-int
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: build
+      uses: ./.github/actions/build
+      with:
+        source_path: Source
+    - uses: azure/login@v1
+      with:
+        creds: |
+          {
+            "clientId": "${{ secrets.ARM_CLIENT_ID }}",
+            "clientSecret": "${{ secrets.ARM_CLIENT_SECRET }}",
+            "subscriptionId": "${{ secrets.ARM_SUBSCRIPTION_ID }}",
+            "tenantId": "${{ secrets.ARM_TENANT_ID }}"
+          }
+    - name: 'Deploy to WebApp'
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: ${{ needs.apply.outputs.app_service_name }}
+        package: '${{ env.GITHUB_WORKSPACE }}/out/_PublishedWebsites/Icebreaker'

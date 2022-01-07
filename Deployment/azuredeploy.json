@@ -45,7 +45,7 @@
         "appIconUrl": {
             "type": "string",
             "minLength": 1,
-            "defaultValue": "https://raw.githubusercontent.com/OfficeDev/microsoft-teams-icebreaker-app/main/Manifest/color.png",
+            "defaultValue": "https://raw.githubusercontent.com/WhiteTomX/microsoft-teams-apps-icebreaker/main/Manifest/color.png",
             "metadata": {
                 "description": "The link to the icon for the bot. It must resolve to a PNG file."
             }
@@ -167,6 +167,20 @@
             "defaultValue": "[resourceGroup().location]",
             "metadata": {
                 "description": "Location for all resources."
+            }
+        },
+        "documentDbEnableFreeTier": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Use FreeTier for DocumentDB. Not compatible with serverless."
+            }
+        },
+        "documentDbServerless": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Use a serverless for DocumentDB. Not compatible with Free Tier."
             }
         }
     },
@@ -337,6 +351,10 @@
                         {
                             "name": "DisableTenantFilter",
                             "value": "false"
+                        },
+                        {
+                            "name": "DocumentDbServerless",
+                            "value": "[parameters('documentDbServerless')]"
                         }
                     ],
                     "ftpsState": "Disabled"
@@ -361,9 +379,10 @@
             "kind": "GlobalDocumentDB",
             "scale": null,
             "properties": {
+                "enableFreeTier": "[parameters('documentDbEnableFreeTier')]",
                 "ipRangeFilter": "",
                 "enableAutomaticFailover": false,
-                "enableMultipleWriteLocations": true,
+                "enableMultipleWriteLocations": "[not(parameters('documentDbServerless'))]",
                 "isVirtualNetworkFilterEnabled": false,
                 "virtualNetworkRules": [],
                 "databaseAccountOfferType": "Standard",
@@ -379,7 +398,7 @@
                         "failoverPriority": 0
                     }
                 ],
-                "capabilities": []
+                "capabilities": "[if(parameters('documentDbServerless'),createArray(createObject('name', 'EnableServerless')),createArray())]"
             },
             "tags": {
                 "defaultExperience": "Core (SQL)"

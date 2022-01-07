@@ -209,6 +209,10 @@
     <value>All set. I've paused your matches. You can turn them back on whenever you like.</value>
     <comment>The confirmation reply that is sent when the user pauses all matches</comment>
   </data>
+  <data name="OptOutForcedConfirmation" xml:space="preserve">
+    <value>You have been flagged as incative and thus won't receive any new matches. You can turn them back on whenever you like.</value>
+    <comment>Text to inform the user that they got flagged as inactive match</comment>
+  </data>
   <data name="PausePairingsButtonText" xml:space="preserve">
     <value>Pause all matches</value>
     <comment>Button text to pause pairings</comment>

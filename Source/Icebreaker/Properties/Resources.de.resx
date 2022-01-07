@@ -210,6 +210,10 @@
     <value>Erledigt. Du wirst keine Matches mehr erhalten. Du kannst jederzeit wieder mitmachen!</value>
     <comment>The confirmation reply that is sent when the user pauses all matches</comment>
   </data>
+  <data name="OptOutForcedConfirmation" xml:space="preserve">
+    <value>Du wurdest als inaktiv markiert und wirst deshalb keine Matches mehr erhalten. Du kannst jederzeit wieder mitmachen!</value>
+    <comment>Text to inform the user that they got flagged as inactive match</comment>
+  </data>
   <data name="PausePairingsButtonText" xml:space="preserve">
     <value>Matches stoppen</value>
     <comment>Button text to pause pairings</comment>
@@ -231,7 +235,7 @@
     <comment>Text to confirm opt out after reporting inactive</comment>
   </data>
   <data name="ReportInactiveConfirmText" xml:space="preserve">
-    <value>Bestätige, dass eine Person inaktiv ist. Somit bekommt die Person kein automatisches Match mehr. Wenn die Person wieder aktiv werden will, kann sie es selbst wieder aktivieren</value>
+    <value>Bestätige, dass die Person inaktiv ist. Somit bekommt sie keine Matches mehr. Wenn die Person wieder aktiv werden will, kann sie es selbst wieder aktivieren</value>
     <comment>Confirmation Text to report someone as inactive</comment>
   </data>
   <data name="ResumePairingsButtonText" xml:space="preserve">

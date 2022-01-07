@@ -2,13 +2,13 @@ name: Deploy to Production
 
 on:
   push:
-    branches: [ main ]
-
+    branches:
+      - main
 jobs:
   apply:
     runs-on: ubuntu-latest
-    name: Apply terraform plan
-    environment: zgm-int
+    name: Apply terraform
+    environment: zgm-prd
     outputs:
       app_service_name: ${{ steps.tf-outputs.outputs.app_service_name }}
     steps:
@@ -22,10 +22,14 @@ jobs:
         arm_subscription_id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
         arm_client_id: ${{ secrets.ARM_CLIENT_ID }}
         arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
+        stage: "prd"
+        cosmosEnableFreeTier: true
+        documentDbServerless: false
     - name: terraform-apply
       uses: dflook/terraform-apply@v1
       with:
         path: ${{ env.TF_DIR }}
+        auto_approve: true
     - name: Get outputs
       uses: dflook/terraform-output@v1
       id: tf-outputs
@@ -48,7 +52,7 @@ jobs:
     needs: apply
     runs-on: windows-latest
     name: Deploy to WebApp
-    environment: zgm-int
+    environment: zgm-prd
     steps:
     - name: Checkout
       uses: actions/checkout@v2

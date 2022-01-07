@@ -19,7 +19,7 @@ namespace Icebreaker.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -264,6 +264,15 @@ namespace Icebreaker.Properties {
         public static string OptOutConfirmation {
             get {
                 return ResourceManager.GetString("OptOutConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You have been flagged as incative and thus won&apos;t receive any new matches. You can turn them back on whenever you like..
+        /// </summary>
+        public static string OptOutForcedConfirmation {
+            get {
+                return ResourceManager.GetString("OptOutForcedConfirmation", resourceCulture);
             }
         }
         
