@@ -169,18 +169,18 @@
                 "description": "Location for all resources."
             }
         },
-        "documentDbEnableFreeTier": {
+        "cosmosDbEnableFreeTier": {
             "type": "bool",
             "defaultValue": false,
             "metadata": {
-                "description": "Use FreeTier for DocumentDB. Not compatible with serverless."
+                "description": "Use FreeTier for cosmosDB. Not compatible with serverless."
             }
         },
-        "documentDbServerless": {
+        "cosmosDbServerless": {
             "type": "bool",
             "defaultValue": false,
             "metadata": {
-                "description": "Use a serverless for DocumentDB. Not compatible with Free Tier."
+                "description": "Use a serverless for cosmosDB. Not compatible with Free Tier."
             }
         }
     },
@@ -353,8 +353,8 @@
                             "value": "false"
                         },
                         {
-                            "name": "DocumentDbServerless",
-                            "value": "[parameters('documentDbServerless')]"
+                            "name": "cosmosDbServerless",
+                            "value": "[parameters('cosmosDbServerless')]"
                         }
                     ],
                     "ftpsState": "Disabled"
@@ -379,10 +379,10 @@
             "kind": "GlobalDocumentDB",
             "scale": null,
             "properties": {
-                "enableFreeTier": "[parameters('documentDbEnableFreeTier')]",
+                "enableFreeTier": "[parameters('cosmosDbEnableFreeTier')]",
                 "ipRangeFilter": "",
                 "enableAutomaticFailover": false,
-                "enableMultipleWriteLocations": "[not(parameters('documentDbServerless'))]",
+                "enableMultipleWriteLocations": "[not(parameters('cosmosDbServerless'))]",
                 "isVirtualNetworkFilterEnabled": false,
                 "virtualNetworkRules": [],
                 "databaseAccountOfferType": "Standard",
@@ -398,7 +398,7 @@
                         "failoverPriority": 0
                     }
                 ],
-                "capabilities": "[if(parameters('documentDbServerless'),createArray(createObject('name', 'EnableServerless')),createArray())]"
+                "capabilities": "[if(parameters('cosmosDbServerless'),createArray(createObject('name', 'EnableServerless')),createArray())]"
             },
             "tags": {
                 "defaultExperience": "Core (SQL)"

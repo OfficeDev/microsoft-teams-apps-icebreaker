@@ -28,11 +28,11 @@ inputs:
   name:
     description: 'name to give to terraform as variable'
     default: 'Icebreaker'
-  documentDbEnableFreeTier:
-    description: 'documentDbEnableFreeTier to give to terraform as variable'
+  cosmosDbEnableFreeTier:
+    description: 'cosmosDbEnableFreeTier to give to terraform as variable'
     default: false
-  documentDbServerless:
-    description: 'documentDbServerless to give to terraform as variable'
+  cosmosDbServerless:
+    description: 'cosmosDbServerless to give to terraform as variable'
     default: true
 
 runs:
@@ -65,8 +65,8 @@ runs:
 
         echo "TF_VAR_stage=${{ inputs.stage }}" >> $GITHUB_ENV
         echo "TF_VAR_name=${{ inputs.name }}" >> $GITHUB_ENV
-        echo "TF_VAR_documentDbEnableFreeTier=${{ inputs.documentDbEnableFreeTier }}" >> $GITHUB_ENV
-        echo "TF_VAR_documentDbServerless=${{ inputs.documentDbServerless }}" >> $GITHUB_ENV
+        echo "TF_VAR_cosmosDbEnableFreeTier=${{ inputs.cosmosDbEnableFreeTier }}" >> $GITHUB_ENV
+        echo "TF_VAR_cosmosDbServerless=${{ inputs.cosmosDbServerless }}" >> $GITHUB_ENV
       shell: bash
         
             
