@@ -23,6 +23,7 @@ namespace Icebreaker
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Builder.Integration.AspNet.Core;
     using Microsoft.Bot.Connector.Authentication;
@@ -111,6 +112,7 @@ namespace Icebreaker
                 CosmosDBKeyName = this.configuration.GetValue<string>("CosmosDBKeyName"),
                 ParingKeyName = this.configuration.GetValue<string>("ParingKeyName"),
                 MicrosoftAppPasswordKeyName = this.configuration.GetValue<string>("MicrosoftAppPasswordKeyName"),
+                ManifestAppId = this.configuration.GetValue<string>("ManifestAppId"),
             };
             services.AddSingleton<IAppSettings>(appSettings);
             services.AddTransient<ISecretsProvider, SecretsProvider>();
@@ -127,6 +129,7 @@ namespace Icebreaker
             services.AddTransient<ConversationHelper>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddHostedService<BackgroundQueueService>();
+            services.AddMvc();
 
             // Controllers
             services.AddControllers()
@@ -162,13 +165,12 @@ namespace Icebreaker
             app.UseStaticFiles();
 
             // Loading the images from Content directory
-            app.UseStaticFiles(new StaticFileOptions
+            app.UseStaticFiles(new StaticFileOptions()
             {
                 FileProvider = new PhysicalFileProvider(
-                    Path.Combine(env.ContentRootPath, "../repository/Source/Icebreaker/Content")),
-                RequestPath = "/Content"
+                Path.Combine(Directory.GetCurrentDirectory(), @"Content")),
+                RequestPath = new PathString("/Content"),
             });
-
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
