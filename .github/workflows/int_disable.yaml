@@ -22,7 +22,7 @@ jobs:
         arm_client_secret: ${{ secrets.ARM_CLIENT_SECRET }}
         stage: 'int'
         name: 'IcebreakerTest'
-    - name: terraform destroy LogicApp
+    - name: Disable LogicApp
       run: |
         az login --service-principal -u ${{ secrets.ARM_CLIENT_ID }} -p ${{ secrets.ARM_CLIENT_SECRET }} --tenant ${{ secrets.ARM_TENANT_ID }}
         az account set --subscription ${{ secrets.ARM_SUBSCRIPTION_ID }}
