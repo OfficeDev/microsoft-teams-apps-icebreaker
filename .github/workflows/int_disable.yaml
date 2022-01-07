@@ -26,5 +26,6 @@ jobs:
       run: |
         az login --service-principal -u ${{ secrets.ARM_CLIENT_ID }} -p ${{ secrets.ARM_CLIENT_SECRET }} --tenant ${{ secrets.ARM_TENANT_ID }}
         az account set --subscription ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        az config set extension.use_dynamic_install=yes_without_prompt
         az resource invoke-action --action disable --ids $(az logic workflow list --query "[].id" -o tsv --resource-group 'rg-Icebreaker-int-01')
       shell: bash
