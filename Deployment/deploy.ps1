@@ -515,7 +515,7 @@ function InstallDependencies {
 
                 if (-not (Get-Module -ListAvailable -Name "AzureAD")) {
                     WriteInfo "Installing AzureAD module..."
-                    Install-Module AzureAD -Scope CurrentUser -Force
+                    Install-Module AzureAD -Scope CurrentUser -Force -AllowClobber
                 }
                 
                 if (-not (Get-Module -ListAvailable -Name "WriteAscii")) {
