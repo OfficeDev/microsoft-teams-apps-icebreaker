@@ -1,0 +1,252 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BackButtonText" xml:space="preserve">
+    <value>Terug</value>
+    <comment>This is the back button text</comment>
+  </data>
+  <data name="ChatWithMatchButtonText" xml:space="preserve">
+    <value>Chat met {0}</value>
+    <comment>Button text to initiate a chat with the person the user has been matched up with</comment>
+  </data>
+  <data name="ChatWithMessageGreeting" xml:space="preserve">
+    <value>Hallo collega</value>
+    <comment>This is the greeting of the chat with matched member message</comment>
+  </data>
+  <data name="DoneButtonText" xml:space="preserve">
+    <value>OK</value>
+    <comment>This is the done button text</comment>
+  </data>
+  <data name="ErrorOccured" xml:space="preserve">
+    <value>Er is een fout opgetreden. Nog een keer proberen?</value>
+    <comment>A generic message that is sent when there is an error occurring</comment>
+  </data>
+  <data name="InstallMessageKnownInstallerPart1" xml:space="preserve">
+    <value>Als je dit leest, ben je waarschijnlijk door {0} toegevoegd aan groep **{1}.**</value>
+    <comment>Install message and also the welcome message when the app installer is known - {0} is the placeholder for the name of the user that has installed the app to the team, and {1} is the placeholder for the name of the team that the app has been installed to</comment>
+  </data>
+  <data name="InstallMessageKnownInstallerPart2" xml:space="preserve">
+    <value>Ik kan je helpen meer mensen in je organisatie te ontmoeten door je elke week willekeurig te koppelen aan een collega. Je kunt zo meer te weten komen over de mensen met wie je werkt. Het is een win-win-*win* situatie.</value>
+    <comment>Part 2 of the install message when the name of the installer is known</comment>
+  </data>
+  <data name="InstallMessageKnownInstallerPart3" xml:space="preserve">
+    <value>**Om nieuwe collega's te ontmoeten, wacht je gewoon af. Ik stuur je snel een uitnodiging.**</value>
+    <comment>Part 3 of the install message with the name of the installer known</comment>
+  </data>
+  <data name="InstallMessageUnknownInstallerPart1" xml:space="preserve">
+    <value>Als je dit leest, is het omdat ik ben geïnstalleerd in **{0}.** </value>
+    <comment>Install message and also the welcome message when the app installer is not known - {0} is the placeholder for the name of the team that the app has been installed to</comment>
+  </data>
+  <data name="InstallMessageUnknownInstallerPart2" xml:space="preserve">
+    <value>Ik kan je helpen meer mensen in je organisatie te ontmoeten door je elke week willekeurig te koppelen aan een collega. Je kunt zo meer te weten komen over de mensen met wie je werkt. Het is een win-win-*win* situatie.</value>
+    <comment>Part 2 of the install message when the name of the installer is not known</comment>
+  </data>
+  <data name="InstallMessageUnknownInstallerPart3" xml:space="preserve">
+    <value>**Om nieuwe collega's te ontmoeten, wacht je gewoon af. Ik stuur je snel een uitnodiging.**</value>
+    <comment>Part 3 of the install message when the name of the installer is not known</comment>
+  </data>
+  <data name="MatchUpCardContentPart1" xml:space="preserve">
+    <value>Hallo, Ik ben {0} in {1}. Een bot die je wekelijks koppelt aan een willekeurige collega. Deze week is je match {2}.</value>
+    <comment>First part of the match up card main content</comment>
+  </data>
+  <data name="MatchUpCardContentPart2" xml:space="preserve">
+    <value>Als je het leuk vind, plan dan een afspraak.</value>
+    <comment>Second part of the match up card main content</comment>
+  </data>
+  <data name="MatchUpCardMatchedText" xml:space="preserve">
+    <value>Je bent gematched aan {0}.</value>
+    <comment>The text saying who the user has been matched up with</comment>
+  </data>
+  <data name="MatchUpCardTitleContent" xml:space="preserve">
+    <value>Het is tijd voor een afspraak!</value>
+    <comment>The title text for the pairup notification adaptive card</comment>
+  </data>
+  <data name="MeetupContent" xml:space="preserve">
+    <value>Hallo daar, het lijkt erop dat wij zijn gematched door {0} deze week. Het zou leuk zijn om af te spreken voor een kopje koffie, wandelingetje of een online kennismaking.</value>
+    <comment>Content of the Meetup for the propose meeting</comment>
+  </data>
+  <data name="MeetupTitle" xml:space="preserve">
+    <value>IceBreaker afspraak {0} / {1}</value>
+    <comment>The title for the Meetup - {0} is the name of the first person that user has been matched with and {1} is the name of the user</comment>
+  </data>
+  <data name="NextButtonText" xml:space="preserve">
+    <value>Volgende</value>
+    <comment>This is the next button text</comment>
+  </data>
+  <data name="OptInConfirmation" xml:space="preserve">
+    <value>Welkom terug! We hebben je gemist. Vanaf nu ontvang je weer uitnodigingen van mij. Veel plezier!</value>
+    <comment>The confirmation reply that is sent when the user resumes the matches</comment>
+  </data>
+  <data name="OptOutConfirmation" xml:space="preserve">
+    <value>Klaar. Ik heb je deelname gepauzeerd. Je kan ze weer inschakelen wanneer je maar wilt.</value>
+    <comment>The confirmation reply that is sent when the user pauses all matches</comment>
+  </data>
+  <data name="PausePairingsButtonText" xml:space="preserve">
+    <value>Pauzeer deelname</value>
+    <comment>Button text to pause pairings</comment>
+  </data>
+  <data name="ProposeMeetupButtonText" xml:space="preserve">
+    <value>Maak afspraak</value>
+    <comment>Button text to propose the meetup with the match of the user</comment>
+  </data>
+  <data name="ResumePairingsButtonText" xml:space="preserve">
+    <value>Hervat deelname</value>
+    <comment>Button text to resume pairings</comment>
+  </data>
+  <data name="SalutationTitleText" xml:space="preserve">
+    <value>Hallo!</value>
+    <comment>This is the text for the salutation in the adaptive cards when the bot is installed to a team and also when new users are added to the team</comment>
+  </data>
+  <data name="TakeATourButtonText" xml:space="preserve">
+    <value>Start rondleiding</value>
+    <comment>The text for the button which launches a tour when clicked</comment>
+  </data>
+  <data name="TourContentPageTitleText" xml:space="preserve">
+    <value>Rondleiding</value>
+    <comment>This is the tour content page title text</comment>
+  </data>
+  <data name="TourMatchesBodyText" xml:space="preserve">
+    <value>Pauzeer deelname wanneer je maar wilt. Te druk deze week? Op vakantie of ziek? Geen probleem. Klik gewoon op de knop op elk gewenst moment.</value>
+    <comment>This is the tour match task module body text</comment>
+  </data>
+  <data name="TourMatchesHeaderText" xml:space="preserve">
+    <value>Pauzeer eenvoudig deelname als dat nodig is</value>
+    <comment>This is the tour match task module header text</comment>
+  </data>
+  <data name="TourWelcomeBodyText" xml:space="preserve">
+    <value>Elke week koppel ik je aan een collega. Als je het leuk vindt, kun je afspreken voor een kopje koffie, een wandelingetje of een online kennismaking. Wacht mijn volgende bericht af voor je eerste match.</value>
+    <comment>This is the tour welcome body text</comment>
+  </data>
+  <data name="TourWelcomeHeaderText" xml:space="preserve">
+    <value>Maak kennis met collega's</value>
+    <comment>This is the tour welcome header text</comment>
+  </data>
+  <data name="TourWelcomeImageAltText" xml:space="preserve">
+    <value>Welkoms afbeelding</value>
+    <comment>This is the tour welcome image alt text</comment>
+  </data>
+  <data name="UnrecognizedInput" xml:space="preserve">
+    <value>Het spijt me, maar je kan mij geen bericht sturen. Je kan wel een rondleiding volgen om meer te weten te komen over mijn functionaliteit.</value>
+    <comment>The text for the unrecognized input scenario</comment>
+  </data>
+  <data name="WelcomeTourTitle" xml:space="preserve">
+    <value>Rondleiding</value>
+    <comment>This is the title of the tour for the Icebreaker Bot</comment>
+  </data>
+</root>
