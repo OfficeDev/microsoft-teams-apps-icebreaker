@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
   "name.short": "Icebreaker",
-  "description.short": "Icebreaker is een bot die willekeurig mensen binnen een team aan elkaar koppelt.",
+  "description.short": "Icebreaker is een app die willekeurig mensen binnen een team aan elkaar koppelt.",
   "description.full": "IceBreaker is een app die willekeurig collega's koppelt en zo bijdraagt aan verbinding in de organisatie."
 }
