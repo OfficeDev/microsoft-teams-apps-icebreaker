@@ -195,7 +195,10 @@
         "KeyVaultURI": "[concat('https://', variables('keyVaultName'), '.vault.azure.net')]",
         "appInsightsName": "[variables('baseResourceName')]",
         "appHostingPlanName": "[variables('baseResourceName')]",
-        "sharedSkus": [ "Free", "Shared" ],
+        "sharedSkus": [
+            "Free",
+            "Shared"
+        ],
         "isSharedPlan": "[contains(variables('sharedSkus'), parameters('sku'))]",
         "skuFamily": "[if(equals(parameters('sku'), 'Shared'), 'D', take(parameters('sku'), 1))]",
         "skuName": "[if(variables('isSharedPlan'), concat(variables('skuFamily'),'1'), concat(variables('skuFamily'), parameters('planSize')))]",
@@ -353,7 +356,7 @@
                             "value": "false"
                         },
                         {
-                            "name": "cosmosDbServerless",
+                            "name": "CosmosDbServerless",
                             "value": "[parameters('cosmosDbServerless')]"
                         }
                     ],
