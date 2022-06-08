@@ -261,7 +261,7 @@ namespace Icebreaker.Helpers
 
             RequestOptions requestOptions;
             bool useSharedOffer;
-            if (CloudConfigurationManager.GetSetting("CosmosDbServerless").Equals("True", StringComparison.OrdinalIgnoreCase))
+            if ("True".Equals(CloudConfigurationManager.GetSetting("CosmosDbServerless"), StringComparison.OrdinalIgnoreCase))
             {
                 // ServerLess doesnt support Throughput
                 requestOptions = null;
