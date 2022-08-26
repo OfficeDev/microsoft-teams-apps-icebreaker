@@ -30,6 +30,10 @@ jobs:
       with:
         path: ${{ env.TF_DIR }}
         auto_approve: true
+      env:
+        TERRAFORM_PRE_RUN: |
+          # Install latest Azure CLI
+          curl -skL https://aka.ms/InstallAzureCLIDeb | bash
     - name: Get outputs
       uses: dflook/terraform-output@v1
       id: tf-outputs
