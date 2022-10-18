@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -134,7 +134,7 @@
     <comment>This is the done button text</comment>
   </data>
   <data name="ErrorOccured" xml:space="preserve">
-    <value>Fehler bei der Verarbeitung der Anforderung. Wieder holen?</value>
+    <value>Fehler bei der Verarbeitung der Anforderung. Wiederholen?</value>
     <comment>A generic message that is sent when there is an error occurring</comment>
   </data>
   <data name="InstallMessageKnownInstallerPart1" xml:space="preserve">
@@ -142,7 +142,7 @@
     <comment>Install message and also the welcome message when the app installer is known - {0} is the placeholder for the name of the user that has installed the app to the team, and {1} is the placeholder for the name of the team that the app has been installed to</comment>
   </data>
   <data name="InstallMessageKnownInstallerPart2" xml:space="preserve">
-    <value>Ich kann Ihnen helfen, mehr Menschen in Ihrer Organisation kennenzulernen, indem ich Sie jede Woche zufällig mit jemandem zusammenbringe. Sie lernen mehr Freunde kennen und erfahren mehr über die Menschen, mit denen Sie arbeiten. Es ist eine Win-Win-*Win*-Situation.</value>
+    <value>Ich kann Ihnen helfen, mehr Menschen in Ihrer Organisation kennenzulernen, indem ich Sie jede Woche zufällig mit jemandem zusammenbringe. Sie lernen mehr Leute kennen und erfahren mehr über die Menschen, mit denen Sie arbeiten. Es ist eine Win-Win-*Win*-Situation.</value>
     <comment>Part 2 of the install message when the name of the installer is known</comment>
   </data>
   <data name="InstallMessageKnownInstallerPart3" xml:space="preserve">
@@ -154,7 +154,7 @@
     <comment>Install message and also the welcome message when the app installer is not known - {0} is the placeholder for the name of the team that the app has been installed to</comment>
   </data>
   <data name="InstallMessageUnknownInstallerPart2" xml:space="preserve">
-    <value>Ich kann Ihnen helfen, mehr Menschen in Ihrer Organisation kennenzulernen, indem ich Sie jede Woche zufällig mit jemandem zusammenbringe. Sie lernen mehr Freunde kennen und erfahren mehr über die Menschen, mit denen Sie arbeiten. Es ist eine Win-Win-*Win*-Situation.</value>
+    <value>Ich helfe Ihnen, mehr Menschen in Ihrem Unternehmen kennenzulernen, indem ich Sie jede Woche nach dem Zufallsprinzip mit einer neuen Person zusammenbringe. Sie lernen neue Leute kennen und erfahren mehr über die Menschen, mit denen Sie arbeiten. Es ist eine Win-Win-*Win*-Situation.</value>
     <comment>Part 2 of the install message when the name of the installer is not known</comment>
   </data>
   <data name="InstallMessageUnknownInstallerPart3" xml:space="preserve">
@@ -166,7 +166,7 @@
     <comment>First part of the match up card main content</comment>
   </data>
   <data name="MatchUpCardContentPart2" xml:space="preserve">
-    <value>Wenn Sie die Neigung dazu haben, vereinbaren Sie etwas. Leute zu treffen *ist* einfach!</value>
+    <value>Wenn Sie Lust haben, können Sie etwas arrangieren. Leute zu treffen *ist* einfach!</value>
     <comment>Second part of the match up card main content</comment>
   </data>
   <data name="MatchUpCardMatchedText" xml:space="preserve">
@@ -174,11 +174,11 @@
     <comment>The text saying who the user has been matched up with</comment>
   </data>
   <data name="MatchUpCardTitleContent" xml:space="preserve">
-    <value>Es ist Zeit für eine Übereinstimmung!</value>
+    <value>Es ist Zeit für ein Treffen!</value>
     <comment>The title text for the pairup notification adaptive card</comment>
   </data>
   <data name="MeetupContent" xml:space="preserve">
-    <value>Hallo, anscheinend haben wir {0} diese Woche abgestimmt. Es ist großartig, sich für ein Kaffee oder ein Mittag essen oder einen Anruf zu treffen, wenn Sie Zeit haben.</value>
+    <value>Hallo, anscheinend haben wir {0} diese Woche abgestimmt. Es wäre toll, wenn wir uns auf einen Kaffee oder ein Mittagessen treffen oder telefonieren könnten, wenn Sie Zeit haben.</value>
     <comment>Content of the Meetup for the propose meeting</comment>
   </data>
   <data name="MeetupTitle" xml:space="preserve">
@@ -222,15 +222,15 @@
     <comment>This is the tour content page title text</comment>
   </data>
   <data name="TourMatchesBodyText" xml:space="preserve">
-    <value>Wenn Sie die Notwendigkeit benötigen, sollten Sie überein stimmen. Die Woche zu stark ausgelastet? Außer Haus? Kein Problem. Klicken Sie einfach auf die Schalt Fläche.</value>
+    <value>Pausieren Sie die Treffen, wann immer Sie wollen. Zu viel zu tun in dieser Woche? Sie sind nicht im Büro? Kein Problem! Klicken Sie einfach auf die Schaltfläche, wann immer Sie wollen.</value>
     <comment>This is the tour match task module body text</comment>
   </data>
   <data name="TourMatchesHeaderText" xml:space="preserve">
-    <value>Einfaches Anhalten von Übereinstimmungen wenn erforderlich</value>
+    <value>Einfaches Anhalten von Treffen wenn erforderlich</value>
     <comment>This is the tour match task module header text</comment>
   </data>
   <data name="TourWelcomeBodyText" xml:space="preserve">
-    <value>Jede Woche Koppeln Sie mit einer neuen Person. Wenn Sie über die Inclination dieser Woche verfügen, können Sie eine Mittag essen treffen, oder einen Anruf, wenn Sie an verschiedenen Orten arbeiten. Sehen Sie sich eine andere Nachricht an, in der ich Sie mit Ihrer ersten überein Stimmung gekoppelt.</value>
+    <value>Jede Woche werde ich Sie mit einer neuen Person zusammenbringen. Wenn Sie in dieser Woche Lust haben, können Sie sich zum Mittagessen oder wenn Sie an verschiedenen Orten sind auch zum telefonieren treffen. Halten Sie Ausschau nach einer weiteren Nachricht, in der ich Sie mit Ihrem ersten Partner zusammenbringen werde.</value>
     <comment>This is the tour welcome body text</comment>
   </data>
   <data name="TourWelcomeHeaderText" xml:space="preserve">
