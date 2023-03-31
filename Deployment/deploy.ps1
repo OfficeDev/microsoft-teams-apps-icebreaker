@@ -96,7 +96,7 @@ function IsValidCulture {
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateSet("en", "ar", "de", "es", "fr", "he", "ja", "ko", "pt-BR", "ru", "zh-CN", "zh-TW")]
+        [ValidateSet("en", "ar", "de", "es", "fr", "he", "ja", "ko", "pt-BR", "ru", "zh-CN", "zh-TW", "nl")]
         [String]$param
     )
     return -not([string]::IsNullOrEmpty($param)) -and ($param -ne '<<value>>')

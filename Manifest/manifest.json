@@ -60,6 +60,10 @@
       {
         "languageTag": "zh-TW",
         "file": "zh-TW.json"
+      },
+      {
+        "languageTag": "nl",
+        "file": "nl.json"
       }
     ]
   },
