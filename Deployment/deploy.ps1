@@ -564,7 +564,7 @@ function InstallDependencies {
     $userAlias = (($user | ConvertFrom-Json) | where {$_.id -eq $parameters.subscriptionId.Value}).user.name
 
     # Create User App
-    $userAppCred = CreateAzureADApp $parameters.baseResourceName.Value
+    $userAppCred = CreateAzureADApp $parameters.appDisplayName.Value
     if ($null -eq $userAppCred) {
         WriteError "Failed to create or update the app in Azure Active Directory. Exiting..."
         logout
